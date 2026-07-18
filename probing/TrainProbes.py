@@ -163,7 +163,8 @@ def define_model(input_dim):
     model.add(Dense(128, activation='relu'))
     model.add(Dense(64, activation='relu'))
     model.add(Dense(1, activation='sigmoid'))
-    model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
+    # tensorflow-metal has no XLA backend; Keras 3's jit_compile="auto" default breaks on Apple GPUs
+    model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'], jit_compile=False)
     return model
 
 def train_model(model, train_embeddings, train_labels):
