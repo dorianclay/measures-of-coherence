@@ -8,8 +8,9 @@ and saves the embeddings of the last token of each sentence into new CSV files.
 It is based on Amos Azaria's and Tom Mitchell's implementation for their paper `The Internal State of an LLM Knows When It's Lying.'
 https://arxiv.org/abs/2304.13734
 
-It uses the OPTForCausalLM model from Hugging Face's transformers, with the model names specified in a configuration JSON file or by commandline args. 
-Model options include: '6.7b', '2.7b', '1.3b', '350m'. It is stable, unlike LLaMa_generate_embeddings.py, which adds functionality for LLaMA.
+It uses AutoModelForCausalLM from Hugging Face's transformers, with the model names specified in a configuration JSON file or by commandline args.
+The model can be any causal LM on the Hugging Face hub (e.g. 'meta-llama/Llama-3.1-8B'); the OPT size shorthands '6.7b', '2.7b', '1.3b', '350m'
+are still accepted for backward compatibility. On CUDA machines the model is loaded in bfloat16 and sharded across all visible GPUs.
 
 The configuration file and/or commandline args also specify whether to remove periods at the end of sentences, which layers of the model to use for generating embeddings,
 and the list of datasets to process.
@@ -24,7 +25,7 @@ Requirements:
 """
 
 import torch
-from transformers import AutoTokenizer, OPTForCausalLM
+from transformers import AutoTokenizer, AutoModelForCausalLM
 import pandas as pd
 import numpy as np
 from typing import Dict, List
@@ -38,16 +39,30 @@ logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s - %(levelname)s - %(message)s',
                     filename='embedding_extraction.log')
 
+OPT_SIZE_SHORTHANDS = ("350m", "1.3b", "2.7b", "6.7b")
+
 def init_model(model_name: str):
     """
     Initializes and returns the model and tokenizer.
+
+    Accepts any causal LM id on the Hugging Face hub, or an OPT size
+    shorthand ('350m', '1.3b', '2.7b', '6.7b') for backward compatibility.
     """
+    if model_name in OPT_SIZE_SHORTHANDS:
+        model_name = "facebook/opt-" + model_name
     try:
-        model = OPTForCausalLM.from_pretrained("facebook/opt-"+model_name)
-        tokenizer = AutoTokenizer.from_pretrained("facebook/opt-"+model_name)
+        if torch.cuda.is_available():
+            # bfloat16 halves memory vs fp32; device_map shards across all visible GPUs
+            model = AutoModelForCausalLM.from_pretrained(model_name, dtype=torch.bfloat16, device_map="auto")
+        else:
+            model = AutoModelForCausalLM.from_pretrained(model_name)
+        tokenizer = AutoTokenizer.from_pretrained(model_name)
+        if tokenizer.pad_token is None:
+            tokenizer.pad_token = tokenizer.eos_token
     except Exception as e:
         print(f"An error occurred when initializing the model: {str(e)}")
         return None, None
+    model.eval()
     return model, tokenizer
 
 def load_data(dataset_path: Path, dataset_name: str, true_false: bool = False):
@@ -75,13 +90,13 @@ def process_row(prompt: str, model, tokenizer, layers_to_use: list, remove_perio
     """
     if remove_period:
         prompt = prompt.rstrip(". ")
-    inputs = tokenizer(prompt, return_tensors="pt")
+    inputs = tokenizer(prompt, return_tensors="pt").to(model.device)
     with torch.no_grad():
         outputs = model.generate(inputs.input_ids, output_hidden_states=True, return_dict_in_generate=True, max_new_tokens=1, min_new_tokens=1)
     embeddings = {}
     for layer in layers_to_use:
         last_hidden_state = outputs.hidden_states[0][layer][0][-1]
-        embeddings[layer] = [last_hidden_state.numpy().tolist()]
+        embeddings[layer] = [last_hidden_state.float().cpu().numpy().tolist()]
     return embeddings
 
 #Still not convinced this function works 100% correctly, but it's much faster than process_row.
@@ -91,8 +106,8 @@ def process_batch(batch_prompts: List[str], model, tokenizer, layers_to_use: lis
     """
     if remove_period:
         batch_prompts = [prompt.rstrip(". ") for prompt in batch_prompts]
-    inputs = tokenizer(batch_prompts, return_tensors="pt", padding=True, truncation=True)
-    
+    inputs = tokenizer(batch_prompts, return_tensors="pt", padding=True, truncation=True).to(model.device)
+
     model.eval()
     with torch.no_grad():
         outputs = model(**inputs, output_hidden_states=True, return_dict=True) 
@@ -106,7 +121,7 @@ def process_batch(batch_prompts: List[str], model, tokenizer, layers_to_use: lis
 
         # Gather the hidden state at the last real token for each sequence
         last_hidden_states = hidden_states[range(hidden_states.size(0)), seq_lengths, :]
-        batch_embeddings[layer] = [embedding.detach().cpu().numpy().tolist() for embedding in last_hidden_states]
+        batch_embeddings[layer] = [embedding.detach().float().cpu().numpy().tolist() for embedding in last_hidden_states]
 
     return batch_embeddings
 
@@ -117,7 +132,10 @@ def save_data(df, output_path: Path, dataset_name: str, model_name: str, layer: 
     """
     output_path.mkdir(parents=True, exist_ok=True)
     filename_suffix = "_rmv_period" if remove_period else ""
-    output_file = output_path / f"embeddings_{dataset_name}{model_name}_{abs(layer)}{filename_suffix}.csv"
+    # Full HF ids contain '/'; keep only the final component so filenames stay valid
+    # (e.g. 'meta-llama/Llama-3.1-8B' -> 'Llama-3.1-8B'). Pass that same name to TrainProbes.
+    model_tag = model_name.split("/")[-1]
+    output_file = output_path / f"embeddings_{dataset_name}{model_tag}_{abs(layer)}{filename_suffix}.csv"
     try:
         df.to_csv(output_file, index=False)
     except PermissionError:
@@ -153,8 +171,8 @@ def main():
         return
 
     parser = argparse.ArgumentParser(description="Generate new csv with embeddings.")
-    parser.add_argument("--model", 
-                        help="Name of the language model to use: '6.7b', '2.7b', '1.3b', '350m'")
+    parser.add_argument("--model",
+                        help="Hugging Face model id (e.g. 'meta-llama/Llama-3.1-8B') or OPT size shorthand: '6.7b', '2.7b', '1.3b', '350m'")
     parser.add_argument("--layers", nargs='*', 
                         help="List of layers of the LM to save embeddings from indexed negatively from the end")
     parser.add_argument("--dataset_names", nargs='*',
