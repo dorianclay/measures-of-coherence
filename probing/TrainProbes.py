@@ -325,6 +325,7 @@ def main():
     args = parser.parse_args()
 
     model_name = args.model if args.model is not None else config_parameters["model"]
+    model_name = model_name.split("/")[-1]
     should_remove_period = args.remove_period if args.remove_period is not None else config_parameters["remove_period"]
     layers_to_process = [int(x) for x in args.layers] if args.layers is not None else config_parameters["layers_to_use"]
     dataset_names = args.dataset_names if args.dataset_names is not None else config_parameters["list_of_datasets"]
