@@ -1,7 +1,7 @@
 [project]
 name = "probes"
 version = "0.1.0"
-description = "Add your description here"
+description = "Probe at LLM's internal activations to correlate interpretations."
 readme = "README.md"
 requires-python = ">=3.12,<3.13"
 dependencies = [
