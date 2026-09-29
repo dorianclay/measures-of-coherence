@@ -1,0 +1,519 @@
+
+====================================================================================================
+HuggingFaceTB/SmolLM2-135M   methods=['logprob']   answer token ids={'True': [2787, 3635], 'False': [4178, 4245]}
+
+  conj_neg_facts:397
+    [1] logprob=0.46   The human body has 206 bones.
+    [0] logprob=0.44   The human body doesn't have 206 bones.
+    [1] logprob=0.41   The study of non-living organisms and their interactions with the environment is
+    [0] logprob=0.44   The study of non-living organisms and their interactions with the environment is
+    [1] logprob=0.43   The human body has 206 bones, and the study of non-living organisms and their in
+    L[logprob] = 0.075
+
+  conj_neg_facts:434
+    [0] logprob=0.46   The human eye can detect only one color.
+    [1] logprob=0.48   The human eye can detect more than one color.
+    [1] logprob=0.42   The least abundant gas in Earth's atmosphere isn't nitrogen.
+    [0] logprob=0.45   The least abundant gas in Earth's atmosphere is nitrogen.
+    [0] logprob=0.46   The human eye can detect only one color, and the least abundant gas in Earth's a
+    L[logprob] = 0.064
+
+  conj_neg_facts:42
+    [1] logprob=0.45   The sun doesn't rise in the west.
+    [0] logprob=0.49   The sun rises in the west.
+    [1] logprob=0.47   The tallest animal in the world isn't the elephant.
+    [0] logprob=0.49   The tallest animal in the world is the elephant.
+    [1] logprob=0.53   The sun doesn't rise in the west, and the tallest animal in the world isn't the 
+    L[logprob] = 0.038
+
+  conj_neg_facts:268
+    [0] logprob=0.42   A group of lions isn't called a pride.
+    [1] logprob=0.44   A group of lions is called a pride.
+    [0] logprob=0.48   The largest tree in the world is a cactus.
+    [1] logprob=0.47   The largest tree in the world isn't a cactus.
+    [0] logprob=0.54   A group of lions isn't called a pride, and the largest tree in the world is a ca
+    L[logprob] = 0.071
+
+  conj_neg_facts:530
+    [1] logprob=0.49   The conservation of energy principle doesn't state that energy can be created an
+    [0] logprob=0.49   The conservation of energy principle states that energy can be created and destr
+    [1] logprob=0.47   The largest mammal on Earth is the blue whale.
+    [0] logprob=0.46   The largest mammal on Earth isn't the blue whale.
+    [1] logprob=0.52   The conservation of energy principle doesn't state that energy can be created an
+    L[logprob] = 0.033
+
+  conj_neg_facts:503
+    [0] logprob=0.44   The human body doesn't have 206 bones.
+    [1] logprob=0.46   The human body has 206 bones.
+    [1] logprob=0.50   The Earth is round.
+    [0] logprob=0.51   The Earth isn't round.
+    [0] logprob=0.47   The human body doesn't have 206 bones, and the Earth is round.
+    L[logprob] = 0.052
+
+  conj_neg_facts:418
+    [0] logprob=0.44   The study of spontaneity and the variation of non-inherited characteristics is c
+    [1] logprob=0.41   The study of spontaneity and the variation of non-inherited characteristics isn'
+    [1] logprob=0.39   The human nose isn't located on the forehead.
+    [0] logprob=0.41   The human nose is located on the forehead.
+    [0] logprob=0.44   The study of spontaneity and the variation of non-inherited characteristics is c
+    L[logprob] = 0.100
+
+  conj_neg_facts:313
+    [0] logprob=0.49   Dogs aren't known for being loyal pets.
+    [1] logprob=0.52   Dogs are known for being loyal pets.
+    [0] logprob=0.51   The tallest mountain in the world is located in Australia.
+    [1] logprob=0.47   The tallest mountain in the world isn't located in Australia.
+    [0] logprob=0.57   Dogs aren't known for being loyal pets, and the tallest mountain in the world is
+    L[logprob] = 0.044
+
+  conj_neg_facts:493
+    [0] logprob=0.44   Hybrids aren't the offspring of two plants or animals from different species or 
+    [1] logprob=0.50   Hybrids are the offspring of two plants or animals from different species or var
+    [0] logprob=0.41   The human immune system doesn't help protect the body from infections.
+    [1] logprob=0.44   The human immune system helps protect the body from infections.
+    [0] logprob=0.44   Hybrids aren't the offspring of two plants or animals from different species or 
+    L[logprob] = 0.077
+
+  conj_neg_facts:369
+    [1] logprob=0.46   The Earth's atmosphere is composed mostly of nitrogen and oxygen.
+    [0] logprob=0.45   The Earth's atmosphere isn't composed mostly of nitrogen and oxygen.
+    [0] logprob=0.55   The smallest planet in our solar system isn't Mercury.
+    [1] logprob=0.53   The smallest planet in our solar system is Mercury.
+    [0] logprob=0.56   The Earth's atmosphere is composed mostly of nitrogen and oxygen, and the smalle
+    L[logprob] = 0.047
+
+  conj_neg_companies:227
+    [1] logprob=0.52   China Shenhua Energy doesn't engage in the production and marketing of metal, mi
+    [0] logprob=0.54   China Shenhua Energy engages in the production and marketing of metal, mineral, 
+    [1] logprob=0.54   Manulife has headquarters in Canada.
+    [0] logprob=0.46   Manulife doesn't have headquarters in Canada.
+    [1] logprob=0.56   China Shenhua Energy doesn't engage in the production and marketing of metal, mi
+    L[logprob] = 0.048
+
+  conj_neg_companies:520
+    [1] logprob=0.54   Medtronic has headquarters in Ireland.
+    [0] logprob=0.49   Medtronic doesn't have headquarters in Ireland.
+    [1] logprob=0.44   Target isn't a holding company, which engages in the provision of financial serv
+    [0] logprob=0.49   Target is a holding company, which engages in the provision of financial service
+    [1] logprob=0.57   Medtronic has headquarters in Ireland, and Target isn't a holding company, which
+    L[logprob] = 0.065
+
+  conj_neg_companies:145
+    [0] logprob=0.53   China Mobile engages in the manufacture, marketing, distribution and sale of bev
+    [1] logprob=0.51   China Mobile doesn't engage in the manufacture, marketing, distribution and sale
+    [0] logprob=0.47   Goldman Sachs Group doesn't operate in the industry of diversified financials.
+    [1] logprob=0.52   Goldman Sachs Group operates in the industry of diversified financials.
+    [0] logprob=0.54   China Mobile engages in the manufacture, marketing, distribution and sale of bev
+    L[logprob] = 0.036
+
+  conj_neg_companies:292
+    [1] logprob=0.49   Agricultural Bank of China doesn't operate in the industry of Food, Drink & Toba
+    [0] logprob=0.58   Agricultural Bank of China operates in the industry of Food, Drink & Tobacco.
+    [0] logprob=0.49   Sony doesn't engage in the development, design, manufacture, and sale of electro
+    [1] logprob=0.51   Sony engages in the development, design, manufacture, and sale of electronic equ
+    [0] logprob=0.55   Agricultural Bank of China doesn't operate in the industry of Food, Drink & Toba
+    L[logprob] = 0.062
+
+  conj_neg_companies:146
+    [0] logprob=0.46   UBS Group isn't a holding company that engages in the provision of financial man
+    [1] logprob=0.50   UBS Group is a holding company that engages in the provision of financial manage
+    [1] logprob=0.46   Procter & Gamble isn't the world's largest home improvement specialty retailer.
+    [0] logprob=0.52   Procter & Gamble is the world's largest home improvement specialty retailer.
+    [0] logprob=0.55   UBS Group isn't a holding company that engages in the provision of financial man
+    L[logprob] = 0.050
+
+  conj_neg_companies:97
+    [0] logprob=0.61   Lockheed Martin has headquarters in Ireland.
+    [1] logprob=0.54   Lockheed Martin doesn't have headquarters in Ireland.
+    [0] logprob=0.47   Costco Wholesale doesn't operate in the industry of retailing.
+    [1] logprob=0.50   Costco Wholesale operates in the industry of retailing.
+    [0] logprob=0.60   Lockheed Martin has headquarters in Ireland, and Costco Wholesale doesn't operat
+    L[logprob] = 0.076
+
+  conj_neg_companies:260
+    [1] logprob=0.53   Postal Savings Bank of China doesn't have headquarters in United States.
+    [0] logprob=0.59   Postal Savings Bank of China has headquarters in United States.
+    [0] logprob=0.51   CNOOC is a diversified, community-based financial services company.
+    [1] logprob=0.45   CNOOC isn't a diversified, community-based financial services company.
+    [0] logprob=0.55   Postal Savings Bank of China doesn't have headquarters in United States, and CNO
+    L[logprob] = 0.071
+
+  conj_neg_companies:549
+    [0] logprob=0.51   Univlever engages in the provision of banking and financial solutions.
+    [1] logprob=0.47   Univlever doesn't engage in the provision of banking and financial solutions.
+    [0] logprob=0.47   Sanofi engages in the manufacture and sale of semiconductor products.
+    [1] logprob=0.45   Sanofi doesn't engage in the manufacture and sale of semiconductor products.
+    [0] logprob=0.57   Univlever engages in the provision of banking and financial solutions, and Sanof
+    L[logprob] = 0.049
+
+  conj_neg_companies:153
+    [0] logprob=0.49   AbbVie (ABBV) doesn't have headquarters in United States.
+    [1] logprob=0.53   AbbVie (ABBV) has headquarters in United States.
+    [1] logprob=0.55   Brookfield Asset Management operates in the industry of diversified financials.
+    [0] logprob=0.50   Brookfield Asset Management doesn't operate in the industry of diversified finan
+    [0] logprob=0.49   AbbVie (ABBV) doesn't have headquarters in United States, and Brookfield Asset M
+    L[logprob] = 0.027
+
+  conj_neg_companies:321
+    [0] logprob=0.51   AT&T engages in business of product trading and business investment activities.
+    [1] logprob=0.46   AT&T doesn't engage in business of product trading and business investment activ
+    [0] logprob=0.48   America Movil doesn't engage in the provision of telecommunications services.
+    [1] logprob=0.51   America Movil engages in the provision of telecommunications services.
+    [0] logprob=0.53   AT&T engages in business of product trading and business investment activities, 
+    L[logprob] = 0.027
+
+====================================================================================================
+facebook/opt-1.3b   methods=['logprob']   answer token ids={'True': [7447, 36948], 'False': [35297, 46659]}
+
+  conj_neg_facts:397
+    [1] logprob=0.68   The human body has 206 bones.
+    [0] logprob=0.62   The human body doesn't have 206 bones.
+    [1] logprob=0.57   The study of non-living organisms and their interactions with the environment is
+    [0] logprob=0.61   The study of non-living organisms and their interactions with the environment is
+    [1] logprob=0.69   The human body has 206 bones, and the study of non-living organisms and their in
+    L[logprob] = 0.158
+
+  conj_neg_facts:434
+    [0] logprob=0.64   The human eye can detect only one color.
+    [1] logprob=0.67   The human eye can detect more than one color.
+    [1] logprob=0.54   The least abundant gas in Earth's atmosphere isn't nitrogen.
+    [0] logprob=0.61   The least abundant gas in Earth's atmosphere is nitrogen.
+    [0] logprob=0.65   The human eye can detect only one color, and the least abundant gas in Earth's a
+    L[logprob] = 0.160
+
+  conj_neg_facts:42
+    [1] logprob=0.64   The sun doesn't rise in the west.
+    [0] logprob=0.63   The sun rises in the west.
+    [1] logprob=0.57   The tallest animal in the world isn't the elephant.
+    [0] logprob=0.59   The tallest animal in the world is the elephant.
+    [1] logprob=0.67   The sun doesn't rise in the west, and the tallest animal in the world isn't the 
+    L[logprob] = 0.151
+
+  conj_neg_facts:268
+    [0] logprob=0.54   A group of lions isn't called a pride.
+    [1] logprob=0.55   A group of lions is called a pride.
+    [0] logprob=0.62   The largest tree in the world is a cactus.
+    [1] logprob=0.60   The largest tree in the world isn't a cactus.
+    [0] logprob=0.67   A group of lions isn't called a pride, and the largest tree in the world is a ca
+    L[logprob] = 0.136
+
+  conj_neg_facts:530
+    [1] logprob=0.70   The conservation of energy principle doesn't state that energy can be created an
+    [0] logprob=0.78   The conservation of energy principle states that energy can be created and destr
+    [1] logprob=0.60   The largest mammal on Earth is the blue whale.
+    [0] logprob=0.55   The largest mammal on Earth isn't the blue whale.
+    [1] logprob=0.72   The conservation of energy principle doesn't state that energy can be created an
+    L[logprob] = 0.247
+
+  conj_neg_facts:503
+    [0] logprob=0.62   The human body doesn't have 206 bones.
+    [1] logprob=0.68   The human body has 206 bones.
+    [1] logprob=0.63   The Earth is round.
+    [0] logprob=0.57   The Earth isn't round.
+    [0] logprob=0.66   The human body doesn't have 206 bones, and the Earth is round.
+    L[logprob] = 0.169
+
+  conj_neg_facts:418
+    [0] logprob=0.64   The study of spontaneity and the variation of non-inherited characteristics is c
+    [1] logprob=0.60   The study of spontaneity and the variation of non-inherited characteristics isn'
+    [1] logprob=0.60   The human nose isn't located on the forehead.
+    [0] logprob=0.67   The human nose is located on the forehead.
+    [0] logprob=0.68   The study of spontaneity and the variation of non-inherited characteristics is c
+    L[logprob] = 0.173
+
+  conj_neg_facts:313
+    [0] logprob=0.57   Dogs aren't known for being loyal pets.
+    [1] logprob=0.65   Dogs are known for being loyal pets.
+    [0] logprob=0.64   The tallest mountain in the world is located in Australia.
+    [1] logprob=0.60   The tallest mountain in the world isn't located in Australia.
+    [0] logprob=0.77   Dogs aren't known for being loyal pets, and the tallest mountain in the world is
+    L[logprob] = 0.208
+
+  conj_neg_facts:493
+    [0] logprob=0.60   Hybrids aren't the offspring of two plants or animals from different species or 
+    [1] logprob=0.68   Hybrids are the offspring of two plants or animals from different species or var
+    [0] logprob=0.60   The human immune system doesn't help protect the body from infections.
+    [1] logprob=0.68   The human immune system helps protect the body from infections.
+    [0] logprob=0.68   Hybrids aren't the offspring of two plants or animals from different species or 
+    L[logprob] = 0.182
+
+  conj_neg_facts:369
+    [1] logprob=0.65   The Earth's atmosphere is composed mostly of nitrogen and oxygen.
+    [0] logprob=0.55   The Earth's atmosphere isn't composed mostly of nitrogen and oxygen.
+    [0] logprob=0.60   The smallest planet in our solar system isn't Mercury.
+    [1] logprob=0.63   The smallest planet in our solar system is Mercury.
+    [0] logprob=0.64   The Earth's atmosphere is composed mostly of nitrogen and oxygen, and the smalle
+    L[logprob] = 0.133
+
+  conj_neg_companies:227
+    [1] logprob=0.66   China Shenhua Energy doesn't engage in the production and marketing of metal, mi
+    [0] logprob=0.75   China Shenhua Energy engages in the production and marketing of metal, mineral, 
+    [1] logprob=0.61   Manulife has headquarters in Canada.
+    [0] logprob=0.57   Manulife doesn't have headquarters in Canada.
+    [1] logprob=0.71   China Shenhua Energy doesn't engage in the production and marketing of metal, mi
+    L[logprob] = 0.234
+
+  conj_neg_companies:520
+    [1] logprob=0.60   Medtronic has headquarters in Ireland.
+    [0] logprob=0.54   Medtronic doesn't have headquarters in Ireland.
+    [1] logprob=0.58   Target isn't a holding company, which engages in the provision of financial serv
+    [0] logprob=0.70   Target is a holding company, which engages in the provision of financial service
+    [1] logprob=0.73   Medtronic has headquarters in Ireland, and Target isn't a holding company, which
+    L[logprob] = 0.212
+
+  conj_neg_companies:145
+    [0] logprob=0.80   China Mobile engages in the manufacture, marketing, distribution and sale of bev
+    [1] logprob=0.67   China Mobile doesn't engage in the manufacture, marketing, distribution and sale
+    [0] logprob=0.60   Goldman Sachs Group doesn't operate in the industry of diversified financials.
+    [1] logprob=0.71   Goldman Sachs Group operates in the industry of diversified financials.
+    [0] logprob=0.78   China Mobile engages in the manufacture, marketing, distribution and sale of bev
+    L[logprob] = 0.247
+
+  conj_neg_companies:292
+    [1] logprob=0.60   Agricultural Bank of China doesn't operate in the industry of Food, Drink & Toba
+    [0] logprob=0.70   Agricultural Bank of China operates in the industry of Food, Drink & Tobacco.
+    [0] logprob=0.70   Sony doesn't engage in the development, design, manufacture, and sale of electro
+    [1] logprob=0.82   Sony engages in the development, design, manufacture, and sale of electronic equ
+    [0] logprob=0.73   Agricultural Bank of China doesn't operate in the industry of Food, Drink & Toba
+    L[logprob] = 0.273
+
+  conj_neg_companies:146
+    [0] logprob=0.62   UBS Group isn't a holding company that engages in the provision of financial man
+    [1] logprob=0.72   UBS Group is a holding company that engages in the provision of financial manage
+    [1] logprob=0.52   Procter & Gamble isn't the world's largest home improvement specialty retailer.
+    [0] logprob=0.61   Procter & Gamble is the world's largest home improvement specialty retailer.
+    [0] logprob=0.73   UBS Group isn't a holding company that engages in the provision of financial man
+    L[logprob] = 0.223
+
+  conj_neg_companies:97
+    [0] logprob=0.59   Lockheed Martin has headquarters in Ireland.
+    [1] logprob=0.57   Lockheed Martin doesn't have headquarters in Ireland.
+    [0] logprob=0.60   Costco Wholesale doesn't operate in the industry of retailing.
+    [1] logprob=0.70   Costco Wholesale operates in the industry of retailing.
+    [0] logprob=0.72   Lockheed Martin has headquarters in Ireland, and Costco Wholesale doesn't operat
+    L[logprob] = 0.208
+
+  conj_neg_companies:260
+    [1] logprob=0.62   Postal Savings Bank of China doesn't have headquarters in United States.
+    [0] logprob=0.67   Postal Savings Bank of China has headquarters in United States.
+    [0] logprob=0.70   CNOOC is a diversified, community-based financial services company.
+    [1] logprob=0.55   CNOOC isn't a diversified, community-based financial services company.
+    [0] logprob=0.82   Postal Savings Bank of China doesn't have headquarters in United States, and CNO
+    L[logprob] = 0.245
+
+  conj_neg_companies:549
+    [0] logprob=0.73   Univlever engages in the provision of banking and financial solutions.
+    [1] logprob=0.58   Univlever doesn't engage in the provision of banking and financial solutions.
+    [0] logprob=0.68   Sanofi engages in the manufacture and sale of semiconductor products.
+    [1] logprob=0.59   Sanofi doesn't engage in the manufacture and sale of semiconductor products.
+    [0] logprob=0.84   Univlever engages in the provision of banking and financial solutions, and Sanof
+    L[logprob] = 0.218
+
+  conj_neg_companies:153
+    [0] logprob=0.60   AbbVie (ABBV) doesn't have headquarters in United States.
+    [1] logprob=0.63   AbbVie (ABBV) has headquarters in United States.
+    [1] logprob=0.72   Brookfield Asset Management operates in the industry of diversified financials.
+    [0] logprob=0.61   Brookfield Asset Management doesn't operate in the industry of diversified finan
+    [0] logprob=0.75   AbbVie (ABBV) doesn't have headquarters in United States, and Brookfield Asset M
+    L[logprob] = 0.190
+
+  conj_neg_companies:321
+    [0] logprob=0.75   AT&T engages in business of product trading and business investment activities.
+    [1] logprob=0.65   AT&T doesn't engage in business of product trading and business investment activ
+    [0] logprob=0.57   America Movil doesn't engage in the provision of telecommunications services.
+    [1] logprob=0.70   America Movil engages in the provision of telecommunications services.
+    [0] logprob=0.80   AT&T engages in business of product trading and business investment activities, 
+    L[logprob] = 0.253
+
+====================================================================================================
+Qwen/Qwen2.5-1.5B-Instruct   methods=['logprob', 'stated']   answer token ids={'True': [2514, 3007], 'False': [3557, 4049]}
+
+  conj_neg_facts:397
+    [1] logprob=1.00  stated=0.98 ('98')   The human body has 206 bones.
+    [0] logprob=0.01  stated=0.94 ('94')   The human body doesn't have 206 bones.
+    [1] logprob=0.09  stated=0.00 ('0')   The study of non-living organisms and their interactions with the environment is
+    [0] logprob=0.00  stated=0.00 ('0')   The study of non-living organisms and their interactions with the environment is
+    [1] logprob=0.12  stated=0.99 ('99')   The human body has 206 bones, and the study of non-living organisms and their in
+    L[logprob] = 0.453
+    L[stated] = 0.500
+
+  conj_neg_facts:434
+    [0] logprob=0.00  stated=0.00 ('0')   The human eye can detect only one color.
+    [1] logprob=0.87  stated=0.99 ('99')   The human eye can detect more than one color.
+    [1] logprob=0.04  stated=0.98 ('98')   The least abundant gas in Earth's atmosphere isn't nitrogen.
+    [0] logprob=0.70  stated=0.92 ('92.3%')   The least abundant gas in Earth's atmosphere is nitrogen.
+    [0] logprob=0.11  stated=0.00 ('0')   The human eye can detect only one color, and the least abundant gas in Earth's a
+    L[logprob] = 0.126
+    L[stated] = 0.451
+
+  conj_neg_facts:42
+    [1] logprob=0.88  stated=1.00 ('100')   The sun doesn't rise in the west.
+    [0] logprob=0.00  stated=0.00 ('0')   The sun rises in the west.
+    [1] logprob=0.62  stated=0.98 ('98')   The tallest animal in the world isn't the elephant.
+    [0] logprob=0.99  stated=0.98 ('98')   The tallest animal in the world is the elephant.
+    [1] logprob=0.53  stated=0.00 ('0')   The sun doesn't rise in the west, and the tallest animal in the world isn't the 
+    L[logprob] = 0.306
+    L[stated] = 0.480
+
+  conj_neg_facts:268
+    [0] logprob=0.00  stated=0.00 ('0')   A group of lions isn't called a pride.
+    [1] logprob=0.87  stated=0.95 ('95')   A group of lions is called a pride.
+    [0] logprob=0.00  stated=0.00 ('0')   The largest tree in the world is a cactus.
+    [1] logprob=0.99  stated=0.98 ('98')   The largest tree in the world isn't a cactus.
+    [0] logprob=0.03  stated=0.00 ('0')   A group of lions isn't called a pride, and the largest tree in the world is a ca
+    L[logprob] = 0.064
+    L[stated] = 0.025
+
+  conj_neg_facts:530
+    [1] logprob=0.99  stated=1.00 ('100')   The conservation of energy principle doesn't state that energy can be created an
+    [0] logprob=0.00  stated=0.00 ('0')   The conservation of energy principle states that energy can be created and destr
+    [1] logprob=1.00  stated=0.97 ('97.5')   The largest mammal on Earth is the blue whale.
+    [0] logprob=0.25  stated=0.97 ('97')   The largest mammal on Earth isn't the blue whale.
+    [1] logprob=0.96  stated=0.98 ('98')   The conservation of energy principle doesn't state that energy can be created an
+    L[logprob] = 0.124
+    L[stated] = 0.475
+
+  conj_neg_facts:503
+    [0] logprob=0.01  stated=0.94 ('94')   The human body doesn't have 206 bones.
+    [1] logprob=1.00  stated=0.98 ('98')   The human body has 206 bones.
+    [1] logprob=1.00  stated=1.00 ('100')   The Earth is round.
+    [0] logprob=0.00  stated=0.00 ('0')   The Earth isn't round.
+    [0] logprob=0.27  stated=0.50 ('50')   The human body doesn't have 206 bones, and the Earth is round.
+    L[logprob] = 0.131
+    L[stated] = 0.460
+
+  conj_neg_facts:418
+    [0] logprob=0.00  stated=0.00 ('0')   The study of spontaneity and the variation of non-inherited characteristics is c
+    [1] logprob=0.20  stated=0.99 ('99')   The study of spontaneity and the variation of non-inherited characteristics isn'
+    [1] logprob=1.00  stated=1.00 ('100')   The human nose isn't located on the forehead.
+    [0] logprob=0.00  stated=0.00 ('0')   The human nose is located on the forehead.
+    [0] logprob=0.04  stated=0.00 ('0')   The study of spontaneity and the variation of non-inherited characteristics is c
+    L[logprob] = 0.398
+    L[stated] = 0.005
+
+  conj_neg_facts:313
+    [0] logprob=0.00  stated=0.00 ('0')   Dogs aren't known for being loyal pets.
+    [1] logprob=1.00  stated=0.98 ('98')   Dogs are known for being loyal pets.
+    [0] logprob=0.00  stated=0.96 ('96')   The tallest mountain in the world is located in Australia.
+    [1] logprob=0.88  stated=0.98 ('98')   The tallest mountain in the world isn't located in Australia.
+    [0] logprob=0.02  stated=0.00 ('0')   Dogs aren't known for being loyal pets, and the tallest mountain in the world is
+    L[logprob] = 0.062
+    L[stated] = 0.470
+
+  conj_neg_facts:493
+    [0] logprob=0.02  stated=0.00 ('0')   Hybrids aren't the offspring of two plants or animals from different species or 
+    [1] logprob=0.30  stated=0.98 ('98')   Hybrids are the offspring of two plants or animals from different species or var
+    [0] logprob=0.00  stated=0.00 ('0')   The human immune system doesn't help protect the body from infections.
+    [1] logprob=1.00  stated=1.00 ('100')   The human immune system helps protect the body from infections.
+    [0] logprob=0.01  stated=0.00 ('0')   Hybrids aren't the offspring of two plants or animals from different species or 
+    L[logprob] = 0.339
+    L[stated] = 0.010
+
+  conj_neg_facts:369
+    [1] logprob=1.00  stated=1.00 ('99.9%')   The Earth's atmosphere is composed mostly of nitrogen and oxygen.
+    [0] logprob=0.01  stated=0.98 ('98')   The Earth's atmosphere isn't composed mostly of nitrogen and oxygen.
+    [0] logprob=0.08  stated=0.98 ('98')   The smallest planet in our solar system isn't Mercury.
+    [1] logprob=0.12  stated=0.98 ('98')   The smallest planet in our solar system is Mercury.
+    [0] logprob=0.89  stated=0.98 ('98')   The Earth's atmosphere is composed mostly of nitrogen and oxygen, and the smalle
+    L[logprob] = 0.409
+    L[stated] = 0.490
+
+  conj_neg_companies:227
+    [1] logprob=0.01  stated=0.00 ('0')   China Shenhua Energy doesn't engage in the production and marketing of metal, mi
+    [0] logprob=0.95  stated=0.95 ('95')   China Shenhua Energy engages in the production and marketing of metal, mineral, 
+    [1] logprob=1.00  stated=0.98 ('98')   Manulife has headquarters in Canada.
+    [0] logprob=0.01  stated=0.98 ('98')   Manulife doesn't have headquarters in Canada.
+    [1] logprob=0.10  stated=0.00 ('0')   China Shenhua Energy doesn't engage in the production and marketing of metal, mi
+    L[logprob] = 0.042
+    L[stated] = 0.480
+
+  conj_neg_companies:520
+    [1] logprob=0.91  stated=0.98 ('98')   Medtronic has headquarters in Ireland.
+    [0] logprob=0.06  stated=0.98 ('98')   Medtronic doesn't have headquarters in Ireland.
+    [1] logprob=0.01  stated=0.00 ('0')   Target isn't a holding company, which engages in the provision of financial serv
+    [0] logprob=0.00  stated=0.95 ('95')   Target is a holding company, which engages in the provision of financial service
+    [1] logprob=0.16  stated=0.50 ('50')   Medtronic has headquarters in Ireland, and Target isn't a holding company, which
+    L[logprob] = 0.495
+    L[stated] = 0.480
+
+  conj_neg_companies:145
+    [0] logprob=0.00  stated=0.00 ('0')   China Mobile engages in the manufacture, marketing, distribution and sale of bev
+    [1] logprob=0.57  stated=0.00 ('0')   China Mobile doesn't engage in the manufacture, marketing, distribution and sale
+    [0] logprob=0.00  stated=0.00 ('0')   Goldman Sachs Group doesn't operate in the industry of diversified financials.
+    [1] logprob=0.99  stated=0.98 ('98')   Goldman Sachs Group operates in the industry of diversified financials.
+    [0] logprob=0.02  stated=0.00 ('0')   China Mobile engages in the manufacture, marketing, distribution and sale of bev
+    L[logprob] = 0.214
+    L[stated] = 0.500
+
+  conj_neg_companies:292
+    [1] logprob=0.02  stated=0.00 ('0')   Agricultural Bank of China doesn't operate in the industry of Food, Drink & Toba
+    [0] logprob=0.09  stated=0.98 ('98')   Agricultural Bank of China operates in the industry of Food, Drink & Tobacco.
+    [0] logprob=0.01  stated=0.00 ('0')   Sony doesn't engage in the development, design, manufacture, and sale of electro
+    [1] logprob=1.00  stated=1.00 ('100')   Sony engages in the development, design, manufacture, and sale of electronic equ
+    [0] logprob=0.28  stated=0.00 ('0')   Agricultural Bank of China doesn't operate in the industry of Food, Drink & Toba
+    L[logprob] = 0.446
+    L[stated] = 0.010
+
+  conj_neg_companies:146
+    [0] logprob=0.00  stated=0.00 ('0')   UBS Group isn't a holding company that engages in the provision of financial man
+    [1] logprob=1.00  stated=0.98 ('98')   UBS Group is a holding company that engages in the provision of financial manage
+    [1] logprob=0.03  stated=0.98 ('98')   Procter & Gamble isn't the world's largest home improvement specialty retailer.
+    [0] logprob=0.00  stated=0.00 ('0')   Procter & Gamble is the world's largest home improvement specialty retailer.
+    [0] logprob=0.04  stated=0.00 ('0')   UBS Group isn't a holding company that engages in the provision of financial man
+    L[logprob] = 0.485
+    L[stated] = 0.010
+
+  conj_neg_companies:97
+    [0] logprob=0.00  stated=0.00 ('0')   Lockheed Martin has headquarters in Ireland.
+    [1] logprob=0.59  stated=0.98 ('98')   Lockheed Martin doesn't have headquarters in Ireland.
+    [0] logprob=0.00  stated=0.00 ('0')   Costco Wholesale doesn't operate in the industry of retailing.
+    [1] logprob=1.00  stated=0.01 ('1')   Costco Wholesale operates in the industry of retailing.
+    [0] logprob=0.02  stated=0.00 ('0')   Lockheed Martin has headquarters in Ireland, and Costco Wholesale doesn't operat
+    L[logprob] = 0.203
+    L[stated] = 0.495
+
+  conj_neg_companies:260
+    [1] logprob=0.73  stated=0.98 ('98')   Postal Savings Bank of China doesn't have headquarters in United States.
+    [0] logprob=0.00  stated=0.00 ('0')   Postal Savings Bank of China has headquarters in United States.
+    [0] logprob=0.01  stated=0.00 ('0')   CNOOC is a diversified, community-based financial services company.
+    [1] logprob=0.00  stated=0.00 ('0')   CNOOC isn't a diversified, community-based financial services company.
+    [0] logprob=0.36  stated=0.98 ('98')   Postal Savings Bank of China doesn't have headquarters in United States, and CNO
+    L[logprob] = 0.493
+    L[stated] = 0.500
+
+  conj_neg_companies:549
+    [0] logprob=0.13  stated=0.95 ('95')   Univlever engages in the provision of banking and financial solutions.
+    [1] logprob=0.01  stated=0.00 ('0')   Univlever doesn't engage in the provision of banking and financial solutions.
+    [0] logprob=0.00  stated=0.00 ('0')   Sanofi engages in the manufacture and sale of semiconductor products.
+    [1] logprob=0.37  stated=0.00 ('0')   Sanofi doesn't engage in the manufacture and sale of semiconductor products.
+    [0] logprob=0.01  stated=0.00 ('0')   Univlever engages in the provision of banking and financial solutions, and Sanof
+    L[logprob] = 0.426
+    L[stated] = 0.500
+
+  conj_neg_companies:153
+    [0] logprob=0.01  stated=0.00 ('0')   AbbVie (ABBV) doesn't have headquarters in United States.
+    [1] logprob=0.99  stated=0.98 ('98')   AbbVie (ABBV) has headquarters in United States.
+    [1] logprob=0.96  stated=0.95 ('95')   Brookfield Asset Management operates in the industry of diversified financials.
+    [0] logprob=0.00  stated=0.00 ('0')   Brookfield Asset Management doesn't operate in the industry of diversified finan
+    [0] logprob=0.39  stated=0.00 ('0')   AbbVie (ABBV) doesn't have headquarters in United States, and Brookfield Asset M
+    L[logprob] = 0.189
+    L[stated] = 0.025
+
+  conj_neg_companies:321
+    [0] logprob=0.02  stated=0.00 ('0')   AT&T engages in business of product trading and business investment activities.
+    [1] logprob=0.01  stated=0.00 ('0')   AT&T doesn't engage in business of product trading and business investment activ
+    [0] logprob=0.00  stated=0.00 ('0')   America Movil doesn't engage in the provision of telecommunications services.
+    [1] logprob=1.00  stated=1.00 ('100')   America Movil engages in the provision of telecommunications services.
+    [0] logprob=0.05  stated=0.00 ('0')   AT&T engages in business of product trading and business investment activities, 
+    L[logprob] = 0.481
+    L[stated] = 0.500
+
+====================================================================================================
+SUMMARY (20 conjunction families, 100 statements)
+  HuggingFaceTB/SmolLM2-135M       logprob  mean L=0.055 median L=0.051 acc=0.49 prevision histogram(0..1, 10 bins)=[0, 0, 0, 1, 59, 38, 2, 0, 0, 0]
+  HuggingFaceTB/SmolLM2-135M       mean P(True)+P(False) on answer tokens = 0.990
+  facebook/opt-1.3b                logprob  mean L=0.201 median L=0.208 acc=0.45 prevision histogram(0..1, 10 bins)=[0, 0, 0, 0, 0, 30, 48, 17, 5, 0]
+  facebook/opt-1.3b                mean P(True)+P(False) on answer tokens = 0.988
+  Qwen/Qwen2.5-1.5B-Instruct       logprob  mean L=0.294 median L=0.323 acc=0.80 prevision histogram(0..1, 10 bins)=[54, 5, 4, 4, 0, 3, 1, 2, 5, 22]
+  Qwen/Qwen2.5-1.5B-Instruct       stated   mean L=0.343 median L=0.478 acc=0.71 prevision histogram(0..1, 10 bins)=[50, 0, 0, 0, 0, 2, 0, 0, 0, 48]
+  Qwen/Qwen2.5-1.5B-Instruct       mean P(True)+P(False) on answer tokens = 1.000
