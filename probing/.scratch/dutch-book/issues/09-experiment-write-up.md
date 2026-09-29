@@ -2,7 +2,7 @@
 
 Type: task (HITL)
 Status: open
-Blocked by: 05, 06, 07, 08
+Blocked by: 05, 06, 07, 08, 10
 
 ## Question
 
@@ -19,4 +19,4 @@ The write-up also covers methods, results (figures and tables for both prevision
 
 Source every decision from the map's resolved tickets and link each one. The write-up restates their content for a reader who never saw the map.
 
-Also blocked by the analysis tickets that will graduate from the map's fog (running elicitation at scale, aggregation and comparison); add them to `Blocked by` when they are created. Worked with the author, who reviews the draft: format and home (repo doc, thesis chapter section, or both) are decided at the start of this ticket.
+Also blocked by the analysis tickets that will graduate from the map's fog (aggregation and comparison); add them to `Blocked by` when they are created. Worked with the author, who reviews the draft: format and home (repo doc, thesis chapter section, or both) are decided at the start of this ticket.
