@@ -1,7 +1,7 @@
 # How do we get probe previsions free of train/test leakage?
 
 Type: grilling
-Status: open
+Status: resolved
 Blocked by: 03
 
 ## Question
@@ -17,3 +17,19 @@ The calibration control ([Should probe previsions be calibrated before booking?]
 Also decide whether to keep the existing probe architecture. `TrainProbes.py` trains a Keras **MLP**, not the linear σ(wᵀx+b) that thesis §4.1.1 defines. Should the experiments use a linear (logistic) probe to match the thesis, the MLP, or both?
 
 Also decide which layer(s) and how many probe seeds (the pipeline trains `repeat_each` probes per setting): report per seed, or average previsions across seeds? Averaging changes coherence.
+
+## Answer
+
+Facts that shaped the decision:
+- Only `facts` and `companies` share statements with the families.
+- The six atomic datasets are clean, but they contain almost no negation (0/10,000 in `cities`, 0/1,458 in `capitals`, 0/876 in `inventions`).
+- Negation pairs linked through conjunctions form one giant component (439/547 facts pairs, 406/500 companies pairs). Within-domain family-disjoint folds are therefore impractical.
+
+Decisions:
+1. **Primary protocol: domain swap.** Train a probe on the facts domain (`facts`, `neg_facts`, `conj_neg_facts`, and all six atomic datasets) and book the companies families; then swap the domains. Each family is booked by a single probe that has seen negation and conjunction but no statement from the booked domain. Report probe accuracy on the booked domain next to every rate.
+   - **Secondary arm: atomic-only probes.** Train on the six atomic datasets only and book both domains. This measures how much incoherence comes from negation-blindness.
+   - Within-domain pair folds are rejected: k(k−1)/2 probes per setting isn't worth it.
+2. **Architecture.** A linear logistic-regression probe, σ(wᵀx+b), is primary, matching thesis §4.1.1. The existing MLP from `TrainProbes.py` runs as a secondary arm.
+3. **Seeds.** Never average previsions across probes: the rate of loss is convex, so an averaged bookie always looks more coherent. Compute the rate for each seed and report the mean ± sd across seeds; this only matters for the MLP.
+4. **Layers.** Sweep layers. Choose the headline layer by validation accuracy within the training domain, never on booked families, and report the full sweep as a supplement.
+5. **Calibration split.** Hold out about 20% of the training domain's negation pairs from probe training, plus the conjunction families whose pairs are both held out. Conjunction families with only one pair held out go to neither side. The calibration temperature is fitted on this held-out slice.
