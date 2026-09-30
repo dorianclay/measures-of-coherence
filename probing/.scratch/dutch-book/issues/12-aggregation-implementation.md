@@ -38,7 +38,11 @@ Tested (`tests/test_aggregate_rates.py`, 9 tests, full suite 19/19 passing):
 - `discover_models`.
 - A full CLI run end-to-end on a tiny synthetic model (real family files, fabricated tiny rate/metric CSVs) confirming headline-layer selection and that every output file gets written.
 
-**Not run on the real 8-model results yet** — handing the script off for the author to run rather than running it myself. Command:
+**2026-09-30: fixed a wrong filename assumption the author hit on the first run.** `load_rates()` and `discover_models()` assumed `elicited_rates/<model>.csv` files were prefixed `elicited_<model>.csv` — that prefix only belongs to `previsions/`, a directory this script never reads; `elicited_rates/` files are plain `<model>.csv`, same as `probe_rates/`. Both places fixed; the test fixture had copied the same wrong assumption (which is why the tests didn't catch it), so it's fixed too.
+
+Given the previous handoff broke on a wrong assumption I should have checked, this time I verified the fix directly rather than trusting the tests alone: ran the real full suite (19/19 passing) plus a smoke test of `Aggregate_Rates.py` itself against the real 8-model results (`--bootstrap-draws 500`, output to a scratch dir, deleted after). It completed cleanly; `n_families` in the roll-up matched the known family counts exactly (547/556 facts, 500/546 companies) for every model, and the numbers were in the right ballpark against the manual checks already on [08](08-probe-previsions.md) and [10](10-elicited-previsions.md) (e.g. Qwen2.5-1.5B probe raw conjunction mean L 0.43, elicited 0.24 — close to the Instruct variant's numbers already recorded there). Spearman correlates came out strongly negative for L vs. booked accuracy (ρ≈-0.92) and positive for L vs. calibration improvement (ρ≈0.73-0.75) across both family shapes, all four figures rendered non-trivial PNGs.
+
+**Not run at the real B=10,000 to produce the final `results/dutch_book/aggregation/` output** — that's still for the author to run; the smoke test only confirmed correctness, not the headline numbers. Command:
 
 ```
 python Aggregate_Rates.py \

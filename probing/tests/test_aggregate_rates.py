@@ -87,7 +87,7 @@ def test_discover_models_intersects_probe_and_elicited_model_names(tmp_path):
     (tmp_path / "elicited_rates").mkdir()
     for name in ["A", "B"]:
         (tmp_path / "probe_rates" / f"{name}.csv").touch()
-        (tmp_path / "elicited_rates" / f"elicited_{name}.csv").touch()
+        (tmp_path / "elicited_rates" / f"{name}.csv").touch()
     (tmp_path / "probe_rates" / "C.csv").touch()  # no matching elicited file -> excluded
     assert discover_models(tmp_path) == ["A", "B"]
 
@@ -146,7 +146,7 @@ def _write_synthetic_results(results_dir: Path):
             "model": "ToyModel", "method": "logprob", "template": "t0", "booked_domain": domain,
             "booked_accuracy": 0.75, "booked_brier_raw": 0.25, "booked_brier_calibrated": 0.15,
         })
-    pd.DataFrame(elicited_rows).to_csv(results_dir / "elicited_rates" / "elicited_ToyModel.csv", index=False)
+    pd.DataFrame(elicited_rows).to_csv(results_dir / "elicited_rates" / "ToyModel.csv", index=False)
     pd.DataFrame(elicitation_metric_rows).to_csv(results_dir / "elicitation_metrics" / "ToyModel.csv", index=False)
 
     control_rows = []

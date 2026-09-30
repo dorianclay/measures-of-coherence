@@ -109,8 +109,8 @@ def percentile_ci(stat: np.ndarray, level: float) -> tuple:
 
 def load_rates(results_dir: Path, models: list) -> tuple:
     probe = pd.concat([pd.read_csv(results_dir / "probe_rates" / f"{m}.csv") for m in models], ignore_index=True)
-    elicited = pd.concat([pd.read_csv(results_dir / "elicited_rates" / f"elicited_{m}.csv")
-                          for m in models], ignore_index=True)
+    elicited = pd.concat([pd.read_csv(results_dir / "elicited_rates" / f"{m}.csv") for m in models],
+                         ignore_index=True)
     probe_metrics = pd.concat([pd.read_csv(results_dir / "probe_metrics" / f"{m}.csv") for m in models],
                                ignore_index=True)
     elicitation_metrics = pd.concat([pd.read_csv(results_dir / "elicitation_metrics" / f"{m}.csv")
@@ -294,7 +294,7 @@ def plot_correlate(points: pd.DataFrame, correlate_col: str, kind: str, rho: flo
 
 def discover_models(results_dir: Path) -> list:
     probe_models = {p.stem for p in (results_dir / "probe_rates").glob("*.csv")}
-    elicited_models = {p.stem.removeprefix("elicited_") for p in (results_dir / "elicited_rates").glob("*.csv")}
+    elicited_models = {p.stem for p in (results_dir / "elicited_rates").glob("*.csv")}
     return sorted(probe_models & elicited_models)
 
 
