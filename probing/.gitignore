@@ -14,3 +14,7 @@ logs/
 processed_datasets/
 probes/
 embeddings/
+
+# Dutch book pipeline: activations are regenerated from the models
+activations/
+results/dutch_book/previsions/
