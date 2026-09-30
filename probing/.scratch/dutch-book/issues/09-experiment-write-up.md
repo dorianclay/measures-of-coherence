@@ -2,7 +2,7 @@
 
 Type: task (HITL)
 Status: open
-Blocked by: 05, 06, 07, 08, 10, 11
+Blocked by: 05, 06, 07, 08, 10, 12
 
 ## Question
 
@@ -19,4 +19,4 @@ The write-up also covers methods, results (figures and tables for both prevision
 
 Source every decision from the map's resolved tickets and link each one. The write-up restates their content for a reader who never saw the map.
 
-Also blocked by [How do per-family rates aggregate and compare across prevision sources?](11-aggregation-and-comparison.md), which now holds the aggregation/comparison decisions. Worked with the author, who reviews the draft: format and home (repo doc, thesis chapter section, or both) are decided at the start of this ticket.
+Also blocked by [Implement the aggregation and comparison analysis](12-aggregation-implementation.md), which implements the decisions from [How do per-family rates aggregate and compare across prevision sources?](11-aggregation-and-comparison.md). Worked with the author, who reviews the draft: format and home (repo doc, thesis chapter section, or both) are decided at the start of this ticket.
