@@ -1,7 +1,7 @@
 # Produce elicited previsions for every family statement
 
 Type: task (AFK)
-Status: open
+Status: claimed
 Blocked by: 06
 
 ## Question
@@ -16,3 +16,26 @@ Implement and run the elicitation decided in [How do we elicit previsions from m
 - Write out raw and calibrated previsions in the input format of `DutchBook.py` (see [Implement and validate the rate-of-loss solver](07-rate-of-loss-solver.md)), matching the probe previsions from [Produce probe previsions under the domain-swap protocol](08-probe-previsions.md), so the solver can consume both identically.
 
 Done when prevision files exist for every model × method × template. The answer records where the files live, each model's accuracy and whether it passed the bar, the parse-failure rate for stated probabilities, and the mean mass on the answer tokens.
+
+## Comments
+
+**2026-09-30: code done, validated locally; waiting on cluster runs.** Still claimed.
+
+- `Elicit_Previsions.py <hf-id>` elicits every distinct family statement once per method and template, each in its own prompt.
+  - Methods: `logprob` over templates t0 (primary), t1 and t2 (paraphrases), plus `stated` on t0 for instruct models.
+  - For each booked domain it fits the bias-free temperature on logit(prevision) over the **other** domain's calibration slice. That is the same split as `Train_Family_Probes.py`, so both prevision sources are calibrated on identical data.
+  - The competence bar (≥ 0.65) is measured on that same slice.
+  - Previsions (raw + calibrated) go to `results/dutch_book/previsions/elicited_<model>.csv` (not committed).
+  - Metrics go to `results/dutch_book/elicitation_metrics/<model>.csv`: T, competence accuracy, pass/fail, booked accuracy, Brier score, answer-token mass and stated parse failures.
+- `slurm/elicited_previsions.sbatch <hf-id>` runs elicitation → `DutchBook.py` and writes `results/dutch_book/elicited_rates/<model>.csv`.
+- Instruct vs. base is decided from the model name (`-Instruct`, `-it`), overridable with `--instruct`. Checking whether a chat template exists is not enough, because **Qwen2.5 base checkpoints ship a chat template too**.
+- Gemma 4's thinking mode is disabled via `enable_thinking=False`. Templates without a system role fold it into the user turn.
+- Batched previsions match single-prompt ones to float16 noise (max difference 0.003).
+
+Local run on Qwen2.5-1.5B-Instruct over all families (44 min on MPS):
+- Every method and template passes the bar: competence accuracy 0.74–0.79, booked accuracy 0.76–0.80.
+- Answer-token mass is ≥ 0.998, with 0 stated parse failures.
+- Mean L, logprob t0, raw → calibrated: conjunctions 0.284 → 0.209, pairs 0.143 → 0.118. The paraphrase templates give 0.28–0.31 on conjunctions.
+- These agree with the prototype's 20-family numbers (accuracy 0.80, L 0.294).
+
+Remaining before resolving: the cluster runs for all 8 models (Gemma 4 first), then copy back `elicitation_metrics/` and `elicited_rates/`.
