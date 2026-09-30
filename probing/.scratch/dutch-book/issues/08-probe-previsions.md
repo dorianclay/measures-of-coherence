@@ -14,6 +14,6 @@ Implement and run the protocol decided in [How do we get probe previsions free o
   - the atomic-only secondary arm.
   - Hold out the ~20% calibration slice from training.
 - Fit the temperature on the calibration slice, as specified in [Should probe previsions be calibrated before booking?](02-calibrating-probe-previsions.md).
-- Write out, for every event in every booked family, the raw and calibrated previsions for each probe, keyed by family id and event index from `event_families/`. Also record each probe's accuracy on the booked domain and on the training-domain validation data, its Brier score, and the fitted T.
+- Write out, for every event in every booked family, the raw and calibrated previsions for each probe, in the input format of `DutchBook.py` (see [Implement and validate the rate-of-loss solver](07-rate-of-loss-solver.md)). Also record each probe's accuracy on the booked domain and on the training-domain validation data, its Brier score, and the fitted T.
 
 Done when prevision files exist for every model × layer × probe arm, and the answer records where they live, row counts, headline layers, and booked-domain accuracies.

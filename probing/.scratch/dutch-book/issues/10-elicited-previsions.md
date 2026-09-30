@@ -13,6 +13,6 @@ Implement and run the elicitation decided in [How do we elicit previsions from m
 - **Secondary:** the 3-template paraphrase arm.
 - For each model, measure elicited accuracy on the training-domain data and apply the ≥ 0.65 competence bar.
 - Fit the temperature-scaling control on the same training-domain calibration slice the probes use (see [How do we get probe previsions free of train/test leakage?](04-probe-leakage-protocol.md)).
-- Write out raw and calibrated previsions keyed by family id and event index, in the same shape as the probe previsions from [Produce probe previsions under the domain-swap protocol](08-probe-previsions.md), so the solver can consume both identically.
+- Write out raw and calibrated previsions in the input format of `DutchBook.py` (see [Implement and validate the rate-of-loss solver](07-rate-of-loss-solver.md)), matching the probe previsions from [Produce probe previsions under the domain-swap protocol](08-probe-previsions.md), so the solver can consume both identically.
 
 Done when prevision files exist for every model × method × template. The answer records where the files live, each model's accuracy and whether it passed the bar, the parse-failure rate for stated probabilities, and the mean mass on the answer tokens.
