@@ -1,7 +1,7 @@
 # Produce elicited previsions for every family statement
 
 Type: task (AFK)
-Status: open
+Status: resolved
 Blocked by: 06
 
 ## Question
@@ -44,3 +44,35 @@ Remaining before resolving: the cluster runs for all 8 models (Gemma 4 first), t
 1. Check that outputs exist for all 8 models. Read the job logs in `logs/` for failures, especially the Gemma 4 jobs, whose loader and thinking-mode paths were untested before the cluster.
 2. Summarize the metrics in the answer.
 3. Commit only the small metrics CSVs.
+
+## Answer
+
+**All 8 models completed, every method/template/domain clears the ≥ 0.65 competence bar** with room to spare (0.75–0.94), including both Gemma 4 jobs (210022 = `gemma-4-12B-it`, 210029 = `gemma-4-12B`), whose loader and thinking-mode paths were the untested risk.
+
+**Files and row counts:**
+- `results/dutch_book/previsions/elicited_<model>.csv` — 45,624 rows for base models (6 method×template×domain combos: logprob t0/t1/t2 × 2 domains), 60,832 for instruct models (+ stated/t0 × 2 domains = 8 combos).
+- `results/dutch_book/elicitation_metrics/<model>.csv` — 6 rows (base) / 8 rows (instruct), matching the combos above.
+- `results/dutch_book/elicited_rates/<model>.csv` — 19,506 rows (base) / 26,008 rows (instruct), in the same 8:6 ratio as the metrics rows.
+
+**Competence accuracy and booked accuracy by model** (logprob/t0, the primary method):
+
+| model | facts (competence / booked) | companies (competence / booked) |
+|---|---|---|
+| Qwen2.5-1.5B | 0.829 / 0.771 | 0.793 / 0.775 |
+| Qwen2.5-1.5B-Instruct | 0.796 / 0.806 | 0.789 / 0.790 |
+| Qwen2.5-7B | 0.889 / 0.874 | 0.888 / 0.884 |
+| Qwen2.5-7B-Instruct | 0.852 / 0.876 | 0.876 / 0.878 |
+| Qwen2.5-14B | 0.894 / 0.906 | 0.905 / 0.897 |
+| Qwen2.5-14B-Instruct | 0.912 / 0.887 | 0.893 / 0.902 |
+| gemma-4-12B | 0.861 / 0.850 | 0.864 / 0.854 |
+| gemma-4-12B-it | 0.894 / 0.908 | 0.901 / 0.871 |
+
+Every model passes on every method/template/domain — no competence-bar failures anywhere, unlike the probe side where `gemma-4-12B-it` failed. Elicited behavior recovers factuality signal from `gemma-4-12B-it` that its last-token linear probe could not ([Produce probe previsions under the domain-swap protocol](08-probe-previsions.md)); worth pairing these two findings in the write-up.
+
+**Answer-token mass:** ≥ 0.98 for most model/template pairs; the paraphrase templates (t1 especially) dip lower for the larger Qwen models (Qwen2.5-14B t1: 0.83/0.83, Qwen2.5-7B t1: 0.85/0.77), meaning a non-trivial share of probability mass falls outside True/False on some paraphrases — still well above the floor needed for reliable normalization, but flagged for the write-up.
+
+**Stated-probability parse failures:** 0 everywhere except `Qwen2.5-7B-Instruct` stated/t0 on companies, which had 7 (out of 242 statements, competence accuracy still 0.87 on the successfully-parsed remainder).
+
+**Gemma 4 base job (210029) hit one transient CUDA OOM warning** (`CUDACachingAllocator`, mid-run, single occurrence) but completed with the exact expected row/rate counts matching every other base model — recovered cleanly, not a real failure.
+
+`results/dutch_book/elicitation_metrics/*.csv` for all 8 models are already committed (plain blobs, as of commit `6eaa0ca`, "Undo accidental Git LFS tracking..."); nothing further to commit for this ticket.
