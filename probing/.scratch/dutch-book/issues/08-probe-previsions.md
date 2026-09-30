@@ -1,7 +1,7 @@
 # Produce probe previsions under the domain-swap protocol
 
 Type: task (AFK)
-Status: claimed
+Status: open
 Blocked by: 06
 
 ## Question
@@ -42,3 +42,8 @@ Local check on Qwen2.5-1.5B-Instruct (1 MLP seed):
 - The atomic-only arm is near chance, and calibration collapses it towards ½ (T at the upper bound e⁵), the degenerate case to flag in the analysis.
 
 Remaining before resolving: the cluster runs for all 8 models (Gemma 4 first, since its loader is untested locally), then copy back `probe_metrics/` and `probe_rates/`.
+
+**2026-09-30: cluster runs finished; reopened for the next session to resolve on the cluster.** The outputs sit on the cluster checkout and are too large to push (see the map's **Resuming** note). To resolve:
+1. Check that outputs exist for all 8 models. Read the job logs in `logs/` for failures, especially the Gemma 4 jobs, whose loader and thinking-mode paths were untested before the cluster.
+2. Summarize the metrics in the answer.
+3. Commit only the small metrics CSVs.

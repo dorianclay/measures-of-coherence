@@ -20,9 +20,8 @@
 #   for m in Qwen/Qwen2.5-{1.5B,7B,14B}{,-Instruct} google/gemma-4-12B{,-it}; do
 #       sbatch slurm/elicited_previsions.sbatch "$m"; done
 #
-# Outputs: results/dutch_book/previsions/elicited_<model>.csv (not committed), plus the small
-# results/dutch_book/elicitation_metrics/<model>.csv and results/dutch_book/elicited_rates/<model>.csv to copy back
-# and commit.
+# Outputs: results/dutch_book/previsions/elicited_<model>.csv and results/dutch_book/elicited_rates/<model>.csv (large;
+# gitignored, stay on the cluster), plus the small results/dutch_book/elicitation_metrics/<model>.csv to commit.
 #
 # Cluster-specific settings (partition, account, qos) can be passed at submit time, or exported as SBATCH_PARTITION
 # etc. If compute nodes have no internet access, download the models on the login node first and submit with

@@ -1,7 +1,7 @@
 # Produce elicited previsions for every family statement
 
 Type: task (AFK)
-Status: claimed
+Status: open
 Blocked by: 06
 
 ## Question
@@ -39,3 +39,8 @@ Local run on Qwen2.5-1.5B-Instruct over all families (44 min on MPS):
 - These agree with the prototype's 20-family numbers (accuracy 0.80, L 0.294).
 
 Remaining before resolving: the cluster runs for all 8 models (Gemma 4 first), then copy back `elicitation_metrics/` and `elicited_rates/`.
+
+**2026-09-30: cluster runs finished; reopened for the next session to resolve on the cluster.** The outputs sit on the cluster checkout and are too large to push (see the map's **Resuming** note). To resolve:
+1. Check that outputs exist for all 8 models. Read the job logs in `logs/` for failures, especially the Gemma 4 jobs, whose loader and thinking-mode paths were untested before the cluster.
+2. Summarize the metrics in the answer.
+3. Commit only the small metrics CSVs.

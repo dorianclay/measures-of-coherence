@@ -20,8 +20,8 @@
 #   for m in Qwen/Qwen2.5-{1.5B,7B,14B}{,-Instruct} google/gemma-4-12B{,-it}; do
 #       sbatch slurm/probe_previsions.sbatch "$m"; done
 #
-# Outputs: activations/<model>/ and results/dutch_book/previsions/<model>.csv (large; not committed), plus the small
-# results/dutch_book/probe_metrics/<model>.csv and results/dutch_book/probe_rates/<model>.csv to copy back and commit.
+# Outputs: activations/<model>/, results/dutch_book/previsions/<model>.csv and results/dutch_book/probe_rates/<model>.csv
+# (large; gitignored, stay on the cluster), plus the small results/dutch_book/probe_metrics/<model>.csv to commit.
 #
 # Cluster-specific settings (partition, account, qos) can be passed at submit time. If compute nodes have no
 # internet access, download the models on the login node first and submit with HF_HUB_OFFLINE=1; see

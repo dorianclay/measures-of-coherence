@@ -10,7 +10,11 @@ Implemented and run experiments that measure the **rate of loss** of an LLM's **
 
 - **Execution override:** this map carries execution. Unlike default wayfinding, tickets may build code and run jobs; the map is done when results exist.
 - Domain: probabilistic coherence / Dutch books. Terms are in `CONTEXT.md` (prevision, prevision source, bookie, event family, atom, rate of loss); use them.
-- Sources: `references/` holds the thesis draft (*AI: Agency and Representation*, §4.1.2), Andrews (2026) §2, and Schervish, Seidenfeld & Kadane (1998). `references/` is untracked, so read it from the main checkout.
+- Sources: `references/` holds the thesis draft (*AI: Agency and Representation*, §4.1.2), Andrews (2026) §2, and Schervish, Seidenfeld & Kadane (1998). `references/` is untracked and private; if it's missing on this machine, ask the author to copy it over.
+- **Resuming** (the work moved from the author's laptop to the cluster on 2026-09-30):
+  - **Experiment outputs exist only on the cluster checkout.** They are gitignored because they are too large to push, and git-lfs isn't available on this fork. Read them in place: `activations/`, `results/dutch_book/previsions/`, `results/dutch_book/probe_rates/` and `results/dutch_book/elicited_rates/`. The small `probe_metrics/` and `elicitation_metrics/` CSVs can be committed.
+  - Research findings and the elicitation prototype are on the branches `research/rate-of-loss-formulation`, `research/calibrating-probe-previsions` and `prototype/elicitation-method`. Read them with `git show <branch>:<path>`.
+  - The formulation and calibration research reads the PDFs in `references/`.
 - Code style: flat root-level scripts with argparse + JSON config like the existing pipeline (e.g. `DutchBook.py`, `Elicit_Previsions.py`); LPs via `scipy.optimize.linprog`; GPU jobs as sbatch files in `slurm/`.
 - Standing decisions from charting:
   - Two prevision sources, compared: probe outputs vs. elicited behavior. Probe previsions come first (cheap).
