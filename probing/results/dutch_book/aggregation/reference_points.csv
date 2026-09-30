@@ -1,0 +1,13 @@
+reference,dataset,family_shape,mean_L,n_families
+ceiling_random,facts,negation_pair,0.15479142569993048,547
+ceiling_random,facts,conjunction,0.2662765021896404,556
+ceiling_random,companies,negation_pair,0.1699595549751291,500
+ceiling_random,companies,conjunction,0.27211594727402566,546
+ceiling_random,pooled,negation_pair,0.16203504044453343,1047
+ceiling_random,pooled,conjunction,0.269169729971922,1102
+floor_labels,facts,negation_pair,0.0,547
+floor_labels,facts,conjunction,0.0014988009592326137,556
+floor_labels,companies,negation_pair,0.0,500
+floor_labels,companies,conjunction,0.0,546
+floor_labels,pooled,negation_pair,0.0,1047
+floor_labels,pooled,conjunction,0.0007562008469449485,1102

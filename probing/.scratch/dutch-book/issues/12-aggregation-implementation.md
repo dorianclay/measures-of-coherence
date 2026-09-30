@@ -1,7 +1,7 @@
 # Implement the aggregation and comparison analysis
 
 Type: task (AFK)
-Status: claimed
+Status: resolved
 Blocked by: 11
 
 ## Question
@@ -51,3 +51,19 @@ python Aggregate_Rates.py \
 ```
 
 (models, results-dir, bootstrap-draws, ci-level, seed all have sensible defaults — see `--help`). Should finish in a couple of minutes on a laptop; no GPU or cluster needed. Once it's run, resolve this ticket with a summary of the tables/figures and anything notable in the results (the `gemma-4-12B-it` split, which paired differences exclude zero, correlate strengths).
+
+## Answer
+
+**The author ran the full B=10,000 analysis.** Output lives in `results/dutch_book/aggregation/`: `rollup.csv`, `bootstrap_ci.csv`, `paired_difference.csv`, `polarity_breakdown.csv`, `correlates.csv`, `reference_points.csv`, and `figures/` (4 box plots, 4 correlate scatters).
+
+**Reference points confirm the solver ticket's numbers exactly**: pooled random-prevision ceiling 0.162 (negation pairs) / 0.269 (conjunctions); label floor 0 except the two Nile facts conjunctions (0.0015 mean, diluted across 556 families).
+
+**Headline result: elicited previsions are more coherent than probe previsions, everywhere, decisively.** Every one of the 32 raw-arm paired-difference bootstrap CIs (8 models × 2 datasets × 2 family shapes) is positive and excludes zero — probe rate of loss is significantly higher than elicited rate of loss in every single cell, never the reverse. Probe raw mean L sits in a narrow band (0.22–0.35 pairs, 0.34–0.45 conjunctions) that barely moves with model size or instruction tuning; elicited raw mean L is both lower (0.05–0.20 pairs, 0.12–0.29 conjunctions) and clearly improves with scale for the Qwen base models (1.5B → 7B → 14B: facts pairs 0.120 → 0.088 → 0.067). Only 3 of the (separately-reported) calibrated-arm differences fail to exclude zero; the raw/headline comparison is unambiguous. This is worth being the write-up's central comparative claim.
+
+**The `gemma-4-12B-it` split shows up here in its starkest form.** On facts: its probe raw mean L (0.354, negation pairs) is the *worst* of all 8 models, while its elicited raw mean L (0.048) is the *best* of all 8 models — the largest probe-minus-elicited gap in the whole table (0.305 pairs / 0.335 conjunctions, both far outside every other model's gap). Exactly the split flagged on [08](08-probe-previsions.md) and [10](10-elicited-previsions.md), now quantified.
+
+**Correlates**: strongly negative for L vs. booked accuracy (Spearman ρ = -0.92 pairs, -0.92 conjunctions, both p < 1e-13, n=32) and positive for L vs. calibration improvement / Brier delta (ρ = 0.73 pairs, 0.75 conjunctions, p < 1e-5) — more accurate previsions are more coherent, and previsions calibration helps more are also the ones that were more incoherent to start. Recording, not explaining, per the ticket's own decision: `gemma-4-12B-it` sits on the scatter as a labeled outlier rather than being used to argue the correlation causes the split.
+
+**Polarity breakdown** (reporting-only, as decided): essentially flat for probes across all four C1/C2 polarities (0.410–0.417, negligible spread) but a real if modest spread for elicited previsions (0.170 pos/pos → 0.204 neg/neg, roughly 20% relative range, worse when both conjuncts are negated). Small enough that it doesn't change the headline story, but real enough to mention in the write-up as a secondary observation — not worth a follow-up ticket.
+
+The write-up ticket ([09](09-experiment-write-up.md)) is now unblocked.
