@@ -1,7 +1,7 @@
 # Produce probe previsions under the domain-swap protocol
 
 Type: task (AFK)
-Status: open
+Status: resolved
 Blocked by: 06
 
 ## Question
@@ -47,3 +47,29 @@ Remaining before resolving: the cluster runs for all 8 models (Gemma 4 first, si
 1. Check that outputs exist for all 8 models. Read the job logs in `logs/` for failures, especially the Gemma 4 jobs, whose loader and thinking-mode paths were untested before the cluster.
 2. Summarize the metrics in the answer.
 3. Commit only the small metrics CSVs.
+
+## Answer
+
+**All 8 models completed cleanly.** `logs/probe-previsions-*.out` (209931, 209976–209982) each end with all three `Saved ... rows/rates` lines and no error/traceback beyond the benign unauthenticated-HF-Hub notice — including both Gemma 4 jobs (209931 = `gemma-4-12B-it`, 209982 = `gemma-4-12B`), whose loader and thinking-mode paths were the untested risk.
+
+**Files and row counts** (identical across all 8 models):
+- `results/dutch_book/previsions/<model>.csv` — 851,648 rows (raw + calibrated previsions, domain-swap + atomic-only arms, all seeds/layers).
+- `results/dutch_book/probe_metrics/<model>.csv` — 112 rows (arm × probe × seed × layer combinations).
+- `results/dutch_book/probe_rates/<model>.csv` — 364,112 rows (per-family L, via `DutchBook.py`).
+
+**Headline layers** (domain-swap linear, layer with max validation accuracy on the training-domain calibration slice, per booked domain):
+
+| model | booked=companies (layer / val acc / booked acc) | booked=facts (layer / val acc / booked acc) |
+|---|---|---|
+| Qwen2.5-1.5B | 18 / 0.698 / 0.591 | 18 / 0.838 / 0.633 |
+| Qwen2.5-1.5B-Instruct | 18 / 0.678 / 0.647 | 18 / 0.861 / 0.621 |
+| Qwen2.5-7B | 21 / 0.740 / 0.715 | 24 / 0.870 / 0.652 |
+| Qwen2.5-7B-Instruct | 21 / 0.719 / 0.712 | 21 / 0.861 / 0.644 |
+| Qwen2.5-14B | 48 / 0.777 / 0.680 | 36 / 0.884 / 0.681 |
+| Qwen2.5-14B-Instruct | 30 / 0.785 / 0.739 | 42 / 0.880 / 0.696 |
+| gemma-4-12B | 30 / 0.744 / 0.704 | 30 / 0.870 / 0.677 |
+| gemma-4-12B-it | 36 / 0.558 / 0.525 | 6 / 0.556 / 0.519 |
+
+**Flag for the write-up/aggregation analysis:** `gemma-4-12B-it` is the one model where the linear domain-swap probe never clears chance at any of the 8 layers (val acc 0.44–0.56 both directions; MLP recovers only to 0.60–0.66). This isn't a pipeline bug — checked the activations directly (`activations/gemma-4-12B-it/facts.npy`): no NaNs, no zero rows, variance comparable to the base checkpoint (`gemma-4-12B`, which reaches 0.87 linear val acc on the same layers/statements). The last-token representation of instruct-tuned Gemma 4 appears to carry much weaker linearly-decodable factuality signal than its base checkpoint; worth a call-out in the write-up rather than a fix here.
+
+`results/dutch_book/probe_metrics/*.csv` for all 8 models are already committed (commit `cdb562e`, "Run experiments on cluster"); nothing further to commit for this ticket.
