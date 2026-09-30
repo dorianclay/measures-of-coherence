@@ -24,9 +24,8 @@
 # results/dutch_book/probe_metrics/<model>.csv and results/dutch_book/probe_rates/<model>.csv to copy back and commit.
 #
 # Cluster-specific settings (partition, account, qos) can be passed at submit time. If compute nodes have no
-# internet access, warm the caches from the login node first:
-#   uv sync --frozen
-#   uv run hf download <model-id>
+# internet access, download the models on the login node first and submit with HF_HUB_OFFLINE=1; see
+# slurm/download_models.sh.
 
 set -euo pipefail
 
