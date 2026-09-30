@@ -39,10 +39,11 @@ Implemented and run experiments that measure the **rate of loss** of an LLM's **
 - [Produce elicited previsions for every family statement](issues/10-elicited-previsions.md) — Cluster runs finished clean for all 8 models; every method/template/domain clears the 0.65 competence bar (0.75–0.94), including `gemma-4-12B-it`, which recovers factuality signal its linear probe couldn't — pair with the probe-previsions finding in the write-up.
 - [How do per-family rates aggregate and compare across prevision sources?](issues/11-aggregation-and-comparison.md) — Conjunction families aren't independent (their reuse graph collapses into one giant connected component), so comparisons use a pair-level dyadic bootstrap (B=10,000, percentile CIs) instead of clustering by family. Mean+median per cell with box plots, reporting-only polarity stratification, Spearman correlates (recording, not explaining, the `gemma-4-12B-it` split) against booked accuracy and calibration error, ceiling/floor shown on every plot and table. Implementation spun off to its own ticket.
 - [Implement the aggregation and comparison analysis](issues/12-aggregation-implementation.md) — Headline result: elicited previsions beat probe previsions on every one of 32 model × dataset × family-shape cells (paired-difference CIs all positive, all exclude zero). `gemma-4-12B-it` shows the largest gap of any model (worst probe, best elicited, on facts). L correlates strongly with booked accuracy (ρ≈-0.92) and calibration improvement (ρ≈0.73–0.75). Conjunction polarity is flat for probes, mildly spread for elicited (worst when both conjuncts negated). Results in `results/dutch_book/aggregation/`.
+- [Write up the experiments and every decision behind them](issues/09-experiment-write-up.md) — Two artifacts: `Dutch_Book_Write_Up.ipynb` (full technical report, executed, self-contained) and `.scratch/dutch-book/thesis-4.1.2-patch.md` (literal paste-ready fixes for thesis §4.1.2: the KSS/SSK reconciliation and a new worked example). Ready for the author's review.
 
 ## Not yet specified
 
-- **Merged algebras.** Statements shared across conjunctions could tie families into larger algebras with a single LP. Worth revisiting only if the per-family results are interesting.
+- **Merged algebras.** Statements shared across conjunctions could tie families into larger algebras with a single LP. Worth revisiting only if the per-family results are interesting. Still open after the write-up — every other ticketed question on the map is now resolved.
 
 ## Out of scope
 
