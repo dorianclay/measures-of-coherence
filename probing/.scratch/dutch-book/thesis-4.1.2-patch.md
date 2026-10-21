@@ -1,6 +1,6 @@
 # Patch for §4.1.2, "Rate of loss to a Dutch Book"
 
-Literal replacement text for the thesis draft (*AI: Agency and Representation*), to paste into the LaTeX source wherever it lives — this repo only has the compiled PDF, not the source. Everything below is already verified (LP vs. closed form vs. dual, to ~1e-13) on branch `research/rate-of-loss-formulation`, `.scratch/dutch-book/research/rate-of-loss-formulation.md`; see [Which rate-of-loss formulation(s) do we compute?](issues/01-rate-of-loss-formulation.md).
+Literal replacement text for the thesis draft (*AI: Agency and Representation*), to paste into the LaTeX source wherever it lives — this repo only has the compiled PDF, not the source. Everything below is already verified (LP vs. closed form vs. dual, to ~1e-13) in `.scratch/dutch-book/research/rate-of-loss-formulation.md`; see [Which rate-of-loss formulation(s) do we compute?](issues/01-rate-of-loss-formulation.md).
 
 ## Fix 1 — the "KSS" note after eq. (4.9)
 

@@ -16,7 +16,7 @@ Prototype: a throwaway script that runs both methods on ~20 families from a smal
 
 ## Answer
 
-Prototype: branch `prototype/elicitation-method` has `PROTOTYPE_elicitation.py` and its output at `.scratch/dutch-book/prototypes/elicitation-run-output.txt`. It ran on 20 conjunction families (10 per domain), 100 statements, each judged in isolation.
+Prototype: `PROTOTYPE_elicitation.py` and its output at `.scratch/dutch-book/prototypes/elicitation-run-output.txt`. It ran on 20 conjunction families (10 per domain), 100 statements, each judged in isolation.
 
 | model | method | accuracy | mean L | previsions |
 |---|---|---|---|---|

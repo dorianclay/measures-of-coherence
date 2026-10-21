@@ -1,6 +1,6 @@
 #!/bin/bash
 # Download the Dutch book experiments' models into the Hugging Face cache. Run on the LOGIN node (which has internet),
-# from the repo root, before submitting jobs whose compute nodes are offline:
+# from this project's root (`probing/` in the parent repo), before submitting jobs whose compute nodes are offline:
 #
 #   export HF_HOME=/path/to/scratch/huggingface   # optional; ~145GB total, default is ~/.cache/huggingface
 #   bash slurm/download_models.sh                 # all eight models

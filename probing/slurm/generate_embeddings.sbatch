@@ -10,7 +10,7 @@
 
 # Embedding extraction for the truth-probes pipeline.
 #
-# Usage (from the repo root; create the log dir once with `mkdir -p logs`):
+# Usage (from this project's root, `probing/` in the parent repo, never the parent repo's root; create the log dir once with `mkdir -p logs`):
 #   sbatch slurm/generate_embeddings.sbatch meta-llama/Llama-3.1-8B
 #   sbatch slurm/generate_embeddings.sbatch Qwen/Qwen3-14B facts companies
 #   LAYERS="-1 -8 -16" BATCH_SIZE=64 sbatch slurm/generate_embeddings.sbatch <model>

@@ -13,7 +13,7 @@
 #      (True/False logprobs over three templates; stated probabilities too for instruct models)
 #   2. DutchBook.py books every family against every elicitation method and template
 #
-# Usage (from the repo root; create the log dir once with `mkdir -p logs`):
+# Usage (from this project's root, `probing/` in the parent repo, never the parent repo's root; create the log dir once with `mkdir -p logs`):
 #   sbatch slurm/elicited_previsions.sbatch Qwen/Qwen2.5-7B-Instruct
 #
 # All eight models of the experiments:

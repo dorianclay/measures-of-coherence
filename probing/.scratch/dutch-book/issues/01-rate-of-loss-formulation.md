@@ -17,7 +17,7 @@ Sources: `references/` PDFs (thesis draft, Andrews 2026 §2, SSK 1998 §§2–5,
 
 ## Answer
 
-Findings: branch `research/rate-of-loss-formulation`, file `.scratch/dutch-book/research/rate-of-loss-formulation.md`. The verification script `rate_of_loss_check.py` is next to it and checks the stake LP against the dual LP and the closed forms to about 1e-13. It also reproduces SSK Theorem 2 and Examples 6–8.
+Findings: `.scratch/dutch-book/research/rate-of-loss-formulation.md`. The verification script `rate_of_loss_check.py` is next to it and checks the stake LP against the dual LP and the closed forms to about 1e-13. It also reproduces SSK Theorem 2 and Examples 6–8.
 
 1. **Not equivalent.** Andrews' L, SSK's bookie-escrow rate ρ and SSK's gambler-escrow rate ψ have the same numerator: SSK's bets are the bookie's side, so α = −b. Only the normalization differs, and Σ|bᵢ| = bookie escrow + gambler escrow. On negation pairs, with d = |p(A)+p(¬A)−1|: L = d/2, ρ = d/(1+d), ψ = d/(1−d). All three are monotone in d, so they give the same ordering. On conjunction families the orderings genuinely differ: p1 = (.7,.5,.5,.5,.25) has L = .100 and ρ = .167, while p2 = (.8,.2,.2,.8,.27) has L = .110 and ρ = .142.
 2. **Exact LPs.** Each rate is one LP over split stakes b⁺, b⁻ ≥ 0 and t, maximizing t. There is one row per atom and one normalization row. The normalization costs per unit are (1,1) for L, (1−p, p) for ρ and (p, 1−p) for ψ. The dual gives the nearest coherent prevision: L is the L∞ distance to the coherent set.

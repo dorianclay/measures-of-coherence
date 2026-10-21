@@ -6,7 +6,7 @@ Blocked by: 06
 
 ## Question
 
-Implement and run the elicitation decided in [How do we elicit previsions from model behavior?](05-elicitation-method.md) for every model in [Which models do the experiments run on?](06-model-list.md). The throwaway prototype on branch `prototype/elicitation-method` shows the prompt and token handling.
+Implement and run the elicitation decided in [How do we elicit previsions from model behavior?](05-elicitation-method.md) for every model in [Which models do the experiments run on?](06-model-list.md). The throwaway prototype `PROTOTYPE_elicitation.py` shows the prompt and token handling.
 
 - **Primary:** logprob previsions for every event in every family in `event_families/`, using the fixed template (chat template with the fixed system role for instruct models, 4-shot for base models), each statement in its own prompt.
 - **Secondary:** stated probabilities, for instruct models only.

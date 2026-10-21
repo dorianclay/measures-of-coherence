@@ -16,7 +16,7 @@ Output: a recommendation for the calibration control arm.
 
 ## Answer
 
-Findings: branch `research/calibrating-probe-previsions`, file `.scratch/dutch-book/research/calibrating-probe-previsions.md`. The script `calibrating-probe-previsions_check.py` reproduces every number.
+Findings: `.scratch/dutch-book/research/calibrating-probe-previsions.md`. The script `calibrating-probe-previsions_check.py` reproduces every number.
 
 1. **Calibration and coherence are separate properties.** Andrews 2026 §6, Paleka et al. 2025, Zhu & Griffiths 2024, and Andrews & Sarkar 2026 all make this point. Constant ½ forecasts pass negation and conjunction coherence checks, and CCS needs its confidence term for exactly that reason. Neither CCS nor Marks & Tegmark calibrates probe outputs.
 2. **Calibration can zero the rate of loss only degenerately, but it can move the rate almost anywhere.**

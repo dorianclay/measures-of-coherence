@@ -21,3 +21,9 @@ activations/
 results/dutch_book/previsions/
 results/dutch_book/probe_rates/
 results/dutch_book/elicited_rates/
+
+# Private local files
+.DS_Store
+.claude/settings.local.json
+.claude/worktrees/
+references/*.pdf

@@ -13,7 +13,7 @@
 #   2. Train_Family_Probes.py trains leakage-free probes (domain swap) and writes previsions on the event families
 #   3. DutchBook.py books every family against every probe
 #
-# Usage (from the repo root; create the log dir once with `mkdir -p logs`):
+# Usage (from this project's root, `probing/` in the parent repo, never the parent repo's root; create the log dir once with `mkdir -p logs`):
 #   sbatch slurm/probe_previsions.sbatch Qwen/Qwen2.5-7B-Instruct
 #
 # All eight models of the experiments, each fits one L40 (48GB) in bf16:
