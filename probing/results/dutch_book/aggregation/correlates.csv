@@ -1,0 +1,5 @@
+family_shape,correlate,n,spearman_rho,p_value
+negation_pair,booked_accuracy,32,-0.9175219941348972,1.5163741456431847e-13
+negation_pair,brier_delta,32,0.7331378299120234,1.8211882810470527e-06
+conjunction,booked_accuracy,32,-0.9248533724340174,3.9448254902557733e-14
+conjunction,brier_delta,32,0.753299120234604,6.506838107339888e-07

@@ -1,0 +1,5 @@
+model,dataset,family_shape,family_id,source,example,label,prevision,statement
+gemma-4-12B-it,facts,negation_pair,neg_facts:pair:198,probe,worst probe violation,0,0.0,The Earth is flat.
+gemma-4-12B-it,facts,negation_pair,neg_facts:pair:198,probe,worst probe violation,1,0.0,The Earth isn't flat.
+gemma-4-12B-it,facts,negation_pair,neg_facts:pair:68,elicited,best elicited coherence,1,1.0,The endocrine system regulates body functions through hormones.
+gemma-4-12B-it,facts,negation_pair,neg_facts:pair:68,elicited,best elicited coherence,0,0.0,The endocrine system doesn't regulate body functions through hormones.
