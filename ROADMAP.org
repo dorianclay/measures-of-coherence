@@ -29,6 +29,14 @@ Coherence measurement toolkit:
 
 ** TODO Open experiment 002 as a DRAFT and grill its research design
 Open questions from the notes: what loss do we train on; which open models (RL-able, and larger: Tewolde 2026 starts at Qwen-30B); which values measures.
+** TODO Later experiments deferred from 002's design
+002 is deliberately narrow: small models, direct answers, hidden /p/, beliefs only. Each item below is its own experiment after 002, mostly run on 002's eval checkpoints or with its pipeline:
+- Larger models (~30B, the scale Tewolde 2026 starts at). Must happen; see "Run larger models on the cluster" below.
+- Reasoning before answering instead of a direct answer. Must happen.
+- Values measures (Ren et al., CCEI, MI) on 002's eval checkpoints.
+- Steering beliefs and values with the probes, on 002's eval checkpoints.
+- Stated /p/ in the prompt instead of hidden /p/.
+- Expected utility instead of realized utility as the reward.
 ** TODO Audit the logical pairs in the datasets
 The notes flag that every logical pair needs checking. Fixes produce a new dataset version, never silent edits; 001's results stay tied to the old one. Known issue: two facts families carry the contested Nile fact.
 ** TODO Run larger models on the cluster
