@@ -218,3 +218,14 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# --- measures-of-coherence ---
+# Large artifacts: the local default for $COHERENCE_STORE (see src/coherence/paths.py)
+store/
+logs/
+.DS_Store
+.idea/
+.claude/settings.local.json
+.claude/worktrees/
+# Private or copyrighted; references/README.md lists them
+references/*.pdf
