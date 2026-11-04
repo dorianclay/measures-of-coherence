@@ -1,6 +1,6 @@
-# Probes
+# measures-of-coherence
 
-Probing LLM internal activations for belief-like states, and measuring how coherent those beliefs are.
+Measuring how coherent an LLM's beliefs and values are, by probing its activations and eliciting its behavior, and whether that coherence tracks its decisions as it is trained on decision games.
 
 ## Language
 
@@ -39,3 +39,37 @@ _Avoid_: dataset (a domain spans several dataset files), topic
 **Rate of loss**:
 The largest guaranteed loss per unit of normalization that a gambler can force on the bookie over an event family; zero exactly when the previsions are coherent. Which normalization is used is stated alongside it.
 _Avoid_: incoherence score, Dutch-book-ability, penalty
+
+### Experiments and runs
+
+**Experiment**:
+One research question, with its hypothesis, analysis plan, decision log and findings, in `experiments/NNN-<slug>/experiment.org`. Its state is one of DRAFT, REGISTERED, RUNNING, CONCLUDED, ABANDONED.
+_Avoid_: study, project, ticket
+
+**Registered**:
+The state of an experiment whose hypothesis and analysis plan are committed and fixed. Changing either after that is a **deviation**: a dated entry added to the experiment, never an edit of the plan. An **exploratory** experiment is never registered and makes no confirmatory claims.
+_Avoid_: pre-registered (fine in prose to the author), locked, frozen
+
+**Run**:
+One execution under the recorder: one config, one model reference, one seed. Its `run.json` records how it was produced and what it read and wrote. A run is either a **training run** or a **measurement run**, and its status is running, succeeded, failed or abandoned.
+_Avoid_: job (that's a slurm job; a run can span several), trial, execution
+
+**Segment**:
+One slurm job's share of a run that spans several jobs because of the cluster's 48 GPU-hour cap. Segments of one run share its code version, config and checkpoint namespace.
+_Avoid_: job, chunk, part
+
+**Model reference**:
+The exact identity of the weights a run used: a base model (Hugging Face id and revision) or `<training-run-id>@step<N>`, an eval checkpoint of a training run.
+_Avoid_: model name, checkpoint path
+
+**Eval checkpoint**:
+Weights a training run saves on its planned measurement schedule. Permanent, and the only kind of checkpoint a model reference can name. The **resume state** (weights, optimizer, RNG and data position) is a different thing: overwritten as training goes, kept only to continue the run.
+_Avoid_: snapshot, save
+
+**Protocol**:
+A named, versioned measurement procedure, e.g. `belief-probe-linear@1` or `belief-elicit-logprob@1`, fixing its prompts, aggregation and dataset version. Results are comparable only within one protocol version.
+_Avoid_: method (unless naming the probe method inside a protocol), setup, recipe
+
+**Artifact**:
+A file a run writes that is too large for git (activations, checkpoints, per-family rates). It lives under `$COHERENCE_STORE/<run-id>/` and is listed with its size and sha256 in the run's **manifest**.
+_Avoid_: output (small outputs live in git with the run), blob

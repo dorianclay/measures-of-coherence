@@ -1,3 +1,5 @@
+> **Historical record**, kept verbatim. This effort is concluded and now lives at `experiments/001-dutch-book/` in `measures-of-coherence`; paths below are relative to the old `Probes` repo. See `../experiment.org` ("Where things moved") for where each file is now.
+
 # Map: Rate of loss to a Dutch book
 
 Label: wayfinder:map

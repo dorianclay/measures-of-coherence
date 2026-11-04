@@ -1,0 +1,64 @@
+#+TITLE: 001 Dutch book: rate of loss of probe vs. elicited previsions
+#+TODO: DRAFT REGISTERED RUNNING | CONCLUDED ABANDONED
+
+* CONCLUDED 001 Dutch book
+CLOSED: [2026-09-30]
+
+This experiment predates the recording system. It was planned as a wayfinder map with 12 tickets, run on the cluster in late September 2026, and moved here from the fork of =balevinstein/Probes= on 2026-11-03. It was never registered, and it has no =run.json= records; see [[*Legacy runs][Legacy runs]].
+
+** Question
+How incoherent, measured as rate of loss, are an LLM's previsions over event families with known logical structure? And does that depend on the prevision source: probe previsions read from activations, or elicited previsions read from the model's behavior?
+
+** Design
+The full record of every decision is the map, [[file:notes/map.md][notes/map.md]], and its tickets in [[file:notes/issues/][notes/issues/]]. In brief:
+- *Rate of loss:* Andrews' L, the L∞ distance to coherence, in [0, 1], is primary. SSK's ρ is secondary, on conjunction families only. ψ is never reported, and L is not compared across family shapes.
+- *Event families:* negation pairs {A, ¬A} and conjunction families {A, ¬A, B, ¬B, conjunction}, built from =neg_facts=, =neg_companies=, =conj_neg_facts= and =conj_neg_companies=, and reported as separate experiments. There are 547 + 500 pairs and 556 + 546 conjunction families (facts + companies).
+- *Probe previsions:* domain swap, so probes trained on facts book companies and vice versa, and never see a booked statement. The linear probe is primary, with MLP and atomic-only probes as secondary arms. Rates are computed per seed. The headline layer is chosen within the training domain.
+- *Elicited previsions:* next-token True/False logprobs are primary, each statement in its own prompt. Stated 0–100 probabilities are a secondary arm for instruct models. A model enters the comparison only with elicited accuracy ≥ 0.65.
+- *Calibration:* a labelled control, not the headline. It's bias-free temperature scaling on a family-disjoint split, reported next to the raw and T→0 rates.
+- *Controls:* label previsions (rate 0 except on the two contested-Nile families) and random previsions (the ceiling: mean L 0.162 on negation pairs, 0.269 on conjunction families).
+- *Models:* Qwen2.5 1.5B, 7B and 14B, and Gemma 4 12B, each as a base and instruct pair.
+- *Aggregation:* a pair-level dyadic bootstrap (B = 10,000, percentile CIs), since conjunction families share constituent pairs and aren't independent.
+
+** Findings
+- Elicited previsions beat probe previsions on all 32 model × dataset × family-shape cells. Every paired-difference CI is positive and excludes zero.
+- =gemma-4-12B-it= shows the largest gap of any model: its linear probe never clears chance at any layer, while its elicited previsions are the best on facts.
+- L correlates strongly with booked accuracy (Spearman ρ ≈ −0.92) and with calibration improvement (ρ ≈ 0.73–0.75).
+- Conjunction polarity is flat for probes and mildly spread for elicited previsions, which are worst when both conjuncts are negated.
+
+The full report is [[file:Dutch_Book_Write_Up.ipynb][Dutch_Book_Write_Up.ipynb]], and the tables and figures are in [[file:results/aggregation/][results/aggregation/]]. Paste-ready fixes for thesis §4.1.2 are in [[file:notes/thesis-4.1.2-patch.md][notes/thesis-4.1.2-patch.md]].
+
+** Open
+- Merged algebras: statements shared across conjunctions could tie families into larger algebras booked with one LP. Worth revisiting if the per-family results matter for the thesis.
+
+** Legacy runs
+These ran before the recorder existed, so there is no =run.json= and no manifest. What's known comes from the tickets' notes on the slurm logs.
+
+| what                        | slurm script                      | jobs                                                    | outcome                          |
+|-----------------------------+-----------------------------------+---------------------------------------------------------+----------------------------------|
+| probe previsions, 8 models  | =slurm/probe_previsions.sbatch=   | 209931 (=gemma-4-12B-it=), 209976–209981, 209982 (=gemma-4-12B=) | all clean ([[file:notes/issues/08-probe-previsions.md][ticket 08]]) |
+| elicited previsions, 8 models | =slurm/elicited_previsions.sbatch= | 210022 (=gemma-4-12B-it=), 210029 (=gemma-4-12B=), and six more | all clean, one recovered OOM warning in 210029 ([[file:notes/issues/10-elicited-previsions.md][ticket 10]]) |
+| aggregation                 | =analysis.dutch_book_rates=, run by the author | —                                          | [[file:notes/issues/12-aggregation-implementation.md][ticket 12]] |
+
+- *Large outputs* (activations, previsions, per-family rates) are on the cluster, in the old =Probes= checkout (path not recorded). The scripts now default to =$COHERENCE_STORE/001-dutch-book/=, so move them there: =activations/= as is, and the contents of =results/dutch_book/= directly under it.
+- *Small outputs* are committed in [[file:results/][results/]]: =probe_metrics/=, =elicitation_metrics/=, the controls and =aggregation/=.
+- *Code version:* the commit SHAs in the notes predate the import into this repo, which rewrote every SHA. Find those commits by message instead, e.g. "Run experiments on cluster" is now =9938274=.
+
+** Where things moved
+The notes are kept verbatim, so their paths are the old ones, relative to the root of the old =Probes= repo.
+
+| in the notes                                              | now                                           |
+|-----------------------------------------------------------+-----------------------------------------------|
+| =DutchBook.py=                                            | =src/coherence/dutch_book.py=                 |
+| =Build_Event_Families.py=                                 | =src/coherence/event_families.py=             |
+| =Elicit_Previsions.py=                                    | =src/coherence/elicitation.py=                |
+| =Generate_Activations.py=                                 | =src/probing/activations.py=                  |
+| =Train_Family_Probes.py=                                  | =src/probing/family_probes.py=                |
+| =Aggregate_Rates.py=                                      | =src/analysis/dutch_book_rates.py=            |
+| =datasets/=, =event_families/=                            | =data/datasets/=, =data/event_families/=      |
+| =results/dutch_book/= (small outputs)                     | =experiments/001-dutch-book/results/=         |
+| =.scratch/dutch-book/=                                    | =experiments/001-dutch-book/notes/=           |
+| =PROTOTYPE_elicitation.py=                                | =notes/prototypes/PROTOTYPE_elicitation.py=   |
+| =references/=                                             | =references/= at the repo root                |
+
+The notebook is kept as executed. Re-running it needs its paths updated to the table above.

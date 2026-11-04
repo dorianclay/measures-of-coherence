@@ -1,0 +1,8 @@
+#+TITLE: Experiments
+#+TODO: DRAFT REGISTERED RUNNING | CONCLUDED ABANDONED
+
+Hand-written until the index generator exists (see the build order in [[file:../docs/design/experiment-recording.org][the design]]); after that, regenerate it rather than editing it.
+
+| id  | experiment                                    | state     | question                                                     | latest finding                                              |
+|-----+-----------------------------------------------+-----------+--------------------------------------------------------------+-------------------------------------------------------------|
+| 001 | [[file:001-dutch-book/experiment.org][Dutch book]] | CONCLUDED | How incoherent are probe vs. elicited previsions, by rate of loss? | Elicited previsions beat probe previsions in all 32 cells. |

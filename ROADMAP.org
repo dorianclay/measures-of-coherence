@@ -1,0 +1,41 @@
+#+TITLE: Roadmap
+#+TODO: TODO NEXT ACTIVE | DONE DROPPED
+
+The thesis arc, stage by stage, linked to the experiments that carry each one. The goal: show that a model's coherence is correlated with (perhaps causal of) its decisions, by training it with RL on strategic games and measuring whether its coherence changes. Coherence is never the training signal, so a link is evidence that the rational-agent model describes something real.
+
+This is the repo's working copy of the plan in the author's meeting notes (=~/org/agency_and_representation/meeting_notes.org=, "Thesis project overview"). When they disagree, update this file.
+
+* DONE Coherence of frozen models' beliefs
+Probe and elicited previsions over event families, booked for rate of loss. Elicited previsions beat probe previsions everywhere.
+- [[file:experiments/001-dutch-book/experiment.org][001 Dutch book]]
+
+* ACTIVE Infrastructure: recording experiments and runs
+Design and build order: [[file:docs/design/experiment-recording.org][experiment-recording.org]].
+** DONE Restructure into one project (=src/=, =data/=, =tests/=)
+** DONE =CLAUDE.md=, =CONTEXT.md=, roadmap, experiment 001
+** TODO Recorder, manifests, dataset versions, protocols, index generator
+** TODO Segments, =--resume=, =submit-chain=
+** TODO Merge =setup= to =main=
+
+* NEXT RL on a minimal decision scenario
+DEADLINE: <2026-11-30 Mon>
+Umbrella/rain: actions {umbrella, ¬umbrella}, states {R, ¬R}, utilities U(a, s), R with probability /p/. Each sample draws /p/ ~ U; the model is fine-tuned on the utility of its decision. At step 0 and on a schedule during training, measure beliefs and values by probing and elicitation, and test steering.
+
+Coherence measurement toolkit:
+|        | probe                   | elicitation      |
+|--------+-------------------------+------------------|
+| belief | linear, mass-mean, etc. | direct prompting |
+| values | Ren et al., etc.        | CCEI, MI         |
+
+** TODO Open experiment 002 as a DRAFT and grill its research design
+Open questions from the notes: what loss do we train on; which open models (RL-able, and larger: Tewolde 2026 starts at Qwen-30B); which values measures.
+** TODO Audit the logical pairs in the datasets
+The notes flag that every logical pair needs checking. Fixes produce a new dataset version, never silent edits; 001's results stay tied to the old one. Known issue: two facts families carry the contested Nile fact.
+** TODO Run larger models on the cluster
+RL on ~30B models within the 48 GPU-hour job cap.
+
+* TODO Games with an opponent
+Coordination, anti-coordination, 2×2 zero-sum.
+
+* TODO Decision theory under RL
+Train under different decision theories (EDT, CDT, UDT), driven by what information the model has when; test on Newcomb's problem, transparent Newcomb, etc.
