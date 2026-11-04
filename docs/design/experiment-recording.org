@@ -1,0 +1,89 @@
+#+TITLE: Design: how experiments and runs are recorded
+#+DATE: 2026-11-03
+
+Settled in a grilling session with the author on 2026-11-03. It drives the top-level =CLAUDE.md= and the pipeline code. The aim is that every number in the thesis traces back to the code, config, model, data and command that produced it, and to the decisions behind it.
+
+The thesis plan this serves (from the author's meeting notes, "Thesis project overview"): RL a model on a minimal decision game (umbrella/rain, varying /p/), measuring the coherence of its beliefs and values by probing and elicitation at checkpoints during training; then games with an opponent; then decision-theory variants. The end-of-November 2026 deadline covers the full umbrella/rain experiment.
+
+* Structure
+- Two levels. An *experiment* is one research question with a hypothesis, analysis plan, decision log and findings. A *run* is one execution: one config, one model reference, one seed. A run belongs to exactly one experiment.
+- Experiments get sequential ids (=002-umbrella-rl-belief-coherence=). Runs get time-sortable, collision-free ids (=20261103-1412-a3f9=), so cluster jobs never clash.
+- Two run kinds, training and measurement, in one system. They join through a *model reference*: a base model (HF id + revision) or =<training-run-id>@step<N>=.
+- *Activation extraction* is its own run, producing an artifact keyed by (model reference, layers, dataset version, extraction protocol). Probe runs cite it as input, so all probe methods (linear, MLP, mass-mean, …) train on the same activations.
+
+* Files and layout
+- Org for anything people write or read: =experiment.org=, the generated =experiments/index.org=, =ROADMAP.org=. JSON for anything code writes: =run.json= per run, plus its =config.yaml=. A script keeps a run table (id, status, model reference, note) inside each =experiment.org=.
+- Git is the source of truth. A hosted tracker (e.g. W&B) is optional, for live training curves only, linked from =run.json= by URL.
+
+#+begin_example
+measures-of-coherence/
+  CLAUDE.md  CONTEXT.md  ROADMAP.org
+  experiments/
+    index.org
+    001-dutch-book/
+    NNN-<slug>/
+      experiment.org
+      analysis/                      # thin per-experiment figure scripts
+      figures/                       # their outputs, each with a sidecar
+      runs/<run-id>/{run.json, config.yaml, outputs/}   # small outputs only
+  src/
+    coherence/   # measurement toolkit + run recorder
+    probing/     # probe methods behind one interface; a sub-package we modify
+    analysis/    # reusable analysis: load runs, protocol checks, bootstrap, plotting, sidecars
+  data/          # versioned datasets
+  tests/
+#+end_example
+
+- One uv project at the root: one =pyproject.toml=, =uv.lock=, =.venv=. Torch-only; the upstream TensorFlow scripts are deleted (history keeps them).
+- Large artifacts live at =$COHERENCE_STORE/<run-id>/= on the cluster. Each run's record lists a manifest of them (path, size, sha256). Checkpoints that a cited result depends on are also pushed to a private Hugging Face repo.
+
+* Provenance
+- =record= wraps any command: =uv run record --experiment 002 --note "…" -- <command>=. It creates the run directory, exports =RUN_ID= and =RUN_DIR=, captures stdout/stderr, and writes the /how/: git SHA, diff of uncommitted changes, full command, working directory, =uv.lock= hash, SLURM job id, host, GPU, start/end, exit code, status.
+- Our own scripts add the /what/ through a library call, =coherence.runs.log(model_ref=…, protocol=…, datasets=[…], artifacts=[…])=, which is a no-op outside =record=. In a pre-registered experiment, a run that doesn't log a model reference and protocol fails.
+- Datasets carry a version and sha256 in a dataset manifest; every run records the versions it read. Fixing data makes a new version, never a silent edit.
+- Every measurement has a named, versioned *protocol* (=belief-elicit-logprob@1=, =belief-probe-linear@1=) fixing templates, aggregation and dataset version. Analysis refuses to put different protocol versions in one table or plot unless that is the point of the comparison.
+- Every figure and table comes from a script that takes run ids, and gets a sidecar listing run ids, protocol versions and the analysis commit. Findings cite figures by path. No hand-edited figures or tables.
+
+* Training on the cluster
+The cluster caps a job at 48 GPU-hours.
+- A training run that spans jobs stays one run. Each slurm job is a *segment* appended to =run.json= (job id, host, SHA, start/end, step range, exit status), started with =record --resume <run-id> -- <command>=.
+- A segment refuses to start if the git SHA or =uv.lock= differs from the first segment's, unless =--allow-drift "<reason>"= is given; that is logged, and counts as a deviation on registered experiments.
+- A run stays =running= until a segment completes the planned steps. A failed segment leaves the run resumable, not failed.
+- Two checkpoint kinds in the manifest. *Eval checkpoints*: weights only, on the plan's measurement schedule, permanent, valid model references. *Resume state*: weights, optimizer, RNG and data position, overwritten, only the latest kept, never a model reference.
+- =submit-chain <run-id> --segments K= submits K jobs linked by =--dependency=afterok=. The training loop saves resume state on a wall-clock deadline well before 48 h. A failed segment stops the chain and is recorded.
+- Measurement during training is separate measurement runs on saved eval checkpoints, never code in the training loop. One measurement path serves base models and checkpoints, and new measures can be applied to old checkpoints.
+
+* Honesty rules
+- Pre-registration: before an experiment's first real run, its hypothesis and analysis plan are committed (state =REGISTERED=). Later changes are dated deviation entries, never edits. Experiments marked =exploratory= skip this.
+- A registered experiment refuses runs from a dirty tree. Exploratory experiments allow it and save the diff in the run directory.
+- Every run keeps its record forever, with status =running= / =succeeded= / =failed= / =abandoned= and a one-line reason. Large artifacts may be deleted; records may not.
+- Every stochastic run takes an explicit =--seed=. A registered plan states seeds per condition up front. Analysis covers every seed that ran.
+- Experiment lifecycle as Org TODO keywords: =#+TODO: DRAFT REGISTERED RUNNING | CONCLUDED ABANDONED=. =experiments/index.org= is generated from them.
+
+* Tasks and roadmap
+- Wayfinder maps and tickets are replaced by Org: each experiment's tasks are TODO headings under =* Tasks= in its =experiment.org=.
+- =ROADMAP.org= holds the thesis arc and links stages to experiments. The author's meeting notes in =~/org= stay the author's; when they disagree, the roadmap is updated.
+
+* What Claude may do
+- Freely: create =DRAFT= and =exploratory= experiments; write code and tests; launch runs through =record= estimated at up to 48 GPU-hours in total; re-run failed segments of approved runs; write run notes; regenerate run tables, figures and the index; draft analysis; push commits that contain only run records.
+- With the author's sign-off: moving an experiment to =REGISTERED=; any deviation entry; writing or changing Findings; bumping a protocol version; deleting any artifact or run record; runs estimated above 48 GPU-hours in total (Claude states the estimate); any other push.
+
+* Branches and commits
+- =setup= merges to =main= once the restructure lands with tests passing.
+- Then each experiment gets =exp/NNN-slug= for code changes. Run-record commits go to the branch the code ran from, so every run's SHA stays reachable. An experiment's branch merges to =main= when its code is stable, by =CONCLUDED= or =ABANDONED= at the latest.
+- One commit per finished unit of work.
+
+* Migration of the Dutch book work
+- It becomes =experiments/001-dutch-book/=, =CONCLUDED=, with a fresh =experiment.org=. The original map, tickets, research notes, prototype output and thesis patch move verbatim into =notes/=, with the notebook and aggregation outputs alongside.
+- No faked =run.json=. A =* Legacy runs= section lists the cluster jobs and where their outputs are, saying they predate the recorder.
+- Its probe and elicitation methods become the =@1= protocols once ported unchanged into =src/=.
+
+* Not decided here
+Research and implementation decisions for experiment 002's own draft: the RL algorithm and the loss trained on, model choice and scale, which values measures to use, the probe interface's exact signature.
+
+* Build order
+1. Restructure into =src/=, =data/=, =tests/=; delete the TensorFlow scripts; keep the existing tests passing.
+2. Top-level =CLAUDE.md= and =CONTEXT.md= (new terms: run, experiment, protocol, model reference, segment, eval vs. resume checkpoint), =ROADMAP.org=, =001-dutch-book=.
+3. =record=, manifests, dataset versions, protocols, index generator, test-first.
+4. Segments, =--resume=, =submit-chain=.
+5. Merge to =main=; open =002= as a =DRAFT= for the umbrella/rain RL work and grill its research design.
