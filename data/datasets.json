@@ -1,0 +1,128 @@
+{
+  "animals": {
+    "path": "datasets/animals_true_false.csv",
+    "history": [
+      {
+        "version": 1,
+        "sha256": "5ad071e1ba82665acf92582ccf5d3e21e2f01f6613e674976a46fc2239fec5c8"
+      }
+    ]
+  },
+  "capitals": {
+    "path": "datasets/capitals_true_false.csv",
+    "history": [
+      {
+        "version": 1,
+        "sha256": "2dbca288dbbc9d03342e2d82b660f73983acf5135596352f473086996762f829"
+      }
+    ]
+  },
+  "cities": {
+    "path": "datasets/cities_true_false.csv",
+    "history": [
+      {
+        "version": 1,
+        "sha256": "ef443d6b14f28d2f4bf7802d8b148e10959c8ef91e3a87dc696584334f042c5c"
+      }
+    ]
+  },
+  "companies": {
+    "path": "datasets/companies_true_false.csv",
+    "history": [
+      {
+        "version": 1,
+        "sha256": "75a31139def9838dcaa4e2f1e5f3680f44f09f3c94553f9ad3b3a5a476124c8c"
+      }
+    ]
+  },
+  "companies_families": {
+    "path": "event_families/companies_families.json",
+    "history": [
+      {
+        "version": 1,
+        "sha256": "d19d521d0c4ff0590e2270318f31575bebf398591c5bea232c49ee57817bf6b4"
+      }
+    ]
+  },
+  "conj_neg_companies": {
+    "path": "datasets/conj_neg_companies_true_false.csv",
+    "history": [
+      {
+        "version": 1,
+        "sha256": "2313d0def25b0051955c5253e54f8d9e1ba3cc51dc62585d893778c0ba4436c7"
+      }
+    ]
+  },
+  "conj_neg_facts": {
+    "path": "datasets/conj_neg_facts_true_false.csv",
+    "history": [
+      {
+        "version": 1,
+        "sha256": "a24baf3181e5ba32975b367e72ed81cb24d59fad9cf4a28246bd6162f1a486d2"
+      }
+    ]
+  },
+  "elements": {
+    "path": "datasets/elements_true_false.csv",
+    "history": [
+      {
+        "version": 1,
+        "sha256": "e79588d6cf8d21c79076ae4aba32ea7e7f61b1cb101aeb7a75c9317315fb461b"
+      }
+    ]
+  },
+  "facts": {
+    "path": "datasets/facts_true_false.csv",
+    "history": [
+      {
+        "version": 1,
+        "sha256": "151b6163289460eb8b37f7c6a1998e23aed8e05b5e557bf1a2297079bf0e5af9"
+      }
+    ]
+  },
+  "facts_families": {
+    "path": "event_families/facts_families.json",
+    "history": [
+      {
+        "version": 1,
+        "sha256": "4cf4b57bde84c07da4b20e73aa0c2d2fda26190c28e543fcca3c8cf6121a1952"
+      }
+    ]
+  },
+  "generated": {
+    "path": "datasets/generated_true_false.csv",
+    "history": [
+      {
+        "version": 1,
+        "sha256": "8a64637fc30ed81171b1c6e5ca0f1e848ed09a0c2651c821f982a146aef0324a"
+      }
+    ]
+  },
+  "inventions": {
+    "path": "datasets/inventions_true_false.csv",
+    "history": [
+      {
+        "version": 1,
+        "sha256": "9578ecabdc9c339b12a5ba2079d8eedb19e67b5e9ac07f04f68dce4ed4ea6148"
+      }
+    ]
+  },
+  "neg_companies": {
+    "path": "datasets/neg_companies_true_false.csv",
+    "history": [
+      {
+        "version": 1,
+        "sha256": "0010f21212ac462d4102f6d8ca4e40d70e81cd187ebba2022a88a79d26f925f0"
+      }
+    ]
+  },
+  "neg_facts": {
+    "path": "datasets/neg_facts_true_false.csv",
+    "history": [
+      {
+        "version": 1,
+        "sha256": "690930e17bf310f8988ee9b86ab2624a494792a95fa226d18c200035e076db9a"
+      }
+    ]
+  }
+}

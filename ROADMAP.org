@@ -13,7 +13,7 @@ Probe and elicited previsions over event families, booked for rate of loss. Elic
 Design and build order: [[file:docs/design/experiment-recording.org][experiment-recording.org]].
 ** DONE Restructure into one project (=src/=, =data/=, =tests/=)
 ** DONE =CLAUDE.md=, =CONTEXT.md=, roadmap, experiment 001
-** TODO Recorder, manifests, dataset versions, protocols, index generator
+** DONE Recorder, manifests, dataset versions, protocols, index generator
 ** TODO Segments, =--resume=, =submit-chain=
 ** TODO Merge =setup= to =main=
 

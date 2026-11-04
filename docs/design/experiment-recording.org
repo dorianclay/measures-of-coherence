@@ -78,6 +78,15 @@ The cluster caps a job at 48 GPU-hours.
 - No faked =run.json=. A =* Legacy runs= section lists the cluster jobs and where their outputs are, saying they predate the recorder.
 - Its probe and elicitation methods become the =@1= protocols once ported unchanged into =src/=.
 
+* Implementation notes
+Choices made while building step 3 that the session above didn't spell out:
+- A DRAFT experiment, like an exploratory one, may run uncommitted code (with =diff.patch= saved). Only REGISTERED and later states that aren't exploratory require a clean tree.
+- The uncommitted-code check ignores what runs and analysis generate: =experiments/*/runs/**=, =experiments/*/figures/**=, each =experiment.org= (its run table) and =experiments/index.org=.
+- Artifact paths in the manifest are relative to =$COHERENCE_STORE=, so records survive the store moving between machines. Artifacts outside the store are refused.
+- =run.json= holds per-job fields in =segments= from the start, so step 4 adds segments without a schema change.
+- Sidecars are =<output>.sources.json= next to each figure or table.
+- Experiment 001's pipeline scripts don't call =coherence.runs.log= yet. One invocation of =probing.family_probes= or =coherence.elicitation= produces several protocols at once, which doesn't fit one run, one protocol. Experiment 002's measurement code should be written to log one protocol per run.
+
 * Not decided here
 Research and implementation decisions for experiment 002's own draft: the RL algorithm and the loss trained on, model choice and scale, which values measures to use, the probe interface's exact signature.
 
