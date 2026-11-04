@@ -1,0 +1,32 @@
+#+TITLE: 002 Umbrella RL: does training on decisions change coherence?
+#+TODO: DRAFT REGISTERED RUNNING | CONCLUDED ABANDONED
+
+* DRAFT 002 Umbrella RL: does training on decisions change coherence?
+
+** Question
+Does fine-tuning a model with RL on the utility of its own decisions, in a one-shot decision under uncertainty (umbrella/rain), change the coherence of its beliefs and values, though coherence is never the training signal?
+
+Setup from the thesis plan: actions {umbrella, ¬umbrella}, states {R, ¬R}, utilities U(a, s), R with probability /p/; each sample draws /p/ ~ U. Before training and on a schedule during it, beliefs and values are measured by probing and elicitation, and steering is tested.
+
+** Hypothesis
+What we expect, stated before the first real run. Fixed once the experiment is REGISTERED.
+
+** Analysis plan
+The runs (models, protocols, seeds per condition), the comparisons and the figures that will answer the question.
+Fixed once the experiment is REGISTERED.
+
+** Tasks
+*** TODO Grill the research design
+Open questions: the loss and RL algorithm; which models (RL-able, larger); how /p/ and the utilities are presented; which belief and values measures, at which steps; the hypothesis and what result would refute it; seeds per condition and the GPU-hour budget.
+
+** Deviations
+Dated entries for every change to the hypothesis or plan after registration. The plan above is never edited.
+
+** Runs
+#+BEGIN: runs
+| run | status | model reference | protocol | note |
+|-----+--------+-----------------+----------+------|
+#+END:
+
+** Findings
+Written or changed only with the author's sign-off. Cite figures from figures/.
