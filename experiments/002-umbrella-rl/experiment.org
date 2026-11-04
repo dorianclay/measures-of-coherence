@@ -13,7 +13,8 @@ Settled in a grilling session with the author on 2026-11-04. Values measures, st
 - *Hidden /p/.* Each town has a fixed, hidden chance of rain, /p/ ∈ {0.1, 0.3, 0.5, 0.7, 0.9}, assigned to town names at random per seed so no name's associations pass for a learned belief. The model never sees the weather; it can infer it from its reward, since the utilities are in the prompt.
 - *Utilities.* Integers uniform on [−10, 10] per prompt, redrawn until U(umbrella, R) > U(¬umbrella, R) and U(¬umbrella, ¬R) > U(umbrella, ¬R), so the choice is never trivial and its threshold on /p/ varies with the stakes.
 - *Reward.* The realized utility: draw s with the town's /p/, reward U(a, s).
-- *Training.* GRPO through Hugging Face TRL, KL to the base model, LoRA. Prompts are generated on the fly from the seed. A fixed number of steps, the same for both arms, set by the pilot.
+- *Training.* GRPO through Hugging Face TRL, KL to the base model, LoRA. A fixed number of steps, the same for both arms, set by the pilot.
+- *Generated data, kept for verification.* Before training, each run generates its seed's full training set (every prompt with its town, utilities, hidden /p/ and drawn weather) to a file under =$RUN_STORE=, hashed in the manifest, and trains from that file in order; the data position on resume is the step. Each step's answers and rewards go to a log beside it, so every reward can be checked against the data afterwards.
 - *Control.* Same prompts, steps and hyperparameters, with each reward replaced by a random draw from the same distribution.
 - *Models.* Qwen2.5-7B-Instruct for the primary runs, Qwen2.5-1.5B-Instruct as a secondary check across sizes; both were in 001.
 - *Pilot.* An exploratory experiment, =003-umbrella-pilot=, on 1.5B, fixes the step count, GRPO hyperparameters (group size, KL weight, learning rate) and the GPU-hour cost per run. This experiment is registered only after it.
@@ -38,7 +39,7 @@ Fixed once the experiment is REGISTERED.
 
 ** Tasks
 *** DONE Grill the research design
-*** TODO Open =003-umbrella-pilot= (exploratory)
+*** DONE Open =003-umbrella-pilot= (exploratory)
 *** TODO Build the umbrella environment, reward and control
 *** TODO Build the GRPO + LoRA training run on the segment API
 *** TODO Add =umbrella_towns@1= and the =town-belief-*@1= protocols
