@@ -22,7 +22,7 @@ Ask the author first to: move an experiment to REGISTERED; add a deviation; writ
 
 - One uv project; packages live in `src/` (`coherence`, `probing`, `analysis`). Run code as modules, e.g. `uv run python -m coherence.dutch_book`. Paths resolve from the repo root through `src/coherence/paths.py`, so the working directory doesn't matter.
 - Large outputs go under `$COHERENCE_STORE` (local default: the gitignored `store/`), with only small outputs in git.
-- Cluster jobs are sbatch files in `slurm/`, submitted from the repo root. The cluster caps each job at 48 GPU-hours, so long training resumes across segments.
+- Cluster jobs are sbatch files in `slurm/`, submitted from the repo root. The cluster caps each job at 48 GPU-hours, so a training run longer than that goes through `uv run submit-chain` as segments, and its training loop must resume from `coherence.runs.resume_state()` and stop on `coherence.runs.out_of_time()`.
 - `src/probing/legacy/` is upstream's unported CCS pipeline; build new probe methods against the activations in `src/probing/`.
 
 ## Commits

@@ -14,7 +14,7 @@ Design and build order: [[file:docs/design/experiment-recording.org][experiment-
 ** DONE Restructure into one project (=src/=, =data/=, =tests/=)
 ** DONE =CLAUDE.md=, =CONTEXT.md=, roadmap, experiment 001
 ** DONE Recorder, manifests, dataset versions, protocols, index generator
-** TODO Segments, =--resume=, =submit-chain=
+** DONE Segments, =--resume=, =submit-chain=
 ** TODO Merge =setup= to =main=
 
 * NEXT RL on a minimal decision scenario

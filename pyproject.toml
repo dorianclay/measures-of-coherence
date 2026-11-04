@@ -22,6 +22,7 @@ dependencies = [
 record = "coherence.record:main"
 experiments = "coherence.experiments:main"
 datasets = "coherence.datasets:main"
+submit-chain = "coherence.submit_chain:main"
 
 [build-system]
 requires = ["hatchling"]

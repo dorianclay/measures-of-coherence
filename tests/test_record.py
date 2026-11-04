@@ -155,7 +155,7 @@ def test_the_run_records_its_environment_and_machine_and_tells_the_command_where
     run_dir = only_run_dir(repo)
     run = json.loads((run_dir / "run.json").read_text())
     # sha256 of "lock contents\n", computed independently with `shasum -a 256`
-    assert run["uv_lock_sha256"] == "fc73a1afb9a1e813a91ab840a6464a1377f6704f489e8b0519a1fc710c7c006d"
+    assert run["segments"][0]["uv_lock_sha256"] == "fc73a1afb9a1e813a91ab840a6464a1377f6704f489e8b0519a1fc710c7c006d"
     segment = run["segments"][0]
     assert segment["slurm_job_id"] == "48213"
     assert segment["gpus"] == ["NVIDIA L40S", "NVIDIA L40S"]

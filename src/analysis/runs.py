@@ -12,8 +12,7 @@ import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
-from coherence import git
-from coherence.paths import experiments_dir
+from coherence import git, runs as coherence_runs
 
 
 def load(run_ids: list[str], allow_mixed_protocols: bool = False) -> list[dict]:
@@ -24,10 +23,8 @@ def load(run_ids: list[str], allow_mixed_protocols: bool = False) -> list[dict]:
     """
     loaded = []
     for run_id in run_ids:
-        matches = list(experiments_dir().glob(f"*/runs/{run_id}/run.json"))
-        if not matches:
-            raise KeyError(f"No run {run_id} under {experiments_dir()}")
-        loaded.append({**json.loads(matches[0].read_text()), "dir": matches[0].parent})
+        run_dir = coherence_runs.find(run_id)
+        loaded.append({**coherence_runs.read(run_dir), "dir": run_dir})
     found = sorted({str(r.get("protocol")) for r in loaded})
     if len(found) > 1 and not allow_mixed_protocols:
         raise ValueError(f"Runs mix protocols {', '.join(found)}; results are comparable only within one protocol "
