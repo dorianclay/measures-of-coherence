@@ -4,20 +4,46 @@
 * DRAFT 002 Umbrella RL: does training on decisions change coherence?
 
 ** Question
-Does fine-tuning a model with RL on the utility of its own decisions, in a one-shot decision under uncertainty (umbrella/rain), change the coherence of its beliefs and values, though coherence is never the training signal?
+Does fine-tuning a model with RL on the utility of its own decisions, in a one-shot decision under uncertainty (umbrella/rain), change the coherence of its beliefs, though coherence is never the training signal?
 
-Setup from the thesis plan: actions {umbrella, ¬umbrella}, states {R, ¬R}, utilities U(a, s), R with probability /p/; each sample draws /p/ ~ U. Before training and on a schedule during it, beliefs and values are measured by probing and elicitation, and steering is tested.
+** Design
+Settled in a grilling session with the author on 2026-11-04. Values measures, steering, larger models, reasoning, stated /p/ and an expected-utility reward are later experiments; see =ROADMAP.org=.
+
+- *Task.* Each prompt names one of five fictional towns, states four utilities U(a, s) for actions {umbrella, ¬umbrella} and states {R, ¬R}, and asks for a direct answer, "umbrella" or "no umbrella". Nothing in the prompt says how likely rain is.
+- *Hidden /p/.* Each town has a fixed, hidden chance of rain, /p/ ∈ {0.1, 0.3, 0.5, 0.7, 0.9}, assigned to town names at random per seed so no name's associations pass for a learned belief. The model never sees the weather; it can infer it from its reward, since the utilities are in the prompt.
+- *Utilities.* Integers uniform on [−10, 10] per prompt, redrawn until U(umbrella, R) > U(¬umbrella, R) and U(¬umbrella, ¬R) > U(umbrella, ¬R), so the choice is never trivial and its threshold on /p/ varies with the stakes.
+- *Reward.* The realized utility: draw s with the town's /p/, reward U(a, s).
+- *Training.* GRPO through Hugging Face TRL, KL to the base model, LoRA. Prompts are generated on the fly from the seed. A fixed number of steps, the same for both arms, set by the pilot.
+- *Control.* Same prompts, steps and hyperparameters, with each reward replaced by a random draw from the same distribution.
+- *Models.* Qwen2.5-7B-Instruct for the primary runs, Qwen2.5-1.5B-Instruct as a secondary check across sizes; both were in 001.
+- *Pilot.* An exploratory experiment, =003-umbrella-pilot=, on 1.5B, fixes the step count, GRPO hyperparameters (group size, KL weight, learning rate) and the GPU-hour cost per run. This experiment is registered only after it.
+- *Measures.* General coherence: 001's four =@1= protocols (elicited logprob, elicited stated, probe linear, probe MLP) on its event families, booked for rate of loss. In-task beliefs: the same methods on a statement and its negation per town ("It will rain in <town> tomorrow"), dataset =umbrella_towns@1=, protocols =town-belief-elicit-logprob@1=, =town-belief-elicit-stated@1= and =town-belief-probe-linear@1=. Probes are retrained on each checkpoint's activations.
+- *Schedule.* Eval checkpoints at step 0 and at about 5, 10, 25, 50 and 100% of the steps. In-task beliefs at every one; general coherence at 0, 50 and 100%.
 
 ** Hypothesis
 What we expect, stated before the first real run. Fixed once the experiment is REGISTERED.
+
+- *H1 (manipulation check).* In RL runs, elicited and probed beliefs about each town's rain move toward its /p/; in control runs they don't.
+- *H2 (the thesis claim).* General coherence changes in RL runs relative to control. Expected direction: RL lowers the rate of loss.
+- H2 is read as evidence about the thesis only if H1 holds. If H1 fails, both are reported, and the write-up says RL didn't produce beliefs, so H2 doesn't test the claim.
 
 ** Analysis plan
 The runs (models, protocols, seeds per condition), the comparisons and the figures that will answer the question.
 Fixed once the experiment is REGISTERED.
 
+- *Runs.* 7B: 5 seeds RL, 5 seeds control (primary). 1.5B: 3 seeds of each (secondary). Each seed draws its own /p/-to-town assignment. Step count and total GPU-hours from the pilot; above 48 GPU-hours needs the author's sign-off.
+- *H1.* Per seed and checkpoint, the slope of belief on true /p/ across the five towns (0: no belief formed; 1: calibrated), for each in-task protocol. The final slope, RL against control, by exact two-sided permutation test with seeds as units. Alongside: decision accuracy (share of expected-utility-optimal choices) and in-task coherence (how far P(rain) + P(no rain) is from 1).
+- *H2.* Per seed, Δ = rate of loss at the final checkpoint minus at step 0, averaged over event families. Δ compared between RL and control by exact two-sided permutation test (252 relabellings for 5 against 5), for each of the four general protocols, with Holm correction at α = 0.05. Effect sizes with bootstrap confidence intervals. 7B is primary; 1.5B is reported the same way.
+- *Figures.* Belief against true /p/ per town over checkpoints, RL and control; slope over steps; rate of loss over checkpoints per arm; Δ per seed by arm and protocol.
+
 ** Tasks
-*** TODO Grill the research design
-Open questions: the loss and RL algorithm; which models (RL-able, larger); how /p/ and the utilities are presented; which belief and values measures, at which steps; the hypothesis and what result would refute it; seeds per condition and the GPU-hour budget.
+*** DONE Grill the research design
+*** TODO Open =003-umbrella-pilot= (exploratory)
+*** TODO Build the umbrella environment, reward and control
+*** TODO Build the GRPO + LoRA training run on the segment API
+*** TODO Add =umbrella_towns@1= and the =town-belief-*@1= protocols
+*** TODO Measurement runs per eval checkpoint, one protocol per run
+*** TODO Fill in step count and budget from the pilot; ask the author to register
 
 ** Deviations
 Dated entries for every change to the hypothesis or plan after registration. The plan above is never edited.
