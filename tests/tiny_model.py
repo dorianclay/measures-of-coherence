@@ -14,7 +14,7 @@ SPECIAL = ["<|pad|>", "<|end|>", "<|user|>", "<|system|>", "<|assistant|>"]
 
 def build(path: Path) -> Path:
     corpus = [s["prompt"][0]["content"] for s in umbrella.generate(seed=0, n=50)]
-    corpus += ["umbrella", "no umbrella", "True", "False", "It will rain in Velmora tomorrow.", "0 50 100"] * 5
+    corpus += ["umbrella", "no umbrella", "True", "False", "Answer: True", "Answer: False", "0 50 100"] * 20
     tok = Tokenizer(models.BPE())
     tok.pre_tokenizer = pre_tokenizers.ByteLevel(add_prefix_space=False)
     tok.decoder = decoders.ByteLevel()

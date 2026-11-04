@@ -124,5 +124,14 @@
         "sha256": "690930e17bf310f8988ee9b86ab2624a494792a95fa226d18c200035e076db9a"
       }
     ]
+  },
+  "umbrella_towns": {
+    "path": "datasets/umbrella_towns.csv",
+    "history": [
+      {
+        "version": 1,
+        "sha256": "1e8eae196e1f233bf26314e8b923667de8e99dc44f72ad4eaea8884c435905f0"
+      }
+    ]
   }
 }

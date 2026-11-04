@@ -41,6 +41,16 @@ PROTOCOLS = {p.id: p for p in [
              "Stated 0-100 probability that the statement is true, instruct models only.",
              code="coherence.elicitation", datasets=DUTCH_BOOK_DATASETS,
              params={"method": "stated", "calibration_fraction": 0.2, "split_seed": 0}),
+    # Experiment 002's in-task beliefs: 001's elicitation methods on the umbrella_towns statements, chat prompts,
+    # uncalibrated (each seed hides different chances of rain, so there is no ground truth to calibrate against).
+    Protocol("town-belief-elicit-logprob@1",
+             "Next-token True/False log-probabilities for each town statement, own prompt each, three templates.",
+             code="coherence.measure_towns", datasets={"umbrella_towns": 1},
+             params={"method": "logprob", "templates": ["t0", "t1", "t2"], "chat": True, "calibrated": False}),
+    Protocol("town-belief-elicit-stated@1",
+             "Stated 0-100 probability that each town statement is true, greedy-decoded; unparseable left empty.",
+             code="coherence.measure_towns", datasets={"umbrella_towns": 1},
+             params={"method": "stated", "templates": ["t0"], "chat": True, "calibrated": False}),
 ]}
 
 

@@ -94,3 +94,11 @@ def optimal_action(sample: dict) -> str:
     expected = {"umbrella": p * u["umbrella_rain"] + (1 - p) * u["umbrella_dry"],
                 "no umbrella": p * u["no_umbrella_rain"] + (1 - p) * u["no_umbrella_dry"]}
     return max(expected, key=expected.get)
+
+
+def belief_statements() -> list[dict]:
+    """The statements whose previsions are the model's beliefs about each town's weather (the dataset umbrella_towns).
+    `rain` says which event a statement asserts, rain (1) or no rain (0), so the pair's previsions should sum to 1."""
+    return [row for town in TOWNS for row in [
+        {"town": town, "rain": 1, "statement": f"It will rain in {town} tomorrow."},
+        {"town": town, "rain": 0, "statement": f"It will not rain in {town} tomorrow."}]]
