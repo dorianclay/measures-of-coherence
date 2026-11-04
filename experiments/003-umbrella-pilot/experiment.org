@@ -9,13 +9,44 @@ What step count, GRPO hyperparameters (group size, KL weight, learning rate) and
 Runs on Qwen2.5-1.5B-Instruct with 002's task, reward and control (see [[file:../002-umbrella-rl/experiment.org][002]]). Done when 002's analysis plan can state a step count and a total GPU-hour estimate.
 
 ** Hypothesis
-What we expect, stated before the first real run. Fixed once the experiment is REGISTERED.
+Exploratory, so nothing is registered. Expected: within a few hundred steps the rl arm's choices become mostly expected-utility-optimal, and its umbrella rate rises with each town's hidden chance of rain; the control arm stays near chance on both.
 
 ** Analysis plan
-The runs (models, protocols, seeds per condition), the comparisons and the figures that will answer the question.
-Fixed once the experiment is REGISTERED.
+- *Runs.* Qwen2.5-1.5B-Instruct, seed 0, 1000 steps, 16 prompts × 8 completions per step, KL weight 0.04, LoRA rank 16:
+  - rl at learning rate 1e-5 and at 5e-5;
+  - control at 5e-5 (rerun at the learning rate chosen, if it differs).
+  Town beliefs (=town-belief-elicit-logprob@1=, =town-belief-elicit-stated@1=) on every eval checkpoint of each.
+- *Read off.* From =analysis/learning_curves.py=: valid and optimal choice rates over steps, and umbrella rate by hidden /p/. The step count for 002 is where the rl arm's optimal rate plateaus, with margin. The learning rate is the one that gets there without collapsing valid answers. GPU-hours per run come from the run records (the script prints them).
+- *Then.* Write 002's step count, learning rate and GPU-hour estimate into its plan, and check town beliefs at the eval checkpoints move with /p/ in the rl run, since that is 002's H1.
 
 ** Tasks
+*** TODO One-time cluster setup
+From the repo root on the login node:
+#+begin_example
+git pull && uv sync --frozen && mkdir -p logs
+export COHERENCE_STORE=/path/to/scratch/coherence-store   # large outputs; put it in your shell profile
+bash slurm/download_models.sh Qwen/Qwen2.5-1.5B-Instruct Qwen/Qwen2.5-7B-Instruct
+export HF_HUB_OFFLINE=1                                     # if compute nodes have no internet
+sbatch --gpus=1 --time=00:05:00 --wrap 'env | grep SLURM_JOB_END_TIME'   # does slurm set it? (else squeue is used)
+#+end_example
+*** TODO Smoke test on a GPU
+#+begin_example
+uv run submit-chain --segments 1 --sbatch-args=--time=00:30:00 --experiment 003 --note "smoke test" -- \
+    python -m coherence.train_umbrella --model Qwen/Qwen2.5-1.5B-Instruct --seed 0 --arm rl --steps 10 \
+    --eval-fractions 1.0
+#+end_example
+Check the log in =logs/=, the run in this file's table, and that =rewards.jsonl= has mostly valid answers.
+*** TODO Pilot runs
+#+begin_example
+for args in "rl 1e-5" "rl 5e-5" "control 5e-5"; do set -- $args
+  uv run submit-chain --segments 2 --sbatch-args=--time=06:00:00 --experiment 003 --note "pilot $1 lr=$2" -- \
+      python -m coherence.train_umbrella --model Qwen/Qwen2.5-1.5B-Instruct --seed 0 --arm $1 --steps 1000 \
+      --learning-rate $2
+done
+#+end_example
+Each prints its run id and job ids. Once a run succeeds: =sbatch slurm/measure_towns.sbatch <run-id>=.
+*** TODO Learning curves, and 002's step count, learning rate and budget
+=uv run python experiments/003-umbrella-pilot/analysis/learning_curves.py <run-id> ...=, on the cluster (it reads =$COHERENCE_STORE=). Commit the figures and run records.
 
 ** Deviations
 Dated entries for every change to the hypothesis or plan after registration. The plan above is never edited.

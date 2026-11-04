@@ -48,3 +48,13 @@ def save(output, path: Path, loaded: list[dict]) -> None:
                "datasets": datasets, "analysis_commit": git.commit(), "script": sys.argv[0],
                "created": datetime.now(timezone.utc).isoformat(timespec="seconds")}
     path.with_name(path.name + ".sources.json").write_text(json.dumps(sidecar, indent=2) + "\n")
+
+
+def gpu_hours(run: dict) -> float:
+    """GPU-hours a run has used so far: each finished segment's wall-clock time times its GPU count."""
+    total = 0.0
+    for segment in run["segments"]:
+        if "finished" in segment:
+            hours = (datetime.fromisoformat(segment["finished"]) - datetime.fromisoformat(segment["started"]))
+            total += hours.total_seconds() / 3600 * max(len(segment["gpus"]), 1)
+    return total
