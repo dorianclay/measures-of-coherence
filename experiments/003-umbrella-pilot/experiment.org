@@ -33,13 +33,13 @@ sbatch --gpus=1 --time=00:05:00 --wrap 'env | grep SLURM_JOB_END_TIME'   # does 
 #+begin_example
 uv run submit-chain --segments 1 --sbatch-args=--time=00:30:00 --experiment 003 --note "smoke test" -- \
     python -m coherence.train_umbrella --model Qwen/Qwen2.5-1.5B-Instruct --seed 0 --arm rl --steps 10 \
-    --eval-fractions 1.0
+    --eval-fractions 1.0 --margin-minutes 5
 #+end_example
 Check the log in =logs/=, the run in this file's table, and that =rewards.jsonl= has mostly valid answers.
 *** TODO Pilot runs
 #+begin_example
 for args in "rl 1e-5" "rl 5e-5" "control 5e-5"; do set -- $args
-  uv run submit-chain --segments 2 --sbatch-args=--time=06:00:00 --experiment 003 --note "pilot $1 lr=$2" -- \
+  uv run submit-chain --segments 1 --sbatch-args=--time=06:00:00 --experiment 003 --note "pilot $1 lr=$2" -- \
       python -m coherence.train_umbrella --model Qwen/Qwen2.5-1.5B-Instruct --seed 0 --arm $1 --steps 1000 \
       --learning-rate $2
 done
