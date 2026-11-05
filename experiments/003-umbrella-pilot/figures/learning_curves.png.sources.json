@@ -1,0 +1,16 @@
+{
+  "output": "learning_curves.png",
+  "runs": [
+    "20261104-2129-5e33",
+    "20261104-2129-c7ef",
+    "20261104-2129-5911"
+  ],
+  "protocols": [],
+  "datasets": {},
+  "analysis_commit": {
+    "sha": "3a3d61f6f5312e73e8c5825559c3aa541cc42e33",
+    "dirty": false
+  },
+  "script": "experiments/003-umbrella-pilot/analysis/learning_curves.py",
+  "created": "2026-11-05T18:29:36+00:00"
+}

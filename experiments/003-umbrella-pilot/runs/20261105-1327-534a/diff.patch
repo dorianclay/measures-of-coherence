@@ -1,0 +1,13 @@
+diff --git a/experiments/003-umbrella-pilot/analysis/learning_curves.py b/experiments/003-umbrella-pilot/analysis/learning_curves.py
+index 527948d..b5f8bc9 100644
+--- a/experiments/003-umbrella-pilot/analysis/learning_curves.py
++++ b/experiments/003-umbrella-pilot/analysis/learning_curves.py
+@@ -45,7 +45,7 @@ def main():
+     axes[0].set(title="Valid answers", xlabel="step", ylim=(0, 1.02))
+     axes[1].set(title="Expected-utility-optimal choices", xlabel="step", ylim=(0, 1.02))
+     axes[1].axhline(0.5, color="grey", lw=0.8, ls=":")
+-    for frame in frames:
++    for frame in sorted(frames, key=lambda f: f["label"].iloc[0]):  # the order groupby gives the other panels, so colors match
+         last = frame[frame["window"] == frame["window"].max()]
+         rate = last.groupby("p")["took_umbrella"].mean()
+         axes[2].plot(rate.index, rate.values, marker="o", label=frame["label"].iloc[0])
