@@ -1,0 +1,17 @@
+{
+  "output": "activations_match_001.csv",
+  "runs": [
+    "20261105-1710-2fb1",
+    "20261105-1710-714f",
+    "20261105-1713-b688",
+    "20261105-1714-4cfd"
+  ],
+  "protocols": [],
+  "datasets": {},
+  "analysis_commit": {
+    "sha": "769b1d61349720eca35158cb2ac18399a823cd16",
+    "dirty": false
+  },
+  "script": "experiments/004-gemma-probe-bos/analysis/bos_effect.py",
+  "created": "2026-11-05T22:56:34+00:00"
+}

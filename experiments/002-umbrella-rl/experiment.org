@@ -44,6 +44,8 @@ Fixed once the experiment is REGISTERED.
 *** TODO Build the GRPO + LoRA training run on the segment API
 *** TODO Add =umbrella_towns@1= and the =town-belief-*@1= protocols
 *** TODO Measurement runs per eval checkpoint, one protocol per run
+*** TODO Check later: does the town-belief protocols' framing suit a forecast?
+The =town-belief-elicit-*@1= protocols reuse 001's "careful fact-checker" system prompt and true/false question. In 003's base-model screen every candidate rejected both "It will rain in <town> tomorrow" and its negation (logprob previsions of 1e-11 to 3e-7; stated answers flat across towns), so the measure may be unable to show a belief forming, and 003's flat result may come from that. Untested. To check: a neutral system prompt asking for a forecast, as a new protocol, on untrained models first. See =../003-umbrella-pilot/figures/base_model_screen.csv=.
 *** TODO Fill in step count and budget from the pilot; ask the author to register
 
 ** Deviations

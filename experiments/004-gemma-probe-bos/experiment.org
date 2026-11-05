@@ -31,6 +31,14 @@ Dated entries for every change to the hypothesis or plan after registration. The
 
 ** Runs
 #+BEGIN: runs
+| run                                                           | status    | model reference                                                | protocol | note                                                                    |
+|---------------------------------------------------------------+-----------+----------------------------------------------------------------+----------+-------------------------------------------------------------------------|
+| [[file:runs/20261105-1710-2fb1/run.json][20261105-1710-2fb1]] | succeeded | google/gemma-4-12B-it@707f0a3b8a3c7ad586ed01e27eafbad8a27dd0f7 |          | facts activations, gemma-4-12B-it, bos=tokenizer, to compare with 001's |
+| [[file:runs/20261105-1710-5102/run.json][20261105-1710-5102]] | succeeded | google/gemma-4-12B-it@707f0a3b8a3c7ad586ed01e27eafbad8a27dd0f7 |          | activations, gemma-4-12B-it, bos=add                                    |
+| [[file:runs/20261105-1710-714f/run.json][20261105-1710-714f]] | succeeded | google/gemma-4-12B@1a2c7729392586f5ecddae8807ee2ef741eabb9a    |          | facts activations, gemma-4-12B, bos=tokenizer, to compare with 001's    |
+| [[file:runs/20261105-1710-e2a9/run.json][20261105-1710-e2a9]] | succeeded | google/gemma-4-12B@1a2c7729392586f5ecddae8807ee2ef741eabb9a    |          | activations, gemma-4-12B, bos=remove                                    |
+| [[file:runs/20261105-1713-b688/run.json][20261105-1713-b688]] | succeeded |                                                                |          | probes, gemma-4-12B-it, bos=add, on activations 20261105-1710-5102      |
+| [[file:runs/20261105-1714-4cfd/run.json][20261105-1714-4cfd]] | succeeded |                                                                |          | probes, gemma-4-12B, bos=remove, on activations 20261105-1710-e2a9      |
 #+END:
 
 ** Findings
