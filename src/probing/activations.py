@@ -84,14 +84,45 @@ def tokenize(batch: list, tokenizer, bos: str):
     return tokenizer(texts, return_tensors="pt", padding=True, add_special_tokens=False)
 
 
+def chat_text(statement: str, tokenizer, presentation: str) -> str:
+    """The statement in a user turn with no system prompt of ours, up to where the model's reply would start."""
+    if presentation == "judge-turn":
+        from coherence.elicitation import INSTRUCT_TEMPLATES
+        statement = INSTRUCT_TEMPLATES["t0"].format(s=statement)
+    return tokenizer.apply_chat_template([{"role": "user", "content": statement}], tokenize=False,
+                                         add_generation_prompt=True, enable_thinking=False)
+
+
+def tokenize_chat(batch: list, tokenizer, presentation: str) -> tuple:
+    """Tokenized chat prompts (they contain their own special tokens), and the index of the token to read in each:
+    the statement's last token for "chat-statement", the last token of the prompt otherwise."""
+    texts = [chat_text(s, tokenizer, presentation) for s in batch]
+    inputs = tokenizer(texts, return_tensors="pt", padding=True, add_special_tokens=False,
+                       return_offsets_mapping=True)
+    offsets = inputs.pop("offset_mapping")
+    if presentation != "chat-statement":
+        return inputs, inputs.attention_mask.sum(dim=1) - 1
+    positions = []
+    for text, statement, row in zip(texts, batch, offsets.tolist()):
+        end = text.rindex(statement) + len(statement)
+        positions.append(max(i for i, (start, stop) in enumerate(row) if start < end and stop > start))
+    return inputs, torch.tensor(positions)
+
+
 @torch.no_grad()
-def extract(statements: list, model, tokenizer, layers: list, batch_size: int, bos: str = "tokenizer") -> np.ndarray:
+def extract(statements: list, model, tokenizer, layers: list, batch_size: int, bos: str = "tokenizer",
+            presentation: str = "raw") -> np.ndarray:
     out = []
     for i in tqdm(range(0, len(statements), batch_size), leave=False):
         batch = [s.rstrip(". ") for s in statements[i:i + batch_size]]
-        inputs = tokenize(batch, tokenizer, bos).to(model.device)
+        if presentation == "raw":
+            inputs = tokenize(batch, tokenizer, bos)
+            last = inputs.attention_mask.sum(dim=1) - 1
+        else:
+            inputs, last = tokenize_chat(batch, tokenizer, presentation)
+        inputs = inputs.to(model.device)
         hidden = model(**inputs, output_hidden_states=True, return_dict=True).hidden_states
-        last = inputs.attention_mask.sum(dim=1) - 1
+        last = last.to(inputs.attention_mask.device)
         rows = torch.arange(len(batch), device=last.device)
         out.append(torch.stack([hidden[k][rows, last] for k in layers], dim=1).to(torch.float16).cpu().numpy())
     return np.concatenate(out)
@@ -105,6 +136,10 @@ def main():
     parser.add_argument("--batch_size", type=int, default=32)
     parser.add_argument("--bos", choices=["tokenizer", "add", "remove"], default="tokenizer",
                         help="Whether statements start with the BOS token; see tokenize().")
+    parser.add_argument("--presentation", choices=["raw", "chat-statement", "chat-turn", "judge-turn"], default="raw",
+                        help="How the model sees a statement and which token is read: raw text at its last token (001's "
+                             "way), or in a user turn at its last token, or at the end of the prompt, or at the end of "
+                             "a prompt asking whether it's true.")
     parser.add_argument("--dataset_path", default=DATASETS_DIR)
     parser.add_argument("--output_path", default=STORE / "001-dutch-book" / "activations")
     args = parser.parse_args()
@@ -118,11 +153,12 @@ def main():
     out_dir.mkdir(parents=True, exist_ok=True)
     with open(out_dir / "meta.json", "w") as f:
         json.dump({"model": args.model, "num_layers": n_layers, "layers": layers,
-                   "depths": [k / n_layers for k in layers], "bos": args.bos}, f, indent=1)
+                   "depths": [k / n_layers for k in layers], "bos": args.bos,
+                   "presentation": args.presentation}, f, indent=1)
 
     for name in tqdm(args.datasets, desc="Datasets"):
         statements = pd.read_csv(Path(args.dataset_path) / f"{name}_true_false.csv", encoding="utf-8-sig").statement.tolist()
-        activations = extract(statements, model, tokenizer, layers, args.batch_size, args.bos)
+        activations = extract(statements, model, tokenizer, layers, args.batch_size, args.bos, args.presentation)
         np.save(out_dir / f"{name}.npy", activations)
         print(f"{name}: {activations.shape} -> {out_dir / f'{name}.npy'}")
     runs.log(artifacts=[out_dir])

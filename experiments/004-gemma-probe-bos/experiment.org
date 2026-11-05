@@ -19,12 +19,29 @@ Exploratory, so nothing is registered. Expected if BOS is the cause: with =<bos>
 - *Then.* If both arms move as expected, BOS is the cause: ask the author about a new probe protocol and about 001's Findings. If =gemma-4-12B-it= stays near chance with =<bos>=, try statements in a chat turn. If it improves only partly, do both.
 
 ** Tasks
-*** TODO Run both arms
+*** DONE Run both arms
 #+begin_example
 sbatch slurm/probe_bos.sbatch google/gemma-4-12B-it add
 sbatch slurm/probe_bos.sbatch google/gemma-4-12B remove
 #+end_example
-*** TODO Compare with 001 and report to the author
+*** DONE Compare with 001 and report to the author
+*** TODO Second question: how the statement is presented
+The BOS arms left =gemma-4-12B-it= near chance (=figures/bos_effect.csv=), so, per the plan above, this is next. The author set the aim on 2026-11-05: a probing method robust enough to test a wider spread of open models, so the choice of models for the rest of the thesis can be made with confidence. The order: BOS, then presentation, and only then tuning the probe.
+
+- *Presentations* (=--presentation= in =probing.activations=), all without a system prompt of ours, all with 001's probes and datasets:
+  - =chat-statement=: the statement in a user turn, read at its last token;
+  - =chat-turn=: the same prompt, read at the last token before the model's reply;
+  - =judge-turn=: the user turn asks whether the statement is true (001's elicitation template t0), read at the same place.
+- *Models.* The instruct models of 001: =gemma-4-12B-it= and Qwen2.5 1.5B, 7B and 14B Instruct. Base models have no user turn to present in. Baseline: raw text with BOS, i.e. 001 for Qwen and for base Gemma, 004's =bos=add= for =gemma-4-12B-it=.
+- *What robust means*, written before these results. One recipe (presentation, probe, layer rule), the same for every model, with no per-model adjustment, whose headline probe reaches booked accuracy of at least 0.65 (001's competence bar for elicitation) in both booking directions on every instruct model, chosen by validation accuracy only. A model that misses it is reported with the recipe, not worked around.
+- *Selection.* Comparing presentations on these four models and then picking one can overstate how well it works. The wider set of models is the test of the chosen recipe; these are not.
+- *Read off.* =analysis/presentation_effect.py=: per model, presentation and booked domain, headline layer, validation and booked accuracy, linear and MLP, mean L raw and calibrated.
+#+begin_example
+for m in google/gemma-4-12B-it Qwen/Qwen2.5-{1.5B,7B,14B}-Instruct; do
+  for p in chat-statement chat-turn judge-turn; do sbatch slurm/probe_presentation.sbatch "$m" "$p"; done
+done
+#+end_example
+*** TODO Then, only if needed: tune the probe
 
 ** Deviations
 Dated entries for every change to the hypothesis or plan after registration. The plan above is never edited.

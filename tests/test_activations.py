@@ -1,9 +1,9 @@
 import pytest
 from tokenizers.processors import TemplateProcessing
-from transformers import AutoTokenizer
+from transformers import AutoModelForCausalLM, AutoTokenizer
 
 import tiny_model
-from probing.activations import tokenize
+from probing.activations import chat_text, extract, tokenize, tokenize_chat
 
 
 @pytest.fixture(scope="module")
@@ -38,3 +38,44 @@ def test_add_gives_exactly_one_bos_whatever_the_tokenizer_does(tokenizers, which
 def test_remove_gives_no_bos_whatever_the_tokenizer_does(tokenizers, which):
     tokenizer = tokenizers[which]
     assert all(row[0] != tokenizer.bos_token_id for row in first_tokens(tokenizer, "remove"))
+
+
+@pytest.fixture(scope="module")
+def tiny(tmp_path_factory):
+    path = tiny_model.build(tmp_path_factory.mktemp("tiny-chat"))
+    tokenizer = AutoTokenizer.from_pretrained(path)
+    tokenizer.padding_side = "right"
+    return tokenizer
+
+
+def read_token(tokenizer, statement, other, presentation):
+    inputs, positions = tokenize_chat([statement, other], tokenizer, presentation)
+    return tokenizer.decode(inputs.input_ids[0, positions[0]])
+
+
+def test_chat_statement_reads_the_statements_last_token_though_shorter_prompts_are_padded(tiny):
+    assert read_token(tiny, "no umbrella", "umbrella and no umbrella and umbrella", "chat-statement").strip() == \
+        tiny.decode(tiny("no umbrella", add_special_tokens=False).input_ids[-1]).strip()
+
+
+def test_chat_statement_finds_the_statement_when_the_template_repeats_it(tiny):
+    inputs, positions = tokenize_chat(["user"], tiny, "chat-statement")
+    assert positions[0] < inputs.attention_mask.sum() - 1
+
+
+@pytest.mark.parametrize("presentation", ["chat-turn", "judge-turn"])
+def test_turn_presentations_read_the_last_token_before_the_reply(tiny, presentation):
+    assert read_token(tiny, "no umbrella", "umbrella and no umbrella and umbrella", presentation) == "<|assistant|>"
+
+
+def test_judge_turn_asks_about_the_statement_and_chat_turn_does_not(tiny):
+    assert "true or false" in chat_text("no umbrella", tiny, "judge-turn")
+    assert "true or false" not in chat_text("no umbrella", tiny, "chat-turn")
+
+
+def test_extract_reads_one_vector_per_statement_and_layer(tiny, tmp_path_factory):
+    path = tiny_model.build(tmp_path_factory.mktemp("tiny-extract"))
+    model = AutoModelForCausalLM.from_pretrained(path).eval()
+    for presentation in ["raw", "chat-statement", "chat-turn", "judge-turn"]:
+        out = extract(["umbrella", "no umbrella."], model, tiny, [1, 2], 2, presentation=presentation)
+        assert out.shape == (2, 2, model.config.hidden_size)
