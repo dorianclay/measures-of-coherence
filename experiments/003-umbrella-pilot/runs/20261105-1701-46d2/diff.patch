@@ -1,0 +1,43 @@
+diff --git a/experiments/003-umbrella-pilot/analysis/base_model_screen.py b/experiments/003-umbrella-pilot/analysis/base_model_screen.py
+new file mode 100644
+index 0000000..247e177
+--- /dev/null
++++ b/experiments/003-umbrella-pilot/analysis/base_model_screen.py
+@@ -0,0 +1,37 @@
++"""Do town-belief measurements make sense on untrained models? Which model should the next pilot round use?
++
++    uv run python experiments/003-umbrella-pilot/analysis/base_model_screen.py <measurement-run-id> ...
++
++Per model and protocol: P(rain) and P(no rain) averaged over towns and templates, their sum (1 if coherent), the
++spread of P(rain) across towns, and how many stated answers didn't parse. Writes figures/base_model_screen.csv.
++"""
++
++import argparse
++
++import pandas as pd
++
++from analysis import runs
++from coherence.paths import experiments_dir
++
++
++def main():
++    parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
++    parser.add_argument("run_ids", nargs="+")
++    args = parser.parse_args()
++
++    loaded = runs.load(args.run_ids, allow_mixed_protocols=True)
++    rows = []
++    for run in loaded:
++        beliefs = pd.read_csv(run["dir"] / "outputs" / "beliefs.csv")
++        towns = beliefs.groupby(["town", "rain"])["prevision"].mean().unstack("rain")
++        rows.append({"model": run["model_ref"].split("@")[0], "protocol": run["protocol"], "run_id": run["run_id"],
++                     "p_rain": towns[1].mean(), "p_no_rain": towns[0].mean(), "sum": (towns[0] + towns[1]).mean(),
++                     "p_rain_min": towns[1].min(), "p_rain_max": towns[1].max(),
++                     "unparsed": int(beliefs["prevision"].isna().sum()), "answers": len(beliefs)})
++    table = pd.DataFrame(rows).sort_values(["protocol", "model"])
++    runs.save(table, experiments_dir() / "003-umbrella-pilot" / "figures" / "base_model_screen.csv", loaded)
++    print(table.drop(columns="run_id").round(3).to_string(index=False))
++
++
++if __name__ == "__main__":
++    main()
