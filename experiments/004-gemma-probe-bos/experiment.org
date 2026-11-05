@@ -1,0 +1,37 @@
+#+TITLE: 004 Gemma IT probes: is the failure a missing BOS token?
+#+TODO: DRAFT REGISTERED RUNNING | CONCLUDED ABANDONED
+
+* DRAFT 004 Gemma IT probes: is the failure a missing BOS token? :exploratory:
+
+** Question
+Did linear probes fail on =gemma-4-12B-it= in 001 because its statements reached the model without a BOS token, rather than because of the model? =probing.activations= tokenized raw statements with the tokenizer's defaults: =gemma-4-12B='s adds =<bos>=, =gemma-4-12B-it='s doesn't. Elicited prompts had =<bos>= from the chat template, and elicitation worked. Exploratory: this decides what to test next, and changes nothing in 001.
+
+** Hypothesis
+Exploratory, so nothing is registered. Expected if BOS is the cause: with =<bos>= added, =gemma-4-12B-it= reaches about the base model's probe accuracy in 001 (validation 0.74–0.87, booked 0.68–0.70), against its 0.56 and 0.52 there; with =<bos>= removed, =gemma-4-12B= falls to about those failing numbers.
+
+** Analysis plan
+- *Runs*, through =slurm/probe_bos.sbatch=, one job per arm:
+  - =gemma-4-12B-it=, =--bos add=;
+  - =gemma-4-12B=, =--bos remove=.
+  Each job runs activations on all of 001's datasets, then 001's domain-swap and atomic-only probes (=probing.family_probes=, its defaults) and rates of loss. 001's own results are the other two arms. These runs log no protocol: they are not =belief-probe-linear@1=, whose extraction is what's in question.
+- *Check that 001 is what we think it was.* Each job also extracts =facts= with the tokenizer's defaults. Those should match 001's saved activations (in =~/code/Probes/activations/=), and the forced arm should differ from them for the model it changes.
+- *Read off.* From =analysis/bos_effect.py=: per model, arm and booked domain, the headline layer as in 001 (domain-swap linear, best validation accuracy), its validation and booked accuracy, and its mean L on negation pairs and conjunctions, beside 001's numbers.
+- *Then.* If both arms move as expected, BOS is the cause: ask the author about a new probe protocol and about 001's Findings. If =gemma-4-12B-it= stays near chance with =<bos>=, try statements in a chat turn. If it improves only partly, do both.
+
+** Tasks
+*** TODO Run both arms
+#+begin_example
+sbatch slurm/probe_bos.sbatch google/gemma-4-12B-it add
+sbatch slurm/probe_bos.sbatch google/gemma-4-12B remove
+#+end_example
+*** TODO Compare with 001 and report to the author
+
+** Deviations
+Dated entries for every change to the hypothesis or plan after registration. The plan above is never edited.
+
+** Runs
+#+BEGIN: runs
+#+END:
+
+** Findings
+Written or changed only with the author's sign-off. Cite figures from figures/.

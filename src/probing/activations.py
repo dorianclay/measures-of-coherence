@@ -30,6 +30,7 @@ import torch
 from tqdm import tqdm
 from transformers import AutoModelForCausalLM, AutoModelForMultimodalLM, AutoTokenizer
 
+from coherence import runs
 from coherence.paths import DATASETS_DIR, STORE
 
 DATASETS = ["cities", "animals", "elements", "inventions", "capitals", "generated",
@@ -74,12 +75,21 @@ def layers_for_depths(n_layers: int, depths: list) -> list:
     return sorted({max(1, round(d * n_layers)) for d in depths})
 
 
+def tokenize(batch: list, tokenizer, bos: str):
+    """bos="tokenizer" leaves it to the tokenizer, as 001 did: gemma-4-12B adds <bos> but gemma-4-12B-it doesn't.
+    "add" and "remove" force it, whatever the tokenizer does."""
+    if bos == "tokenizer":
+        return tokenizer(batch, return_tensors="pt", padding=True)
+    texts = [tokenizer.bos_token + s for s in batch] if bos == "add" else batch
+    return tokenizer(texts, return_tensors="pt", padding=True, add_special_tokens=False)
+
+
 @torch.no_grad()
-def extract(statements: list, model, tokenizer, layers: list, batch_size: int) -> np.ndarray:
+def extract(statements: list, model, tokenizer, layers: list, batch_size: int, bos: str = "tokenizer") -> np.ndarray:
     out = []
     for i in tqdm(range(0, len(statements), batch_size), leave=False):
         batch = [s.rstrip(". ") for s in statements[i:i + batch_size]]
-        inputs = tokenizer(batch, return_tensors="pt", padding=True).to(model.device)
+        inputs = tokenize(batch, tokenizer, bos).to(model.device)
         hidden = model(**inputs, output_hidden_states=True, return_dict=True).hidden_states
         last = inputs.attention_mask.sum(dim=1) - 1
         rows = torch.arange(len(batch), device=last.device)
@@ -93,10 +103,14 @@ def main():
     parser.add_argument("--datasets", nargs="*", default=DATASETS, help="Dataset names without the '_true_false.csv' suffix.")
     parser.add_argument("--depths", nargs="*", type=float, default=DEFAULT_DEPTHS, help="Relative depths in (0, 1].")
     parser.add_argument("--batch_size", type=int, default=32)
+    parser.add_argument("--bos", choices=["tokenizer", "add", "remove"], default="tokenizer",
+                        help="Whether statements start with the BOS token; see tokenize().")
     parser.add_argument("--dataset_path", default=DATASETS_DIR)
     parser.add_argument("--output_path", default=STORE / "001-dutch-book" / "activations")
     args = parser.parse_args()
 
+    from huggingface_hub import snapshot_download
+    runs.log(model_ref=f"{args.model}@{Path(snapshot_download(args.model)).name}")
     model, tokenizer = init_model(args.model)
     n_layers = num_layers(model)
     layers = layers_for_depths(n_layers, args.depths)
@@ -104,13 +118,14 @@ def main():
     out_dir.mkdir(parents=True, exist_ok=True)
     with open(out_dir / "meta.json", "w") as f:
         json.dump({"model": args.model, "num_layers": n_layers, "layers": layers,
-                   "depths": [k / n_layers for k in layers]}, f, indent=1)
+                   "depths": [k / n_layers for k in layers], "bos": args.bos}, f, indent=1)
 
     for name in tqdm(args.datasets, desc="Datasets"):
         statements = pd.read_csv(Path(args.dataset_path) / f"{name}_true_false.csv", encoding="utf-8-sig").statement.tolist()
-        activations = extract(statements, model, tokenizer, layers, args.batch_size)
+        activations = extract(statements, model, tokenizer, layers, args.batch_size, args.bos)
         np.save(out_dir / f"{name}.npy", activations)
         print(f"{name}: {activations.shape} -> {out_dir / f'{name}.npy'}")
+    runs.log(artifacts=[out_dir])
 
 
 if __name__ == "__main__":
