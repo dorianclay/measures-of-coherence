@@ -69,11 +69,13 @@ def manifest_entry(path: Path, hashed: bool = True) -> dict:
 
 
 def log(*, model_ref: str | None = None, protocol: str | None = None, seed: int | None = None,
-        planned_steps: int | None = None, datasets: list[str] = (), artifacts: list[Path] = ()) -> None:
+        planned_steps: int | None = None, datasets: list[str] = (), artifacts: list[Path] = (),
+        inputs: list[str] = ()) -> None:
     """Add what this run measured to its record. Does nothing outside `record`, so scripts still run standalone.
 
     A model reference is `<hf-id>@<revision>` or an eval checkpoint, `<run-id>@step<N>`, which must exist.
     A training run gives its planned_steps; it stays running across segments until progress reaches them.
+    Inputs are the ids of runs whose artifacts this run reads (an extraction run, for a probe run).
     Datasets are names in data/datasets.json; each must still match its recorded version. Artifacts are files
     under $RUN_STORE; logging a path again replaces its manifest entry.
     """
@@ -86,10 +88,14 @@ def log(*, model_ref: str | None = None, protocol: str | None = None, seed: int 
         return
     for name in datasets:
         datasets_.path(name)
+    for run_id in inputs:
+        find(run_id)
     entries = [manifest_entry(a) for a in artifacts]
     run = read(run_dir)
     run.update({k: v for k, v in {"model_ref": model_ref, "protocol": protocol, "seed": seed,
                                    "planned_steps": planned_steps}.items() if v is not None})
+    if inputs:
+        run["inputs"] = [*run.get("inputs", []), *[i for i in inputs if i not in run.get("inputs", [])]]
     if datasets:
         run["datasets"] = {**run.get("datasets", {}), **{name: datasets_.version(name) for name in datasets}}
     if entries:

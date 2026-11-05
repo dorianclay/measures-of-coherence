@@ -159,6 +159,58 @@ def check_no_leakage(train_texts, other_texts, what: str):
         raise RuntimeError(f"{len(leaked)} {what} statements are in the training set, e.g. {sorted(leaked)[:3]}")
 
 
+def probe_previsions(acts: Activations, model_tag: str, families_path: Path, calibration_fraction: float = 0.2,
+                     split_seed: int = 0, mlp_seeds: int = 5, probes=("linear", "mlp")):
+    """Previsions and metrics rows of every probe asked for: linear for both arms, MLP (seeds 0..mlp_seeds-1) for the
+    domain_swap arm, at every layer. Each probe's result doesn't depend on which others are trained."""
+    layers, depths = acts.meta["layers"], acts.meta["depths"]
+    prevision_rows, metric_rows = [], []
+
+    for training_domain in DOMAINS:
+        booked_domain = next(d for d in DOMAINS if d != training_domain)
+        train_families = load_families(Path(families_path), training_domain)
+        booked_families = load_families(Path(families_path), booked_domain)
+        calibration, excluded = split_training_domain(train_families, calibration_fraction, split_seed)
+        booked = booked_keys(booked_families)
+        event_lookup = [(fam["id"], i, event_key(e))
+                        for fam in booked_families["negation_pairs"] + booked_families["conjunction_families"]
+                        for i, e in enumerate(fam["events"])]
+
+        for arm in ["domain_swap", "atomic_only"]:
+            train = training_keys(acts, arm, training_domain, excluded)
+            arm_probes = ([("linear", 0)] if "linear" in probes else []) + \
+                ([("mlp", s) for s in range(mlp_seeds)] if arm == "domain_swap" and "mlp" in probes else [])
+            if not arm_probes:
+                continue
+            for layer_index, (layer, depth) in enumerate(zip(layers, depths)):
+                X, y, train_texts = acts.rows(train, layer_index)
+                Xc, yc, cal_texts = acts.rows(calibration, layer_index)
+                Xb, yb, booked_texts = acts.rows(booked, layer_index)
+                check_no_leakage(train_texts, booked_texts, f"booked-domain ({booked_domain})")
+                check_no_leakage(train_texts, cal_texts, "calibration-slice")
+
+                for probe, seed in arm_probes:
+                    logits_of = (train_linear if probe == "linear" else train_mlp)(X, y, seed)
+                    zc, zb = logits_of(Xc), logits_of(Xb)
+                    temperature = fit_temperature(zc, yc)
+                    by_key = {}
+                    for calibrated, p in [(False, sigmoid(zb)), (True, sigmoid(zb / temperature))]:
+                        by_key[calibrated] = dict(zip(booked, p))
+                    ident = {"model": model_tag, "arm": arm, "probe": probe, "seed": seed, "layer": layer,
+                             "depth": round(depth, 4), "booked_domain": booked_domain}
+                    metric_rows.append({**ident, "training_statements": len(train), "temperature": temperature,
+                                        "validation_accuracy": float(np.mean((zc > 0) == yc)),
+                                        "booked_accuracy": float(np.mean((zb > 0) == yb)),
+                                        "booked_brier_raw": float(np.mean((sigmoid(zb) - yb) ** 2)),
+                                        "booked_brier_calibrated": float(np.mean((sigmoid(zb / temperature) - yb) ** 2))})
+                    for calibrated in (False, True):
+                        prevision_rows += [{**ident, "calibrated": calibrated, "family_id": fid, "event_index": i,
+                                            "prevision": by_key[calibrated][key]} for fid, i, key in event_lookup]
+                    print(f"{training_domain}->{booked_domain} {arm} {probe}:{seed} layer {layer}: "
+                          f"val acc {metric_rows[-1]['validation_accuracy']:.3f}, booked acc {metric_rows[-1]['booked_accuracy']:.3f}, T {temperature:.2f}")
+    return prevision_rows, metric_rows
+
+
 def main():
     parser = argparse.ArgumentParser(description="Train leakage-free probes and write their previsions on event families.")
     parser.add_argument("--model", required=True, help="Model name as used for activations/<model>/ (last part of the HF id).")
@@ -172,48 +224,8 @@ def main():
     args = parser.parse_args()
 
     acts = Activations(Path(args.activations_path) / args.model, Path(args.dataset_path))
-    layers, depths = acts.meta["layers"], acts.meta["depths"]
-    prevision_rows, metric_rows = [], []
-
-    for training_domain in DOMAINS:
-        booked_domain = next(d for d in DOMAINS if d != training_domain)
-        train_families = load_families(Path(args.families_path), training_domain)
-        booked_families = load_families(Path(args.families_path), booked_domain)
-        calibration, excluded = split_training_domain(train_families, args.calibration_fraction, args.split_seed)
-        booked = booked_keys(booked_families)
-        event_lookup = [(fam["id"], i, event_key(e))
-                        for fam in booked_families["negation_pairs"] + booked_families["conjunction_families"]
-                        for i, e in enumerate(fam["events"])]
-
-        for arm in ["domain_swap", "atomic_only"]:
-            train = training_keys(acts, arm, training_domain, excluded)
-            probes = [("linear", 0)] + ([("mlp", s) for s in range(args.mlp_seeds)] if arm == "domain_swap" else [])
-            for layer_index, (layer, depth) in enumerate(zip(layers, depths)):
-                X, y, train_texts = acts.rows(train, layer_index)
-                Xc, yc, cal_texts = acts.rows(calibration, layer_index)
-                Xb, yb, booked_texts = acts.rows(booked, layer_index)
-                check_no_leakage(train_texts, booked_texts, f"booked-domain ({booked_domain})")
-                check_no_leakage(train_texts, cal_texts, "calibration-slice")
-
-                for probe, seed in probes:
-                    logits_of = (train_linear if probe == "linear" else train_mlp)(X, y, seed)
-                    zc, zb = logits_of(Xc), logits_of(Xb)
-                    temperature = fit_temperature(zc, yc)
-                    by_key = {}
-                    for calibrated, p in [(False, sigmoid(zb)), (True, sigmoid(zb / temperature))]:
-                        by_key[calibrated] = dict(zip(booked, p))
-                    ident = {"model": args.model, "arm": arm, "probe": probe, "seed": seed, "layer": layer,
-                             "depth": round(depth, 4), "booked_domain": booked_domain}
-                    metric_rows.append({**ident, "training_statements": len(train), "temperature": temperature,
-                                        "validation_accuracy": float(np.mean((zc > 0) == yc)),
-                                        "booked_accuracy": float(np.mean((zb > 0) == yb)),
-                                        "booked_brier_raw": float(np.mean((sigmoid(zb) - yb) ** 2)),
-                                        "booked_brier_calibrated": float(np.mean((sigmoid(zb / temperature) - yb) ** 2))})
-                    for calibrated in (False, True):
-                        prevision_rows += [{**ident, "calibrated": calibrated, "family_id": fid, "event_index": i,
-                                            "prevision": by_key[calibrated][key]} for fid, i, key in event_lookup]
-                    print(f"{training_domain}->{booked_domain} {arm} {probe}:{seed} layer {layer}: "
-                          f"val acc {metric_rows[-1]['validation_accuracy']:.3f}, booked acc {metric_rows[-1]['booked_accuracy']:.3f}, T {temperature:.2f}")
+    prevision_rows, metric_rows = probe_previsions(acts, args.model, Path(args.families_path),
+                                                   args.calibration_fraction, args.split_seed, args.mlp_seeds)
 
     for name, rows in [("previsions", prevision_rows), ("probe_metrics", metric_rows)]:
         out = Path(args.output_path) / name / f"{args.model}.csv"

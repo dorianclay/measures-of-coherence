@@ -40,11 +40,13 @@ Fixed once the experiment is REGISTERED.
 ** Tasks
 *** DONE Grill the research design
 *** DONE Open =003-umbrella-pilot= (exploratory)
-*** TODO Build the umbrella environment, reward and control
-*** TODO Build the GRPO + LoRA training run on the segment API
-*** TODO Add =umbrella_towns@1= and the =town-belief-*@1= protocols
-*** TODO Measurement runs per eval checkpoint, one protocol per run
+*** DONE Build the umbrella environment, reward and control
+*** DONE Build the GRPO + LoRA training run on the segment API
+*** DONE Add =umbrella_towns@1= and the =town-belief-*@1= protocols
+*** DONE Measurement runs per eval checkpoint, one protocol per run
 *** TODO Fill in step count and budget from the pilot; ask the author to register
+*** TODO Main runs
+Per run: =uv run submit-chain ... -- python -m coherence.train_umbrella --model Qwen/Qwen2.5-7B-Instruct --seed <s> --arm <rl|control> --steps <from pilot> ...=, then =sbatch --dependency=afterok:<last job> slurm/measure_checkpoints.sbatch <run-id>= for the measurement schedule.
 
 ** Deviations
 Dated entries for every change to the hypothesis or plan after registration. The plan above is never edited.

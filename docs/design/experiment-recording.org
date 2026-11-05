@@ -85,7 +85,7 @@ Choices made while building step 3 that the session above didn't spell out:
 - Artifact paths in the manifest are relative to =$COHERENCE_STORE=, so records survive the store moving between machines. Artifacts outside the store are refused.
 - =run.json= holds per-job fields in =segments= from the start, so step 4 adds segments without a schema change.
 - Sidecars are =<output>.sources.json= next to each figure or table.
-- Experiment 001's pipeline scripts don't call =coherence.runs.log= yet. One invocation of =probing.family_probes= or =coherence.elicitation= produces several protocols at once, which doesn't fit one run, one protocol. Experiment 002's measurement code should be written to log one protocol per run.
+- Experiment 001's own scripts (=probing.activations=, =probing.family_probes=, =coherence.elicitation=) still produce several protocols per invocation and don't call =coherence.runs.log=; they stay as 001 ran them. One-protocol-per-run commands wrap the same functions: =coherence.measure_families= (elicited previsions, booked), =probing.extract= (activations, protocol =activations-last-token@1=) and =probing.probe= (probe protocols, reading an extraction run). Refactoring the three scripts' =main= into functions was checked by running old and new code on a tiny model with the real data: every output file was byte-identical.
 
 Choices made while building step 4:
 - A run is a training run when it logs =planned_steps=; only training runs resume. =coherence.runs.progress(step)= records the last completed step, =runs.step()= reads it back, and each segment records its step range. A segment exits 0 when it stops early on purpose, so the chain goes on; the run is =succeeded= only once a segment reaches the planned steps.
@@ -94,6 +94,11 @@ Choices made while building step 4:
 - Checkpoints are manifest entries with =checkpoint: eval|resume= and =step=, logged with =runs.checkpoint(path, step=…, kind=…)=; a checkpoint may be a directory (hashed over its files). Resume state is not hashed and the manifest keeps only the latest; =runs.resume_state()= returns its path and step. =runs.model_path("<run-id>@step<N>")= finds an eval checkpoint, and =runs.log= refuses a checkpoint reference with no eval checkpoint at that step.
 - =runs.out_of_time(margin_seconds)= is the training loop's wall-clock check: it reads =SLURM_JOB_END_TIME=, falling back to =squeue=. Whether the cluster's slurm sets that variable is unchecked; the fallback covers either case.
 - =submit-chain= picks the new run's id itself and passes it to =record --run-id=, so all K jobs can be submitted before the first starts. Jobs after the first use =--dependency=afterok= with =--kill-on-invalid-dep=yes=, so a failed segment cancels the rest instead of leaving them pending. When extending a run whose last segment is still going, the first new job waits for that segment's job. Every job runs =slurm/record.sbatch=.
+
+Choices made while building 002's pipeline:
+- A run that reads another run's artifacts lists its id under =inputs= (=coherence.runs.log(inputs=…)=). A probe run inherits its extraction run's model reference and refuses an extraction made from older dataset versions.
+- The =@1= probe protocols' =datasets= now list everything the probes train on (the atomic datasets and the base facts and companies datasets were missing). This corrects the record of what =@1= reads; the measurement itself is unchanged.
+- =coherence.models.load= turns any model reference into weights: =<hf-id>@<commit>= through the Hugging Face cache, =<path>@local=, or =<run-id>@step<N>= as that run's LoRA adapter merged into its own base model.
 
 * Not decided here
 Research and implementation decisions for experiment 002's own draft: the RL algorithm and the loss trained on, model choice and scale, which values measures to use, the probe interface's exact signature.

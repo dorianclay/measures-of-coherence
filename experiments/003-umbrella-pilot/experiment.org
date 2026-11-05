@@ -23,7 +23,7 @@ Exploratory, so nothing is registered. Expected: within a few hundred steps the 
 *** TODO One-time cluster setup
 From the repo root on the login node:
 #+begin_example
-git pull && uv sync --frozen && mkdir -p logs
+git fetch && git checkout exp/002-umbrella-rl && git pull && uv sync --frozen && mkdir -p logs
 export COHERENCE_STORE=/path/to/scratch/coherence-store   # large outputs; put it in your shell profile
 bash slurm/download_models.sh Qwen/Qwen2.5-1.5B-Instruct Qwen/Qwen2.5-7B-Instruct
 export HF_HUB_OFFLINE=1                                     # if compute nodes have no internet

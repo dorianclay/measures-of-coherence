@@ -129,24 +129,10 @@ def logit(p, eps: float = 1e-4):
     return np.log(p) - np.log(1 - p)
 
 
-def main():
-    parser = argparse.ArgumentParser(description="Elicit previsions from model behavior for every event family statement.")
-    parser.add_argument("--model", required=True, help="Hugging Face model id.")
-    parser.add_argument("--instruct", choices=["auto", "yes", "no"], default="auto",
-                        help="Chat prompts (instruct) or 4-shot prompts (base); auto decides from the model name.")
-    parser.add_argument("--batch_size", type=int, default=16)
-    parser.add_argument("--families_path", default=EVENT_FAMILIES_DIR)
-    parser.add_argument("--output_path", default=STORE / "001-dutch-book")
-    parser.add_argument("--calibration_fraction", type=float, default=0.2)
-    parser.add_argument("--split_seed", type=int, default=0)
-    args = parser.parse_args()
-
-    instruct = looks_instruct(args.model) if args.instruct == "auto" else args.instruct == "yes"
-    model_tag = args.model.split("/")[-1]
-    model, tokenizer = init_model(args.model)
-    print(f"{args.model}: {'instruct (chat prompts)' if instruct else 'base (4-shot prompts)'}; answer ids {answer_token_ids(tokenizer)}")
-
-    families = {d: load_families(Path(args.families_path), d) for d in DOMAINS}
+def elicit(model, tokenizer, model_tag: str, instruct: bool, families_path: Path, batch_size: int = 16,
+           calibration_fraction: float = 0.2, split_seed: int = 0, methods=("logprob", "stated")):
+    """Previsions and metrics rows for every family event, by each method asked for (stated only for instruct models)."""
+    families = {d: load_families(Path(families_path), d) for d in DOMAINS}
     # Every family event, keyed by normalized statement: each distinct statement is elicited once
     events = {d: [(fam["id"], i, e) for fam in families[d]["negation_pairs"] + families[d]["conjunction_families"]
                   for i, e in enumerate(fam["events"])] for d in DOMAINS}
@@ -154,18 +140,19 @@ def main():
     labels = {d: {normalize(e["statement"]): e["label"] for _, _, e in events[d]} for d in DOMAINS}
     calibration_texts = {}
     for d in DOMAINS:
-        keys, _ = split_training_domain(families[d], args.calibration_fraction, args.split_seed)
+        keys, _ = split_training_domain(families[d], calibration_fraction, split_seed)
         by_key = {(e["source"].removesuffix("_true_false"), e["row"]): normalize(e["statement"]) for _, _, e in events[d]}
         calibration_texts[d] = sorted({by_key[k] for k in keys})
 
-    runs = [("logprob", t) for t in ["t0", "t1", "t2"]] + ([("stated", "t0")] if instruct else [])
+    runs = ([("logprob", t) for t in ["t0", "t1", "t2"]] if "logprob" in methods else []) + \
+        ([("stated", "t0")] if instruct and "stated" in methods else [])
     elicited, masses, failures = {}, {}, {}
     for method, template in runs:
         for d in DOMAINS:
             texts = [s for _, s in statements[d]]
             if method == "logprob":
                 prompts = [judgment_prompt(tokenizer, instruct, template, s) for s in texts]
-                p, m = logprob_previsions(prompts, model, tokenizer, instruct, args.batch_size)
+                p, m = logprob_previsions(prompts, model, tokenizer, instruct, batch_size)
                 masses[method, template, d] = float(np.mean(m))
             else:
                 p = stated_previsions(texts, model, tokenizer)
@@ -206,6 +193,27 @@ def main():
             m = metric_rows[-1]
             print(f"{method}/{template} -> {booked_domain}: competence {m['competence_accuracy']:.3f} "
                   f"({'pass' if m['passes_bar'] else 'FAIL'}), booked acc {m['booked_accuracy']:.3f}, T {temperature:.2f}")
+    return prevision_rows, metric_rows
+
+
+def main():
+    parser = argparse.ArgumentParser(description="Elicit previsions from model behavior for every event family statement.")
+    parser.add_argument("--model", required=True, help="Hugging Face model id.")
+    parser.add_argument("--instruct", choices=["auto", "yes", "no"], default="auto",
+                        help="Chat prompts (instruct) or 4-shot prompts (base); auto decides from the model name.")
+    parser.add_argument("--batch_size", type=int, default=16)
+    parser.add_argument("--families_path", default=EVENT_FAMILIES_DIR)
+    parser.add_argument("--output_path", default=STORE / "001-dutch-book")
+    parser.add_argument("--calibration_fraction", type=float, default=0.2)
+    parser.add_argument("--split_seed", type=int, default=0)
+    args = parser.parse_args()
+
+    instruct = looks_instruct(args.model) if args.instruct == "auto" else args.instruct == "yes"
+    model_tag = args.model.split("/")[-1]
+    model, tokenizer = init_model(args.model)
+    print(f"{args.model}: {'instruct (chat prompts)' if instruct else 'base (4-shot prompts)'}; answer ids {answer_token_ids(tokenizer)}")
+    prevision_rows, metric_rows = elicit(model, tokenizer, model_tag, instruct, Path(args.families_path),
+                                         args.batch_size, args.calibration_fraction, args.split_seed)
 
     for name, rows, filename in [("previsions", prevision_rows, f"elicited_{model_tag}.csv"),
                                  ("elicitation_metrics", metric_rows, f"{model_tag}.csv")]:

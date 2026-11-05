@@ -98,17 +98,23 @@ def main():
     args = parser.parse_args()
 
     model, tokenizer = init_model(args.model)
+    files = {name: Path(args.dataset_path) / f"{name}_true_false.csv" for name in args.datasets}
+    extract_all(model, tokenizer, args.model, files, args.depths, args.batch_size,
+                Path(args.output_path) / args.model.split("/")[-1])
+
+
+def extract_all(model, tokenizer, model_name: str, files: dict, depths: list, batch_size: int, out_dir: Path):
+    """Activations of every dataset (name -> CSV with a statement column) to out_dir/<name>.npy, plus meta.json."""
     n_layers = num_layers(model)
-    layers = layers_for_depths(n_layers, args.depths)
-    out_dir = Path(args.output_path) / args.model.split("/")[-1]
+    layers = layers_for_depths(n_layers, depths)
     out_dir.mkdir(parents=True, exist_ok=True)
     with open(out_dir / "meta.json", "w") as f:
-        json.dump({"model": args.model, "num_layers": n_layers, "layers": layers,
+        json.dump({"model": model_name, "num_layers": n_layers, "layers": layers,
                    "depths": [k / n_layers for k in layers]}, f, indent=1)
 
-    for name in tqdm(args.datasets, desc="Datasets"):
-        statements = pd.read_csv(Path(args.dataset_path) / f"{name}_true_false.csv", encoding="utf-8-sig").statement.tolist()
-        activations = extract(statements, model, tokenizer, layers, args.batch_size)
+    for name, file in tqdm(files.items(), desc="Datasets"):
+        statements = pd.read_csv(file, encoding="utf-8-sig").statement.tolist()
+        activations = extract(statements, model, tokenizer, layers, batch_size)
         np.save(out_dir / f"{name}.npy", activations)
         print(f"{name}: {activations.shape} -> {out_dir / f'{name}.npy'}")
 
