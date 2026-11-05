@@ -84,6 +84,7 @@ Choices made while building step 3 that the session above didn't spell out:
 - The uncommitted-code check ignores what runs and analysis generate: =experiments/*/runs/**=, =experiments/*/figures/**=, each =experiment.org= (its run table) and =experiments/index.org=.
 - Artifact paths in the manifest are relative to =$COHERENCE_STORE=, so records survive the store moving between machines. Artifacts outside the store are refused.
 - =run.json= holds per-job fields in =segments= from the start, so step 4 adds segments without a schema change.
+- Run tables and the index are rewritten under a lock on =experiments/.tables.lock=, each with one rename, so concurrent jobs can't crash on a half-written =experiment.org= or leave a stale table. The lock and temporary files (=.tables.*=) don't count as uncommitted code.
 - Sidecars are =<output>.sources.json= next to each figure or table.
 - Experiment 001's pipeline scripts don't call =coherence.runs.log= yet. One invocation of =probing.family_probes= or =coherence.elicitation= produces several protocols at once, which doesn't fit one run, one protocol. Experiment 002's measurement code should be written to log one protocol per run.
 

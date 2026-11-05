@@ -229,3 +229,4 @@ logs/
 .claude/worktrees/
 # Private or copyrighted; references/README.md lists them
 references/*.pdf
+.tables.*

@@ -1,3 +1,7 @@
+import json
+import threading
+from concurrent.futures import ThreadPoolExecutor
+
 import pytest
 
 from coherence import experiments
@@ -53,3 +57,44 @@ def test_index_lists_every_experiment_with_its_state_question_and_latest_finding
         ["002", "[[file:002-umbrella-rl/experiment.org][Umbrella RL]]", "DRAFT (exploratory)",
          "Does RL change coherence?", ""],
     ]
+
+
+def write_runs(experiment_path, run_ids):
+    for run_id in run_ids:
+        run_dir = experiment_path / "runs" / run_id
+        run_dir.mkdir(parents=True)
+        (run_dir / "run.json").write_text(json.dumps({"run_id": run_id, "status": "succeeded"}))
+
+
+def test_a_reader_never_sees_experiment_org_mid_rewrite(root):
+    path = write_experiment(root, "002-x", "DRAFT 002 X", "\n#+BEGIN: runs\n#+END:\n")
+    write_runs(path, ["20261105-0000-aaaa"])
+    done = threading.Event()
+
+    def rewrite():
+        for _ in range(300):
+            experiments.write_run_table(experiments.load(path))
+        done.set()
+
+    writer = threading.Thread(target=rewrite)
+    writer.start()
+    try:
+        while not done.is_set():
+            experiments.load(path)
+    finally:
+        writer.join()
+
+
+def test_concurrent_table_writes_leave_every_finished_run_in_the_table(root):
+    path = write_experiment(root, "002-x", "DRAFT 002 X", "\n#+BEGIN: runs\n#+END:\n")
+    experiment = experiments.load(path)
+
+    def finish_run(i):
+        write_runs(path, [f"20261105-0000-{i:04x}"])
+        experiments.write_run_table(experiment)
+        experiments.write_index()
+
+    with ThreadPoolExecutor(8) as pool:
+        list(pool.map(finish_run, range(200)))
+    assert len(table_rows(experiment.org.read_text())) == 200
+    assert "DRAFT" in (root / "experiments" / "index.org").read_text()

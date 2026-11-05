@@ -7,7 +7,8 @@ from coherence.paths import repo_root
 # Run records, the tables generated from them and analysis outputs change with every run; they aren't code, so they
 # never make the tree count as dirty.
 NOT_CODE = [":(exclude)experiments/*/runs/**", ":(exclude)experiments/*/figures/**",
-            ":(exclude)experiments/*/experiment.org", ":(exclude)experiments/index.org"]
+            ":(exclude)experiments/*/experiment.org", ":(exclude)experiments/index.org",
+            ":(exclude)experiments/.tables.*", ":(exclude)experiments/*/.tables.*"]
 
 
 def git(*args, check=True) -> str:
