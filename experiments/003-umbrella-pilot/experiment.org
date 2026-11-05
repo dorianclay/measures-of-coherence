@@ -53,8 +53,9 @@ Dated entries for every change to the hypothesis or plan after registration. The
 
 ** Runs
 #+BEGIN: runs
-| run | status | model reference | protocol | note |
-|-----+--------+-----------------+----------+------|
+| run                                                           | status    | model reference                                                     | protocol | note       |
+|---------------------------------------------------------------+-----------+---------------------------------------------------------------------+----------+------------|
+| [[file:runs/20261104-2119-17fa/run.json][20261104-2119-17fa]] | succeeded | Qwen/Qwen2.5-1.5B-Instruct@989aa7980e4cf806f80c7fef2b1adb7bc71aa306 |          | smoke test |
 #+END:
 
 ** Findings

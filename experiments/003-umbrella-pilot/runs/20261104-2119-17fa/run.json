@@ -1,0 +1,75 @@
+{
+  "run_id": "20261104-2119-17fa",
+  "experiment": "003",
+  "note": "smoke test",
+  "command": [
+    "python",
+    "-m",
+    "coherence.train_umbrella",
+    "--model",
+    "Qwen/Qwen2.5-1.5B-Instruct",
+    "--seed",
+    "0",
+    "--arm",
+    "rl",
+    "--steps",
+    "10",
+    "--eval-fractions",
+    "1.0",
+    "--margin-minutes",
+    "5"
+  ],
+  "cwd": "/home/export/doriancl/code/measures-of-coherence",
+  "status": "succeeded",
+  "segments": [
+    {
+      "git": {
+        "sha": "2a428beccf7d6417daf273dd09ad7bac9b9db774",
+        "dirty": false
+      },
+      "uv_lock_sha256": "cb2209d1f8d9ce4beae95ed5b5fb8d345d16edb9dcebd0af4bb56a0787ac334f",
+      "host": "n02",
+      "gpus": [
+        "NVIDIA L40"
+      ],
+      "slurm_job_id": "266351",
+      "started": "2026-11-05T02:19:58+00:00",
+      "steps": [
+        0,
+        10
+      ],
+      "finished": "2026-11-05T02:21:30+00:00",
+      "exit_code": 0
+    }
+  ],
+  "model_ref": "Qwen/Qwen2.5-1.5B-Instruct@989aa7980e4cf806f80c7fef2b1adb7bc71aa306",
+  "seed": 0,
+  "planned_steps": 10,
+  "artifacts": [
+    {
+      "path": "20261104-2119-17fa/dataset.jsonl",
+      "size": 81147,
+      "sha256": "5e9cc9cc233030838f47667f713adf73cd00865d3eece97ac2eaa30cde2222e6"
+    },
+    {
+      "path": "20261104-2119-17fa/eval/step0",
+      "size": 73917828,
+      "sha256": "a7787c267489bdeaa74be44a7b268127e64049d74a28ebe79d7a2b2586253ff0",
+      "checkpoint": "eval",
+      "step": 0
+    },
+    {
+      "path": "20261104-2119-17fa/eval/step10",
+      "size": 73917828,
+      "sha256": "448c42ae5b466682f39ee036ff6e4094776feb2e1835cf88b5a9a3c1bfe0d75b",
+      "checkpoint": "eval",
+      "step": 10
+    },
+    {
+      "path": "20261104-2119-17fa/rewards.jsonl",
+      "size": 116897,
+      "sha256": "21619bddf7f3312affc626cef0d86951ba62ef844dc5494dd8779bdd5d870e9c"
+    }
+  ],
+  "step": 10
+}
