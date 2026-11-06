@@ -79,6 +79,8 @@ Dated entries for every change to the hypothesis or plan after registration. The
 | [[file:runs/20261105-2112-fd91/run.json][20261105-2112-fd91]] | succeeded | Qwen/Qwen2.5-14B-Instruct@cf98f3b3bbb457ad9e2bb7baf9a0125b6b88caa8  |          | activations, Qwen2.5-14B-Instruct, presentation=judge-turn                                    |
 | [[file:runs/20261105-2115-9d3c/run.json][20261105-2115-9d3c]] | succeeded |                                                                     |          | probes, Qwen2.5-14B-Instruct, presentation=chat-turn, on activations 20261105-2109-b511       |
 | [[file:runs/20261105-2119-5b28/run.json][20261105-2119-5b28]] | succeeded |                                                                     |          | probes, Qwen2.5-14B-Instruct, presentation=judge-turn, on activations 20261105-2112-fd91      |
+| [[file:runs/20261105-2214-4f26/run.json][20261105-2214-4f26]] | succeeded | google/gemma-4-12B-it@707f0a3b8a3c7ad586ed01e27eafbad8a27dd0f7      |          | activations, gemma-4-12B-it, presentation=chat-statement                                      |
+| [[file:runs/20261105-2217-bed1/run.json][20261105-2217-bed1]] | succeeded |                                                                     |          | probes, gemma-4-12B-it, presentation=chat-statement, on activations 20261105-2214-4f26        |
 #+END:
 
 ** Findings

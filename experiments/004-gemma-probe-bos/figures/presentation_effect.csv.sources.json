@@ -12,14 +12,15 @@
     "20261105-2047-be76",
     "20261105-2055-d045",
     "20261105-2115-9d3c",
-    "20261105-2119-5b28"
+    "20261105-2119-5b28",
+    "20261105-2217-bed1"
   ],
   "protocols": [],
   "datasets": {},
   "analysis_commit": {
-    "sha": "7d250b45d2f56c1cd5336a7ab11cc8e913e868fd",
+    "sha": "be6123d1c0fcc854094740ed6bd71061dd072f53",
     "dirty": false
   },
   "script": "experiments/004-gemma-probe-bos/analysis/presentation_effect.py",
-  "created": "2026-11-06T03:13:03+00:00"
+  "created": "2026-11-06T04:06:23+00:00"
 }
