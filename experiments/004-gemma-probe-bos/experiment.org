@@ -1,7 +1,7 @@
 #+TITLE: 004 Gemma IT probes: is the failure a missing BOS token?
 #+TODO: DRAFT REGISTERED RUNNING | CONCLUDED ABANDONED
 
-* DRAFT 004 Gemma IT probes: is the failure a missing BOS token? :exploratory:
+* CONCLUDED 004 Gemma IT probes: is the failure a missing BOS token? :exploratory:
 
 ** Question
 Did linear probes fail on =gemma-4-12B-it= in 001 because its statements reached the model without a BOS token, rather than because of the model? =probing.activations= tokenized raw statements with the tokenizer's defaults: =gemma-4-12B='s adds =<bos>=, =gemma-4-12B-it='s doesn't. Elicited prompts had =<bos>= from the chat template, and elicitation worked. Exploratory: this decides what to test next, and changes nothing in 001.
@@ -41,7 +41,9 @@ for m in google/gemma-4-12B-it Qwen/Qwen2.5-{1.5B,7B,14B}-Instruct; do
   for p in chat-statement chat-turn judge-turn; do sbatch slurm/probe_presentation.sbatch "$m" "$p"; done
 done
 #+end_example
-*** TODO Third question: do the recipes hold on a wider set of models?
+*** DONE Third question: do the recipes hold on a wider set of models?
+Closed by the author on 2026-11-06 without =Mistral-Small-4-119B-2603=, which never ran: it ships only as FP8, and =Qwen3.5-122B-A10B= covers its size. About 52 GPU-hours.
+
 The four models above chose the recipes; these models test them. Two recipes passed there and both go forward, by the author's decision on 2026-11-06: =judge-turn= with the linear probe, and =chat-turn= with the MLP. Each keeps the layer rule and the definition of robust written above, unchanged. A model that misses is reported with the recipe, not worked around.
 
 - *Models, in the setting they're used in.* The author's decision on 2026-11-06: evaluate models as close to production use as we can, so each chat template's default system prompt stays. It differs by model: none on Qwen and Gemma, about 520 tokens on Mistral's, a date in some. Each run's =meta.json= records the rendered prompt and the token read, because that token also differs by template. Reasoning stays off, as in the four models above, which does depart from how reasoning models are used.
@@ -57,9 +59,10 @@ The four models above chose the recipes; these models test them. Two recipes pas
 #+begin_example
 slurm/wider_models.sh <gpus> <hours> <hf-model-id> [batch-size]
 #+end_example
-*** TODO Remove the wider models from the Hugging Face cache
+*** DONE Remove the wider models from the Hugging Face cache
 Asked for by the author on 2026-11-06. Once both stages are analysed and the models for the rest of the thesis are chosen: delete the wider set's weights from the cache, keeping the chosen models and the 001 models that were already there. Run records keep each model's revision, so any of them can be downloaded again. Activations in the store are artifacts, so they stay unless the author signs off on deleting them.
-*** TODO Then, only if needed: tune the probe
+*** DONE Then, only if needed: tune the probe
+Not needed: both recipes met the definition of robust untuned.
 
 ** Deviations
 Dated entries for every change to the hypothesis or plan after registration. The plan above is never edited.
@@ -178,4 +181,19 @@ Dated entries for every change to the hypothesis or plan after registration. The
 #+END:
 
 ** Findings
-Written or changed only with the author's sign-off. Cite figures from figures/.
+Written with the author's sign-off on 2026-11-06. Exploratory: this chooses what to do next, and changes nothing in 001.
+
+*A missing BOS was not why =gemma-4-12B-it='s linear probe failed.* Adding =<bos>= left it at 0.52–0.59 booked. Removing it did break base =gemma-4-12B= (0.68–0.70 down to 0.50), so BOS matters for the base model, but it doesn't explain the IT model (=figures/bos_effect.csv=).
+
+*How the statement is presented was the larger problem.* In a chat turn, read at the last token before the reply, =gemma-4-12B-it= reaches 0.75–0.82 with a linear probe and 0.88–0.89 with an MLP, in the worse booking direction, against 0.52 and 0.60 as raw text with BOS (=figures/presentation_effect.csv=). Reading at the statement's own last token did not help as much (0.60 and 0.63).
+
+*Two recipes are robust by the definition written in advance.* =judge-turn= with the linear probe and =chat-turn= with the MLP each clear 0.65 in both directions on all 4 models that chose them and all 19 that tested them, 3B to 122B, from eight labs, with no per-model adjustment (=figures/wider_models.csv=). Lowest of the 19, worse direction: 0.66 (=Apertus-v1.1-4B-Instruct=) and 0.73 (=granite-4.2-3b=). =chat-turn= with the linear probe, not a chosen recipe, misses on two.
+
+*The author's decision: the rest of the thesis uses the Qwen3.x families.* All four score at least 0.87 on =chat-turn= MLP and 0.78 on =judge-turn= linear, the most consistent family tested, and within it 122B scores no better than 9B or 27B. The size is not yet chosen.
+
+What this doesn't show:
+- These accuracies show a probe can read the models' beliefs, not how coherent those beliefs are. Models were not ranked by rate of loss, and the differences among the best have no confidence intervals.
+- Elicitation was not run on the wider set, and neither was RL training, so trainability is untested on Qwen3.x.
+- =judge-turn= and =chat-turn= read just before the model's reply, so these probes may partly read the upcoming answer rather than the statement.
+- Reasoning was off throughout, which departs from how Qwen3.x is normally used; see =005=.
+- Each template's default system prompt stayed, so some models were shown much more text than others.
