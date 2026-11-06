@@ -1,0 +1,42 @@
+{
+  "run_id": "20261106-0441-0567",
+  "experiment": "004",
+  "note": "activations, granite-4.2-30b, presentation=chat-turn",
+  "command": [
+    "bash",
+    "-c",
+    "python -m probing.activations --model \"$MODEL\" --presentation \"$PRESENTATION\" --batch_size \"$BATCH_SIZE\" --output_path \"$RUN_STORE\""
+  ],
+  "cwd": "/home/export/doriancl/code/measures-of-coherence",
+  "status": "succeeded",
+  "segments": [
+    {
+      "git": {
+        "sha": "4362de48f5c28fbae88cc7dab301cbeb081644f6",
+        "dirty": true
+      },
+      "uv_lock_sha256": "cb2209d1f8d9ce4beae95ed5b5fb8d345d16edb9dcebd0af4bb56a0787ac334f",
+      "host": "n02",
+      "gpus": [
+        "NVIDIA L40",
+        "NVIDIA L40"
+      ],
+      "slurm_job_id": "267224",
+      "started": "2026-11-06T11:46:04+00:00",
+      "steps": [
+        0,
+        0
+      ],
+      "finished": "2026-11-06T11:54:14+00:00",
+      "exit_code": 0
+    }
+  ],
+  "model_ref": "ibm-granite/granite-4.2-30b@9e668ce1c538387ef24d3644e9b0606647762636",
+  "artifacts": [
+    {
+      "path": "20261106-0441-0567/granite-4.2-30b",
+      "size": 1288570799,
+      "sha256": "9773e8fcf5924892bf465f5710bf0e12c2bf78be3c4bb159c1aa43303f779982"
+    }
+  ]
+}

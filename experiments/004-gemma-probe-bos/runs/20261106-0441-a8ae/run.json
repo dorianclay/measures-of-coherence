@@ -1,0 +1,41 @@
+{
+  "run_id": "20261106-0441-a8ae",
+  "experiment": "004",
+  "note": "activations, gemma-4-E2B-it, presentation=chat-turn",
+  "command": [
+    "bash",
+    "-c",
+    "python -m probing.activations --model \"$MODEL\" --presentation \"$PRESENTATION\" --batch_size \"$BATCH_SIZE\" --output_path \"$RUN_STORE\""
+  ],
+  "cwd": "/home/export/doriancl/code/measures-of-coherence",
+  "status": "succeeded",
+  "segments": [
+    {
+      "git": {
+        "sha": "4362de48f5c28fbae88cc7dab301cbeb081644f6",
+        "dirty": true
+      },
+      "uv_lock_sha256": "cb2209d1f8d9ce4beae95ed5b5fb8d345d16edb9dcebd0af4bb56a0787ac334f",
+      "host": "n02",
+      "gpus": [
+        "NVIDIA L40"
+      ],
+      "slurm_job_id": "267188",
+      "started": "2026-11-06T10:25:29+00:00",
+      "steps": [
+        0,
+        0
+      ],
+      "finished": "2026-11-06T10:26:41+00:00",
+      "exit_code": 0
+    }
+  ],
+  "model_ref": "google/gemma-4-E2B-it@4adf15748de9e1a0097b6274cee9c15836c41c37",
+  "artifacts": [
+    {
+      "path": "20261106-0441-a8ae/gemma-4-E2B-it",
+      "size": 483215304,
+      "sha256": "3eb87caa8b27ac74eb3241312ba74967f73f099ca356c6f393524b3435a09643"
+    }
+  ]
+}

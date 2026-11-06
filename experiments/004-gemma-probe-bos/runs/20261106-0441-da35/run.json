@@ -1,0 +1,42 @@
+{
+  "run_id": "20261106-0441-da35",
+  "experiment": "004",
+  "note": "activations, NVIDIA-Nemotron-3.5-Lightning-30B-A3B-BF16, presentation=chat-turn",
+  "command": [
+    "bash",
+    "-c",
+    "python -m probing.activations --model \"$MODEL\" --presentation \"$PRESENTATION\" --batch_size \"$BATCH_SIZE\" --output_path \"$RUN_STORE\""
+  ],
+  "cwd": "/home/export/doriancl/code/measures-of-coherence",
+  "status": "succeeded",
+  "segments": [
+    {
+      "git": {
+        "sha": "4362de48f5c28fbae88cc7dab301cbeb081644f6",
+        "dirty": true
+      },
+      "uv_lock_sha256": "cb2209d1f8d9ce4beae95ed5b5fb8d345d16edb9dcebd0af4bb56a0787ac334f",
+      "host": "n02",
+      "gpus": [
+        "NVIDIA L40",
+        "NVIDIA L40"
+      ],
+      "slurm_job_id": "267240",
+      "started": "2026-11-06T12:38:41+00:00",
+      "steps": [
+        0,
+        0
+      ],
+      "finished": "2026-11-06T13:22:13+00:00",
+      "exit_code": 0
+    }
+  ],
+  "model_ref": "nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-BF16@a9904d24bcc1d289a1950fa9d2b978c47cf903b9",
+  "artifacts": [
+    {
+      "path": "20261106-0441-da35/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-BF16",
+      "size": 845625339,
+      "sha256": "0cb92bdddb4c4e415f22460c7f834452296c9be56069539689c045569dc45346"
+    }
+  ]
+}

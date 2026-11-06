@@ -1,0 +1,41 @@
+{
+  "run_id": "20261106-0441-09fa",
+  "experiment": "004",
+  "note": "activations, Qwen3.5-4B, presentation=judge-turn",
+  "command": [
+    "bash",
+    "-c",
+    "python -m probing.activations --model \"$MODEL\" --presentation \"$PRESENTATION\" --batch_size \"$BATCH_SIZE\" --output_path \"$RUN_STORE\""
+  ],
+  "cwd": "/home/export/doriancl/code/measures-of-coherence",
+  "status": "succeeded",
+  "segments": [
+    {
+      "git": {
+        "sha": "4362de48f5c28fbae88cc7dab301cbeb081644f6",
+        "dirty": true
+      },
+      "uv_lock_sha256": "cb2209d1f8d9ce4beae95ed5b5fb8d345d16edb9dcebd0af4bb56a0787ac334f",
+      "host": "n02",
+      "gpus": [
+        "NVIDIA L40"
+      ],
+      "slurm_job_id": "267182",
+      "started": "2026-11-06T10:23:02+00:00",
+      "steps": [
+        0,
+        0
+      ],
+      "finished": "2026-11-06T10:26:31+00:00",
+      "exit_code": 0
+    }
+  ],
+  "model_ref": "Qwen/Qwen3.5-4B@851bf6e806efd8d0a36b00ddf55e13ccb7b8cd0a",
+  "artifacts": [
+    {
+      "path": "20261106-0441-09fa/Qwen3.5-4B",
+      "size": 805357548,
+      "sha256": "8eae3ed5399c9bfc02123ac6f95dc452d4532e4578f3ca820b2f69fcb888fe42"
+    }
+  ]
+}

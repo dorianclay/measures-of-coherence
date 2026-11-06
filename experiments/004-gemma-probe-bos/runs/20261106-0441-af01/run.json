@@ -1,0 +1,41 @@
+{
+  "run_id": "20261106-0441-af01",
+  "experiment": "004",
+  "note": "activations, Apertus-v1.1-4B-Instruct, presentation=judge-turn",
+  "command": [
+    "bash",
+    "-c",
+    "python -m probing.activations --model \"$MODEL\" --presentation \"$PRESENTATION\" --batch_size \"$BATCH_SIZE\" --output_path \"$RUN_STORE\""
+  ],
+  "cwd": "/home/export/doriancl/code/measures-of-coherence",
+  "status": "succeeded",
+  "segments": [
+    {
+      "git": {
+        "sha": "4362de48f5c28fbae88cc7dab301cbeb081644f6",
+        "dirty": true
+      },
+      "uv_lock_sha256": "cb2209d1f8d9ce4beae95ed5b5fb8d345d16edb9dcebd0af4bb56a0787ac334f",
+      "host": "n02",
+      "gpus": [
+        "NVIDIA L40"
+      ],
+      "slurm_job_id": "267178",
+      "started": "2026-11-06T09:41:22+00:00",
+      "steps": [
+        0,
+        0
+      ],
+      "finished": "2026-11-06T09:43:52+00:00",
+      "exit_code": 0
+    }
+  ],
+  "model_ref": "swiss-ai/Apertus-v1.1-4B-Instruct@0d004ae50a03fda815ff7a091a89ab0baec94f3d",
+  "artifacts": [
+    {
+      "path": "20261106-0441-af01/Apertus-v1.1-4B-Instruct",
+      "size": 966428731,
+      "sha256": "b7b327bd065d1340b63eb0b21cf2c16a0f1ecafa040db3058e3a9c68fbad8cde"
+    }
+  ]
+}

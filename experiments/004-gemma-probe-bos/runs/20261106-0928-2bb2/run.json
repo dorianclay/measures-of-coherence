@@ -1,0 +1,45 @@
+{
+  "run_id": "20261106-0928-2bb2",
+  "experiment": "004",
+  "note": "probes, granite-4.2-30b, presentation=chat-turn, on activations 20261106-0441-0567",
+  "command": [
+    "bash",
+    "-c",
+    "\n    set -euo pipefail\n    python -m probing.family_probes --model \"$TAG\" --activations_path \"$(dirname \"$RUN_STORE\")/$ACTIVATIONS_RUN\" \\\n        --output_path \"$RUN_STORE\"\n    python -m coherence.dutch_book \\\n        --families data/event_families/facts_families.json data/event_families/companies_families.json \\\n        --previsions \"$RUN_STORE/previsions/$TAG.csv\" --output \"$RUN_STORE/probe_rates/$TAG.csv\"\n    mkdir -p \"$RUN_DIR/outputs\"\n    cp \"$RUN_STORE/probe_metrics/$TAG.csv\" \"$RUN_DIR/outputs/probe_metrics.csv\"\n    python -c \"\nimport os\nfrom coherence import runs\nruns.log(artifacts=[f\\\"{os.environ[\\\"RUN_STORE\\\"]}/previsions\\\", f\\\"{os.environ[\\\"RUN_STORE\\\"]}/probe_rates\\\"])\""
+  ],
+  "cwd": "/home/export/doriancl/code/measures-of-coherence",
+  "status": "succeeded",
+  "segments": [
+    {
+      "git": {
+        "sha": "4362de48f5c28fbae88cc7dab301cbeb081644f6",
+        "dirty": true
+      },
+      "uv_lock_sha256": "cb2209d1f8d9ce4beae95ed5b5fb8d345d16edb9dcebd0af4bb56a0787ac334f",
+      "host": "n02",
+      "gpus": [
+        "NVIDIA L40"
+      ],
+      "slurm_job_id": "267225",
+      "started": "2026-11-06T14:28:52+00:00",
+      "steps": [
+        0,
+        0
+      ],
+      "finished": "2026-11-06T15:19:39+00:00",
+      "exit_code": 0
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "20261106-0928-2bb2/previsions",
+      "size": 76643109,
+      "sha256": "3e61d97507b30cc66dd969a22f6954096a20ea079c85a7578d0cbcaa17f81974"
+    },
+    {
+      "path": "20261106-0928-2bb2/probe_rates",
+      "size": 42100359,
+      "sha256": "60778bbe65f1cf0e791b41899c5c6d7147d03269f2e62d552c1e5caaebdc7e01"
+    }
+  ]
+}
