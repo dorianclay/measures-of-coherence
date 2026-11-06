@@ -4,7 +4,7 @@
 
 Per model, presentation, probe and booked domain: the layer with the best validation accuracy, its validation and
 booked accuracy, and its mean L, raw and calibrated. For a baseline of raw text with BOS, pass 004's bos=add run among
-the ids; 001's numbers are in its own results. Writes figures/presentation_effect.csv, with a sidecar.
+the ids; 001's numbers are in its own results. Writes figures/presentation_effect.csv (or --output), with a sidecar.
 """
 
 import argparse
@@ -48,6 +48,7 @@ def rows_for(model: str, presentation: str, run_id: str, metrics: pd.DataFrame, 
 def main():
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("run_ids", nargs="+")
+    parser.add_argument("--output", default="presentation_effect.csv", help="File name under the experiment's figures/.")
     args = parser.parse_args()
 
     loaded = runs.load(args.run_ids)
@@ -59,7 +60,7 @@ def main():
         rows += rows_for(model, presentation, run["run_id"], pd.read_csv(run["dir"] / "outputs" / "probe_metrics.csv"),
                          pd.read_csv(store_root() / run["run_id"] / "probe_rates" / f"{model}.csv"))
     table = pd.DataFrame(rows).sort_values(["model", "probe", "booked_domain", "presentation"])
-    runs.save(table, experiments_dir() / "004-gemma-probe-bos" / "figures" / "presentation_effect.csv", loaded)
+    runs.save(table, experiments_dir() / "004-gemma-probe-bos" / "figures" / args.output, loaded)
     print(table.drop(columns=["run_id", "clears_bar"]).round(3).to_string(index=False))
 
 

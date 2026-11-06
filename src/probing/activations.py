@@ -85,7 +85,8 @@ def tokenize(batch: list, tokenizer, bos: str):
 
 
 def chat_text(statement: str, tokenizer, presentation: str) -> str:
-    """The statement in a user turn with no system prompt of ours, up to where the model's reply would start."""
+    """The statement in a user turn, up to where the model's reply would start. The system prompt is the template's
+    default, as in production: we add none and remove none. Reasoning is off."""
     if presentation == "judge-turn":
         from coherence.elicitation import INSTRUCT_TEMPLATES
         statement = INSTRUCT_TEMPLATES["t0"].format(s=statement)
@@ -111,6 +112,16 @@ def tokenize_chat(batch: list, tokenizer, presentation: str) -> tuple:
     return inputs, torch.tensor(positions)
 
 
+def prompt_record(tokenizer, presentation: str) -> dict:
+    """What a model is actually shown and which token is read, since both differ by chat template."""
+    if presentation == "raw":
+        return {}
+    example = "The statement goes here"
+    inputs, last = tokenize_chat([example], tokenizer, presentation)
+    return {"prompt_example": chat_text(example, tokenizer, presentation),
+            "read_token": tokenizer.convert_ids_to_tokens(inputs.input_ids[0, last[0]].item())}
+
+
 @torch.no_grad()
 def extract(statements: list, model, tokenizer, layers: list, batch_size: int, bos: str = "tokenizer",
             presentation: str = "raw") -> np.ndarray:
@@ -123,7 +134,7 @@ def extract(statements: list, model, tokenizer, layers: list, batch_size: int, b
         else:
             inputs, last = tokenize_chat(batch, tokenizer, presentation)
         inputs = inputs.to(model.device)
-        hidden = model(**inputs, output_hidden_states=True, return_dict=True).hidden_states
+        hidden = model(**inputs, output_hidden_states=True, return_dict=True, use_cache=False).hidden_states
         last = last.to(inputs.attention_mask.device)
         rows = torch.arange(len(batch), device=last.device)
         out.append(torch.stack([hidden[k][rows, last] for k in layers], dim=1).to(torch.float16).cpu().numpy())
@@ -156,7 +167,7 @@ def main():
     with open(out_dir / "meta.json", "w") as f:
         json.dump({"model": args.model, "num_layers": n_layers, "layers": layers,
                    "depths": [k / n_layers for k in layers], "bos": args.bos,
-                   "presentation": args.presentation}, f, indent=1)
+                   "presentation": args.presentation, **prompt_record(tokenizer, args.presentation)}, f, indent=1)
 
     for name in tqdm(args.datasets, desc="Datasets"):
         statements = pd.read_csv(Path(args.dataset_path) / f"{name}_true_false.csv", encoding="utf-8-sig").statement.tolist()

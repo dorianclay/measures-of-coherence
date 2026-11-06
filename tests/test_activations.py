@@ -3,7 +3,7 @@ from tokenizers.processors import TemplateProcessing
 from transformers import AutoModelForCausalLM, AutoTokenizer
 
 import tiny_model
-from probing.activations import chat_text, extract, tokenize, tokenize_chat
+from probing.activations import chat_text, extract, prompt_record, tokenize, tokenize_chat
 
 
 @pytest.fixture(scope="module")
@@ -88,3 +88,10 @@ def test_chat_statement_finds_a_statement_the_template_trims(tiny, tmp_path_fact
     inputs, positions = tokenize_chat(["no umbrella\xa0"], trimming, "chat-statement")
     assert trimming.decode(inputs.input_ids[0, positions[0]]).strip() == \
         trimming.decode(trimming("no umbrella", add_special_tokens=False).input_ids[-1]).strip()
+
+
+def test_prompt_record_keeps_the_prompt_and_the_token_read(tiny):
+    record = prompt_record(tiny, "chat-turn")
+    assert record["prompt_example"] == chat_text("The statement goes here", tiny, "chat-turn")
+    assert tiny.convert_tokens_to_string([record["read_token"]]) in record["prompt_example"]
+    assert prompt_record(tiny, "raw") == {}
