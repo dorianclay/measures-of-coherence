@@ -158,7 +158,8 @@ def main():
     args = parser.parse_args()
 
     from huggingface_hub import snapshot_download
-    runs.log(model_ref=f"{args.model}@{Path(snapshot_download(args.model)).name}")
+    # Only the revision is wanted: repos can hold duplicate weight formats that the cache need not keep
+    runs.log(model_ref=f"{args.model}@{Path(snapshot_download(args.model, allow_patterns=['config.json'])).name}")
     model, tokenizer = init_model(args.model)
     n_layers = num_layers(model)
     layers = layers_for_depths(n_layers, args.depths)

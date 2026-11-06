@@ -46,15 +46,16 @@ The four models above chose the recipes; these models test them. Two recipes pas
 
 - *Models, in the setting they're used in.* The author's decision on 2026-11-06: evaluate models as close to production use as we can, so each chat template's default system prompt stays. It differs by model: none on Qwen and Gemma, about 520 tokens on Mistral's, a date in some. Each run's =meta.json= records the rendered prompt and the token read, because that token also differs by template. Reasoning stays off, as in the four models above, which does depart from how reasoning models are used.
 - *First stage: 3–32B.* The newest open release of each lab at each size, ungated and needing no remote code. The 001 instruct models are controls; their runs above used the same templates, so they aren't rerun.
-  - 3–5B, one GPU: =granite-4.2-3b=, =Ministral-3-3B-Instruct-2512=, =Apertus-v1.1-4B-Instruct=, =Qwen3.5-4B=, =gemma-4-E2B-it=.
-  - 7–14B, one GPU: =Olmo-3-7B-Instruct=, =gemma-4-E4B-it=, =granite-4.2-8b=, =Ministral-3-8B-Instruct-2512=, =Qwen3.5-9B=, =Ministral-3-14B-Instruct-2512=.
+  - 3–5B, one GPU: =granite-4.2-3b=, =Ministral-3-3B-Instruct-2512-BF16=, =Apertus-v1.1-4B-Instruct=, =Qwen3.5-4B=, =gemma-4-E2B-it=.
+  - 7–14B, one GPU: =Olmo-3-7B-Instruct=, =gemma-4-E4B-it=, =granite-4.2-8b=, =Ministral-3-8B-Instruct-2512-BF16=, =Qwen3.5-9B=, =Ministral-3-14B-Instruct-2512-BF16=.
   - 27–32B, two GPUs: =Qwen3.8-27B=, =granite-4.2-30b=, =gemma-4-31B-it=, =GLM-4.7-Flash=, =NVIDIA-Nemotron-3.5-Lightning-30B-A3B-BF16=, =Olmo-3.1-32B-Instruct=.
   About 45 GPU-hours, extrapolated above 14B.
-- *Second stage: 70–125B*, approved by the author up to 100 GPU-hours in all, after the first stage: =Apertus-70B-Instruct-2509=, =Mistral-Small-4-119B-2603=, =Qwen3.5-122B-A10B=.
+  All at bf16. Mistral's main repos ship FP8 weights, so their =-BF16= versions stand in for them, to compare like with like. Batch size follows memory and is no part of the recipe: 16 for Ministral 8B and 14B, 4 for Nemotron, whose Mamba layers need far more than their weights; 32 otherwise.
+- *Second stage: 70–125B*, approved by the author up to 100 GPU-hours in all, after the first stage: =Apertus-70B-Instruct-2509=, =Mistral-Small-4-119B-2603=, =Qwen3.5-122B-A10B=. =Mistral-Small-4-119B-2603= is FP8 with no public bf16 version found, so settle it before this stage.
 - *Runs.* Activations and probes are separate jobs, so a multi-GPU model holds its GPUs only while extracting. Both jobs train both probes, as above.
 - *Read off.* =analysis/presentation_effect.py --output wider_models.csv=, grouped afterwards by lab, size and token read: within a lab the sizes separate size from lab, and =gemma-4-E4B-it= and =gemma-4-31B-it= read different tokens within one family.
 #+begin_example
-slurm/wider_models.sh <gpus> <hours> <hf-model-id>
+slurm/wider_models.sh <gpus> <hours> <hf-model-id> [batch-size]
 #+end_example
 *** TODO Remove the wider models from the Hugging Face cache
 Asked for by the author on 2026-11-06. Once both stages are analysed and the models for the rest of the thesis are chosen: delete the wider set's weights from the cache, keeping the chosen models and the 001 models that were already there. Run records keep each model's revision, so any of them can be downloaded again. Activations in the store are artifacts, so they stay unless the author signs off on deleting them.
