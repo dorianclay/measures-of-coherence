@@ -1,0 +1,25 @@
+{
+  "output": "presentation_effect.csv",
+  "runs": [
+    "20261105-1713-b688",
+    "20261105-1805-6bdb",
+    "20261105-1900-1152",
+    "20261105-1913-ef65",
+    "20261105-1941-0309",
+    "20261105-1952-8dac",
+    "20261105-2016-f230",
+    "20261105-2028-6a5e",
+    "20261105-2047-be76",
+    "20261105-2055-d045",
+    "20261105-2115-9d3c",
+    "20261105-2119-5b28"
+  ],
+  "protocols": [],
+  "datasets": {},
+  "analysis_commit": {
+    "sha": "7d250b45d2f56c1cd5336a7ab11cc8e913e868fd",
+    "dirty": false
+  },
+  "script": "experiments/004-gemma-probe-bos/analysis/presentation_effect.py",
+  "created": "2026-11-06T03:13:03+00:00"
+}
