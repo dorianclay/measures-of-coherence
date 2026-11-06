@@ -47,7 +47,19 @@ done
 Each prints its run id and job ids. Once a run succeeds: =sbatch slurm/measure_towns.sbatch <run-id>=.
 *** DONE Screen untrained candidate models for the next round
 Town beliefs on Qwen2.5-7B-Instruct, Qwen2.5-14B-Instruct, gemma-4-12B-it and Qwen3-14B: =analysis/base_model_screen.py=, =figures/base_model_screen.csv=.
-*** TODO Learning curves, and 002's step count, learning rate and budget
+*** DONE Learning curves on the first round
+*** TODO Second round on Qwen3.x
+The first round can't set 002's numbers: on 1.5B the rl arm locked into one answer per town, and the town-belief measure rejected both statements on every untrained candidate (=figures/base_model_screen.csv=). 004's Findings moved the thesis to the Qwen3.x families, by the author's decision on 2026-11-06. This round runs on =Qwen3.5-9B=, the smallest with the top scores, one GPU to load; the size is not settled.
+
+Reasoning stays off, as 002 asks for direct answers: Qwen3.x templates open a =<think>= block by default, so =coherence.train_umbrella= now passes =enable_thinking=False=, which leaves Qwen2.5's prompts as they were.
+
+First, before any sweep: a 10-step smoke test for valid answers, memory and time per step, and the town-belief protocols on the untrained model, so 002's measure is known on it.
+#+begin_example
+uv run submit-chain --segments 1 --sbatch-args="--time=01:00:00 --mem=96G" --experiment 003 --note "smoke test Qwen3.5-9B" -- \
+    python -m coherence.train_umbrella --model Qwen/Qwen3.5-9B --seed 0 --arm rl --steps 10 \
+    --eval-fractions 1.0 --margin-minutes 5
+#+end_example
+*** TODO 002's step count, learning rate and budget
 =uv run python experiments/003-umbrella-pilot/analysis/learning_curves.py <run-id> ...=, on the cluster (it reads =$COHERENCE_STORE=). Commit the figures and run records.
 
 ** Deviations

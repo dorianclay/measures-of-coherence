@@ -56,6 +56,17 @@ def test_a_training_run_saves_its_dataset_eval_checkpoints_and_every_reward(tmp_
                                                        ("_rain" if sample["rain"] else "_dry")])
 
 
+def test_training_prompts_have_reasoning_off(tmp_path):
+    """A template that opens a reasoning block by default would spend the few completion tokens inside it."""
+    template = "{% if enable_thinking is not defined or enable_thinking %}{{ raise_exception('reasoning on') }}{% endif %}"
+    model = tiny_model.build(tmp_path / "model", chat_template=template + tiny_model.CHAT_TEMPLATE)
+    repo = make_repo(tmp_path)
+
+    result = record(repo, "--experiment", "002", *train_command(model))
+
+    assert result.returncode == 0, result.stderr
+
+
 def test_a_run_split_across_segments_trains_exactly_like_an_unbroken_one(tmp_path, model):
     unbroken_repo = make_repo(tmp_path / "unbroken")
     split_repo = make_repo(tmp_path / "split")

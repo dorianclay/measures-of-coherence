@@ -163,6 +163,7 @@ def main(argv=None):
         per_device_train_batch_size=args.prompts_per_step * args.group_size, num_generations=args.group_size,
         gradient_accumulation_steps=1, learning_rate=args.learning_rate, beta=args.kl,
         max_completion_length=args.max_completion_length, temperature=args.temperature, shuffle_dataset=False,
+        chat_template_kwargs={"enable_thinking": False},  # 002 asks for direct answers; reasoning is a later experiment
         save_strategy="no", logging_steps=1, report_to="none", bf16=cuda, use_cpu=not cuda)
     trainer = GRPOTrainer(
         model=model, processing_class=tokenizer, args=config,
