@@ -79,3 +79,12 @@ def test_extract_reads_one_vector_per_statement_and_layer(tiny, tmp_path_factory
     for presentation in ["raw", "chat-statement", "chat-turn", "judge-turn"]:
         out = extract(["umbrella", "no umbrella."], model, tiny, [1, 2], 2, presentation=presentation)
         assert out.shape == (2, 2, model.config.hidden_size)
+
+
+def test_chat_statement_finds_a_statement_the_template_trims(tiny, tmp_path_factory):
+    path = tiny_model.build(tmp_path_factory.mktemp("tiny-trim"))
+    trimming = AutoTokenizer.from_pretrained(path, chat_template=tiny_model.CHAT_TEMPLATE.replace(
+        "m['content']", "m['content'] | trim"))
+    inputs, positions = tokenize_chat(["no umbrella\xa0"], trimming, "chat-statement")
+    assert trimming.decode(inputs.input_ids[0, positions[0]]).strip() == \
+        trimming.decode(trimming("no umbrella", add_special_tokens=False).input_ids[-1]).strip()

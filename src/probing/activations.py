@@ -104,7 +104,9 @@ def tokenize_chat(batch: list, tokenizer, presentation: str) -> tuple:
         return inputs, inputs.attention_mask.sum(dim=1) - 1
     positions = []
     for text, statement, row in zip(texts, batch, offsets.tolist()):
-        end = text.rindex(statement) + len(statement)
+        # Some chat templates trim the content, and a few statements end in a non-breaking space
+        stripped = statement.strip()
+        end = text.rindex(stripped) + len(stripped)
         positions.append(max(i for i, (start, stop) in enumerate(row) if start < end and stop > start))
     return inputs, torch.tensor(positions)
 
