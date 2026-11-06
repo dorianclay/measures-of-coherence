@@ -121,6 +121,9 @@ Dated entries for every change to the hypothesis or plan after registration. The
 | [[file:runs/20261105-1656-f08b/run.json][20261105-1656-f08b]] | failed    | Qwen/Qwen3-14B@40c069824f4251a91eefaf281ebe4c544efd3e18             | town-belief-elicit-logprob@1 | base-model screen: town-belief-elicit-logprob@1 on Qwen/Qwen3-14B                                         |
 | [[file:runs/20261105-1701-46d2/run.json][20261105-1701-46d2]] | succeeded | Qwen/Qwen3-14B@40c069824f4251a91eefaf281ebe4c544efd3e18             | town-belief-elicit-logprob@1 | base-model screen: town-belief-elicit-logprob@1 on Qwen/Qwen3-14B (rerun: cached snapshot was incomplete) |
 | [[file:runs/20261105-1703-20df/run.json][20261105-1703-20df]] | succeeded | Qwen/Qwen3-14B@40c069824f4251a91eefaf281ebe4c544efd3e18             | town-belief-elicit-stated@1  | base-model screen: town-belief-elicit-stated@1 on Qwen/Qwen3-14B (rerun: cached snapshot was incomplete)  |
+| [[file:runs/20261106-1522-ed24/run.json][20261106-1522-ed24]] | succeeded | Qwen/Qwen3.5-9B@c202236235762e1c871ad0ccb60c8ee5ba337b9a            |                              | smoke test Qwen3.5-9B                                                                                     |
+| [[file:runs/20261106-1525-80d7/run.json][20261106-1525-80d7]] | succeeded | Qwen/Qwen3.5-9B@c202236235762e1c871ad0ccb60c8ee5ba337b9a            | town-belief-elicit-logprob@1 | base-model screen: town-belief-elicit-logprob@1 on Qwen/Qwen3.5-9B                                        |
+| [[file:runs/20261106-1528-a929/run.json][20261106-1528-a929]] | succeeded | Qwen/Qwen3.5-9B@c202236235762e1c871ad0ccb60c8ee5ba337b9a            | town-belief-elicit-stated@1  | base-model screen: town-belief-elicit-stated@1 on Qwen/Qwen3.5-9B                                         |
 #+END:
 
 ** Findings

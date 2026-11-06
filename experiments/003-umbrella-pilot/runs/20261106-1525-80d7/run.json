@@ -1,0 +1,45 @@
+{
+  "run_id": "20261106-1525-80d7",
+  "experiment": "003",
+  "note": "base-model screen: town-belief-elicit-logprob@1 on Qwen/Qwen3.5-9B",
+  "command": [
+    "python",
+    "-m",
+    "coherence.measure_towns",
+    "--model",
+    "Qwen/Qwen3.5-9B@c202236235762e1c871ad0ccb60c8ee5ba337b9a",
+    "--protocol",
+    "town-belief-elicit-logprob@1"
+  ],
+  "cwd": "/home/export/doriancl/code/measures-of-coherence",
+  "status": "succeeded",
+  "segments": [
+    {
+      "git": {
+        "sha": "96af81f43f731fd73255fdfcd7e19ca0e732e95f",
+        "dirty": true
+      },
+      "uv_lock_sha256": "cb2209d1f8d9ce4beae95ed5b5fb8d345d16edb9dcebd0af4bb56a0787ac334f",
+      "host": "n02",
+      "gpus": [
+        "NVIDIA L40"
+      ],
+      "slurm_job_id": "267473",
+      "started": "2026-11-06T20:25:31+00:00",
+      "steps": [
+        0,
+        0
+      ],
+      "finished": "2026-11-06T20:26:38+00:00",
+      "exit_code": 0
+    }
+  ],
+  "model_ref": "Qwen/Qwen3.5-9B@c202236235762e1c871ad0ccb60c8ee5ba337b9a",
+  "protocol": "town-belief-elicit-logprob@1",
+  "datasets": {
+    "umbrella_towns": {
+      "version": 1,
+      "sha256": "1e8eae196e1f233bf26314e8b923667de8e99dc44f72ad4eaea8884c435905f0"
+    }
+  }
+}
