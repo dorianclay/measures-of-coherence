@@ -1,0 +1,47 @@
+{
+  "run_id": "20261106-1141-7bf7",
+  "experiment": "004",
+  "note": "activations, Qwen3.5-122B-A10B, presentation=chat-turn",
+  "command": [
+    "bash",
+    "-c",
+    "python -m probing.activations --model \"$MODEL\" --presentation \"$PRESENTATION\" --batch_size \"$BATCH_SIZE\" --output_path \"$RUN_STORE\""
+  ],
+  "cwd": "/home/export/doriancl/code/measures-of-coherence",
+  "status": "succeeded",
+  "segments": [
+    {
+      "git": {
+        "sha": "e1d8a40cc365e107a937567a77468e23ec5bb709",
+        "dirty": true
+      },
+      "uv_lock_sha256": "cb2209d1f8d9ce4beae95ed5b5fb8d345d16edb9dcebd0af4bb56a0787ac334f",
+      "host": "n02",
+      "gpus": [
+        "NVIDIA L40",
+        "NVIDIA L40",
+        "NVIDIA L40",
+        "NVIDIA L40",
+        "NVIDIA L40",
+        "NVIDIA L40",
+        "NVIDIA L40"
+      ],
+      "slurm_job_id": "267373",
+      "started": "2026-11-06T18:52:00+00:00",
+      "steps": [
+        0,
+        0
+      ],
+      "finished": "2026-11-06T19:04:44+00:00",
+      "exit_code": 0
+    }
+  ],
+  "model_ref": "Qwen/Qwen3.5-122B-A10B@dc4d348443bc740c68e2d77492492c11606384d5",
+  "artifacts": [
+    {
+      "path": "20261106-1141-7bf7/Qwen3.5-122B-A10B",
+      "size": 966428566,
+      "sha256": "8fb955d4cbcdf9c777279c3bf5389a34cc7bff43caba1cc5d79afe4ee7934714"
+    }
+  ]
+}

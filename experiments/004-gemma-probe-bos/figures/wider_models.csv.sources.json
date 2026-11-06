@@ -34,14 +34,18 @@
     "20261106-1007-093c",
     "20261106-1013-d12d",
     "20261106-1017-cef0",
-    "20261106-1019-a28c"
+    "20261106-1019-a28c",
+    "20261106-1246-cc5c",
+    "20261106-1333-4715",
+    "20261106-1404-6a9e",
+    "20261106-1404-96ab"
   ],
   "protocols": [],
   "datasets": {},
   "analysis_commit": {
-    "sha": "4362de48f5c28fbae88cc7dab301cbeb081644f6",
+    "sha": "e1d8a40cc365e107a937567a77468e23ec5bb709",
     "dirty": true
   },
   "script": "experiments/004-gemma-probe-bos/analysis/presentation_effect.py",
-  "created": "2026-11-06T15:54:07+00:00"
+  "created": "2026-11-06T19:45:57+00:00"
 }
