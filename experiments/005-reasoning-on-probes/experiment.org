@@ -1,0 +1,37 @@
+#+TITLE: 005 Probes with reasoning on: do the recipes hold when a model thinks first?
+#+TODO: DRAFT REGISTERED RUNNING | CONCLUDED ABANDONED
+
+* DRAFT 005 Probes with reasoning on: do the recipes hold when a model thinks first? :exploratory:
+
+** Question
+Do probes work as well, and agree with what the model says, when a model reasons before answering? Experiment 004 tests its recipes with reasoning off, which departs from how reasoning models are used in production. The author asked on 2026-11-06 to check this too.
+
+** Hypothesis
+Exploratory, so nothing is registered. Not yet designed; start after 004's wider test, which decides which models and recipes are worth this.
+
+** Analysis plan
+Not fixed. What the design has to settle:
+
+- *Where to read.* Two places, which are different questions:
+  - at the end of the prompt with reasoning on, before any reasoning exists. This needs only a template flag, but the model has thought about nothing yet;
+  - after the reasoning closes, where the reply would start. This is the setting production has, and needs the model to generate first.
+- *Generation is new work.* =probing.activations= only runs forward passes on fixed prompts. Reading after reasoning needs a generation step: a seed and sampling settings per run, a cap on reasoning length and a rule for what happens at the cap, and the reasoning text saved, since the activations depend on it.
+- *Cost.* 004 uses 19,662 statements. Hundreds of generated tokens for each is far more than a forward pass, so estimate it on a small run, and decide whether a sample of statements is enough.
+- *What a probe would then mean.* Reasoning may state its conclusion, so a probe read after it could mostly be reading that text. Compare with what the reasoning says, and with the same statements with reasoning off.
+- *Models.* Some have a reasoning mode on one checkpoint (Qwen3.5 and 3.8, =gemma-4-31B-it=, Granite 4.2, Nemotron, GLM); others have separate ones (=Ministral-3-*-Reasoning-2512=, =Olmo-3-*-Think=), which are different weights from the instruct models 004 tests.
+- *Elicitation.* =coherence.elicitation= also turns thinking off, so the comparison with elicited previsions needs a reasoning-on arm as well.
+
+** Tasks
+*** TODO Design this once 004's wider test is read off
+
+** Deviations
+Dated entries for every change to the hypothesis or plan after registration. The plan above is never edited.
+
+** Runs
+#+BEGIN: runs
+| run | status | model reference | protocol | note |
+|-----+--------+-----------------+----------+------|
+#+END:
+
+** Findings
+Written or changed only with the author's sign-off. Cite figures from figures/.
