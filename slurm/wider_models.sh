@@ -14,7 +14,7 @@ BATCH_SIZE="${4:-32}"
 
 for presentation in judge-turn chat-turn; do
     run="$(uv run python -c 'from coherence.record import new_run_id; print(new_run_id())')"
-    job="$(sbatch --parsable --nice=100 --gpus="$GPUS" --mem="$((96 * GPUS))G" --time="$HOURS:00:00" \
+    job="$(sbatch --parsable --nice=100 --gpus="$GPUS" --mem="$((96 + 48 * (GPUS - 1)))G" --time="$HOURS:00:00" \
         slurm/activations_presentation.sbatch "$MODEL" "$presentation" "$run" "$BATCH_SIZE")"
     sbatch --nice=100 --dependency="afterok:$job" --kill-on-invalid-dep=yes \
         slurm/probes_presentation.sbatch "$MODEL" "$presentation" "$run"
