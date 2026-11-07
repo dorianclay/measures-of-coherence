@@ -1,0 +1,75 @@
+{
+  "run_id": "20261107-1258-7e43",
+  "experiment": "003",
+  "note": "smoke test Qwen3.5-9B, flash-linear-attention",
+  "command": [
+    "python",
+    "-m",
+    "coherence.train_umbrella",
+    "--model",
+    "Qwen/Qwen3.5-9B",
+    "--seed",
+    "0",
+    "--arm",
+    "rl",
+    "--steps",
+    "10",
+    "--eval-fractions",
+    "1.0",
+    "--margin-minutes",
+    "5"
+  ],
+  "cwd": "/home/export/doriancl/code/measures-of-coherence",
+  "status": "succeeded",
+  "segments": [
+    {
+      "git": {
+        "sha": "76bfe69e66810b6ec910219bb85cf0199657eaf9",
+        "dirty": true
+      },
+      "uv_lock_sha256": "3bb1d5ec3ff19601c74f53e94a20660ac35654f7a36dac000df72420638c3965",
+      "host": "n02",
+      "gpus": [
+        "NVIDIA L40"
+      ],
+      "slurm_job_id": "268028",
+      "started": "2026-11-07T17:58:22+00:00",
+      "steps": [
+        0,
+        10
+      ],
+      "finished": "2026-11-07T18:02:50+00:00",
+      "exit_code": 0
+    }
+  ],
+  "model_ref": "Qwen/Qwen3.5-9B@c202236235762e1c871ad0ccb60c8ee5ba337b9a",
+  "seed": 0,
+  "planned_steps": 10,
+  "artifacts": [
+    {
+      "path": "20261107-1258-7e43/dataset.jsonl",
+      "size": 81147,
+      "sha256": "5e9cc9cc233030838f47667f713adf73cd00865d3eece97ac2eaa30cde2222e6"
+    },
+    {
+      "path": "20261107-1258-7e43/eval/step0",
+      "size": 173187841,
+      "sha256": "dcc1ed4d4e729e32636c543cf8673e46bd703b24c3d0e8101b71f183f7b71c24",
+      "checkpoint": "eval",
+      "step": 0
+    },
+    {
+      "path": "20261107-1258-7e43/eval/step10",
+      "size": 173187841,
+      "sha256": "ded8c695863458bd966d60946ac20becdcd6c83224e9f893bcfdd191f9f3fb01",
+      "checkpoint": "eval",
+      "step": 10
+    },
+    {
+      "path": "20261107-1258-7e43/rewards.jsonl",
+      "size": 119270,
+      "sha256": "1c162e56b92c553b45af3dea0493c779bcc01feb7e9d2aa1700727c8ebf73ad2"
+    }
+  ],
+  "step": 10
+}
