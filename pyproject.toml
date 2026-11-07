@@ -6,14 +6,13 @@ readme = "README.md"
 requires-python = ">=3.12,<3.13"
 dependencies = [
     "accelerate>=1.0.0",
-    "flash-linear-attention>=0.6.0",
     "jupyter>=1.1.1",
     "matplotlib>=3.11.1",
     "nbformat>=5.11.1",
     "numpy>=1.26.0,<2.0.0",
     "pandas>=3.0.3",
     "peft>=0.21.2",
-    "pyarrow<25", # 25+ needs NumPy 2; NumPy stays <2 so 001's @1 protocols run on the versions they were measured with
+    "pyarrow<25",  # 25+ needs NumPy 2; NumPy stays <2 so 001's @1 protocols run on the versions they were measured with
     "scikit-learn>=1.9.0",
     "scipy>=1.14.0",
     "torch>=2.13.0",
