@@ -51,6 +51,20 @@ PROTOCOLS = {p.id: p for p in [
              "Stated 0-100 probability that each town statement is true, greedy-decoded; unparseable left empty.",
              code="coherence.measure_towns", datasets={"umbrella_towns": 1},
              params={"method": "stated", "templates": ["t0"], "chat": True, "calibrated": False}),
+    # The same statements asked as forecasts, with no system prompt of ours, as in training: the fact-checker framing
+    # above rejects both a statement and its negation on untrained models (003's base-model screen).
+    Protocol("town-forecast-elicit-logprob@1",
+             "Next-token True/False log-probabilities for each town statement as a forecast, own prompt each, three "
+             "templates, no system prompt.",
+             code="coherence.measure_towns", datasets={"umbrella_towns": 1},
+             params={"method": "logprob", "templates": ["f0", "f1", "f2"], "chat": True, "calibrated": False,
+                     "framing": "forecast"}),
+    Protocol("town-forecast-elicit-stated@1",
+             "Stated 0-100 probability that each town statement comes true as a forecast, greedy-decoded, no system "
+             "prompt; unparseable left empty.",
+             code="coherence.measure_towns", datasets={"umbrella_towns": 1},
+             params={"method": "stated", "templates": ["s0"], "chat": True, "calibrated": False,
+                     "framing": "forecast"}),
 ]}
 
 

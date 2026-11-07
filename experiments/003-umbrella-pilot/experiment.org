@@ -59,6 +59,14 @@ uv run submit-chain --segments 1 --sbatch-args="--time=01:00:00 --mem=96G" --exp
     python -m coherence.train_umbrella --model Qwen/Qwen3.5-9B --seed 0 --arm rl --steps 10 \
     --eval-fractions 1.0 --margin-minutes 5
 #+end_example
+*** TODO Can a town-belief protocol read a belief?
+The smoke test passed, at about 26 seconds per step. On untrained =Qwen3.5-9B= the =town-belief-elicit-*@1= protocols still fail: logprob P(rain) + P(no rain) is about 0.1, and stated answers are 0.5 everywhere. New protocols =town-forecast-elicit-logprob@1= and =-stated@1= ask the same statements as forecasts, with no system prompt of ours, the same as the training prompts.
+
+- *Told-chance check.* A flat 0.5 could be an honest "don't know" or a measure that can't move, so both framings are also run with "In <town>, it rains on X% of days." at the top of the prompt, for X = 10, 30, 50, 70, 90 in every town (=--told-chances=).
+- *Usable*, written before these results, on the untrained model, per protocol: P(rain) + P(no rain) averages 0.8–1.2 without a told chance, and when told, the slope of P(rain) on the told chance is at least 0.5 and of P(no rain) at most −0.5. A protocol that misses it isn't used to read 002's H1.
+- *Read off.* =analysis/forecast_screen.py=, =figures/forecast_screen.csv=. Under 1 GPU-hour.
+*** TODO Does the faster linear attention change speed or outputs?
+*** TODO Lock-in: about 300 steps, varying temperature and KL weight
 *** TODO 002's step count, learning rate and budget
 =uv run python experiments/003-umbrella-pilot/analysis/learning_curves.py <run-id> ...=, on the cluster (it reads =$COHERENCE_STORE=). Commit the figures and run records.
 

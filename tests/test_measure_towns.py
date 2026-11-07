@@ -5,9 +5,14 @@ import json
 import shutil
 import sys
 
+import pandas as pd
 import pytest
+from transformers import AutoTokenizer
 
 import tiny_model
+from coherence import protocols
+from coherence.elicitation import SYSTEM
+from coherence.measure_towns import prompt
 from coherence.paths import repo_root
 from test_record import git, make_repo, record
 from test_train_umbrella import train_command
@@ -70,6 +75,31 @@ def test_a_base_model_is_measured_the_same_way(repo, model):
     rows = beliefs(repo, run)
     assert len(rows) == 5 * 2
     assert {(r["town"], r["rain"]) for r in rows} == {(t, str(k)) for t in tiny_model.umbrella.TOWNS for k in (0, 1)}
+
+
+def test_the_forecast_protocols_ask_without_a_system_prompt_of_ours(model):
+    tokenizer = AutoTokenizer.from_pretrained(model)
+    row = pd.DataFrame([{"town": "Velmora", "rain": 1, "statement": "It will rain in Velmora tomorrow."}])
+    for protocol_id, template in [("town-forecast-elicit-logprob@1", "f0"), ("town-forecast-elicit-stated@1", "s0")]:
+        text = prompt(protocols.get(protocol_id), tokenizer, template, next(row.itertuples()))
+        assert "It will rain in Velmora tomorrow." in text and "Forecast:" in text
+        assert SYSTEM not in text and "<|system|>" not in text
+
+
+def test_a_told_chance_is_stated_in_the_prompt_for_every_town_and_chance(repo, model):
+    result = record(repo, "--experiment", "002", "--", sys.executable, "-m", "coherence.measure_towns",
+                    "--model", f"{model}@local", "--protocol", "town-forecast-elicit-stated@1",
+                    "--told-chances", "0.1", "0.9")
+
+    assert result.returncode == 0, result.stderr
+    rows = beliefs(repo, runs_by_command(repo)["coherence.measure_towns"])
+    assert len(rows) == 5 * 2 * 2
+    assert {float(r["told_chance"]) for r in rows} == {0.1, 0.9}
+
+    told = pd.DataFrame([{"town": "Velmora", "statement": "S.", "told_chance": 0.9}])
+    text = prompt(protocols.get("town-forecast-elicit-stated@1"), AutoTokenizer.from_pretrained(model), "s0",
+                  next(told.itertuples()))
+    assert "In Velmora, it rains on 90% of days." in text
 
 
 def test_a_protocol_this_command_does_not_implement_is_refused(repo, model):

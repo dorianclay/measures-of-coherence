@@ -111,11 +111,14 @@ def logprob_previsions(prompts, model, tokenizer, instruct: bool, batch_size: in
     return previsions, masses
 
 
-@torch.no_grad()
 def stated_previsions(statements, model, tokenizer):
+    return stated_from_prompts([chat_prompt(tokenizer, STATED_TEMPLATE.format(s=s)) for s in statements], model, tokenizer)
+
+
+@torch.no_grad()
+def stated_from_prompts(prompts, model, tokenizer):
     previsions = []
-    for statement in tqdm(statements, leave=False):
-        prompt = chat_prompt(tokenizer, STATED_TEMPLATE.format(s=statement))
+    for prompt in tqdm(prompts, leave=False):
         inputs = tokenizer(prompt, return_tensors="pt", add_special_tokens=False).to(model.device)
         out = model.generate(**inputs, max_new_tokens=8, do_sample=False)
         text = tokenizer.decode(out[0, inputs.input_ids.shape[1]:], skip_special_tokens=True)
