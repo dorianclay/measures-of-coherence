@@ -1,0 +1,45 @@
+{
+  "run_id": "20261107-1254-ea25",
+  "experiment": "003",
+  "note": "forecast screen: town-forecast-elicit-stated@1 on Qwen/Qwen3.5-9B",
+  "command": [
+    "python",
+    "-m",
+    "coherence.measure_towns",
+    "--model",
+    "Qwen/Qwen3.5-9B@c202236235762e1c871ad0ccb60c8ee5ba337b9a",
+    "--protocol",
+    "town-forecast-elicit-stated@1"
+  ],
+  "cwd": "/home/export/doriancl/code/measures-of-coherence",
+  "status": "succeeded",
+  "segments": [
+    {
+      "git": {
+        "sha": "fa37e0745a63e9df93a4725624795c002f2e7c5b",
+        "dirty": true
+      },
+      "uv_lock_sha256": "cb2209d1f8d9ce4beae95ed5b5fb8d345d16edb9dcebd0af4bb56a0787ac334f",
+      "host": "n02",
+      "gpus": [
+        "NVIDIA L40"
+      ],
+      "slurm_job_id": "268021",
+      "started": "2026-11-07T17:54:24+00:00",
+      "steps": [
+        0,
+        0
+      ],
+      "finished": "2026-11-07T17:56:43+00:00",
+      "exit_code": 0
+    }
+  ],
+  "model_ref": "Qwen/Qwen3.5-9B@c202236235762e1c871ad0ccb60c8ee5ba337b9a",
+  "protocol": "town-forecast-elicit-stated@1",
+  "datasets": {
+    "umbrella_towns": {
+      "version": 1,
+      "sha256": "1e8eae196e1f233bf26314e8b923667de8e99dc44f72ad4eaea8884c435905f0"
+    }
+  }
+}

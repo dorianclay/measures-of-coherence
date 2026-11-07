@@ -1,0 +1,31 @@
+{
+  "output": "forecast_screen.csv",
+  "runs": [
+    "20261107-1254-dce5",
+    "20261107-1254-3f2e",
+    "20261107-1254-c759",
+    "20261107-1254-9a19",
+    "20261107-1254-ea25",
+    "20261107-1254-e070",
+    "20261106-1525-80d7",
+    "20261106-1528-a929"
+  ],
+  "protocols": [
+    "town-belief-elicit-logprob@1",
+    "town-belief-elicit-stated@1",
+    "town-forecast-elicit-logprob@1",
+    "town-forecast-elicit-stated@1"
+  ],
+  "datasets": {
+    "umbrella_towns": {
+      "version": 1,
+      "sha256": "1e8eae196e1f233bf26314e8b923667de8e99dc44f72ad4eaea8884c435905f0"
+    }
+  },
+  "analysis_commit": {
+    "sha": "fa37e0745a63e9df93a4725624795c002f2e7c5b",
+    "dirty": true
+  },
+  "script": "experiments/003-umbrella-pilot/analysis/forecast_screen.py",
+  "created": "2026-11-07T17:57:10+00:00"
+}
