@@ -69,6 +69,19 @@ The smoke test passed, at about 26 seconds per step. On untrained =Qwen3.5-9B= t
 *** DONE Does the faster linear attention change speed or outputs?
 Not worth it. With =flash-linear-attention= (=76bfe69=, since reverted) the 10 steps took 239 s against 259 s, one run each, and town previsions moved by up to 0.006. =causal-conv1d= can't be built here, as the head node has no =nvcc=, so transformers' fast path stays partial. Every run elsewhere used the torch path, so it stays.
 *** TODO Lock-in: about 300 steps, varying temperature and KL weight
+Approved by the author on 2026-11-08, about 9 GPU-hours. On 1.5B the rl arm locked into one answer per town by about step 200–500. This asks whether sampling temperature or a stronger pull to the base model keeps the answers varied enough to keep learning.
+
+- *Runs.* =Qwen3.5-9B=, rl, seed 0, 300 steps, learning rate 1e-5 (the less extreme of round 1's two), otherwise round 1's settings: temperature 1.0 and 1.5, each with KL weight 0.04 and 0.2. Eval checkpoints at the default fractions. No control yet; it follows once a setting looks good.
+- *Measures.* =town-belief-elicit-stated@1= on every eval checkpoint, the only town protocol that cleared the bar above.
+- *Read off.* =analysis/learning_curves.py=: optimal and valid rates, umbrella rate by hidden /p/, and how often all of a prompt's answers match; =analysis/town_beliefs.py= for the stated beliefs.
+#+begin_example
+for t in 1.0 1.5; do for kl in 0.04 0.2; do
+  uv run submit-chain --segments 1 --sbatch-args="--time=04:00:00 --mem=96G" --experiment 003 \
+      --note "lock-in Qwen3.5-9B temperature=$t kl=$kl" -- python -m coherence.train_umbrella --model Qwen/Qwen3.5-9B \
+      --seed 0 --arm rl --steps 300 --learning-rate 1e-5 --temperature $t --kl $kl
+done; done
+#+end_example
+Then =PROTOCOLS=town-belief-elicit-stated@1 sbatch --dependency=afterok:<job> slurm/measure_towns.sbatch <run-id>= for each.
 *** TODO 002's step count, learning rate and budget
 =uv run python experiments/003-umbrella-pilot/analysis/learning_curves.py <run-id> ...=, on the cluster (it reads =$COHERENCE_STORE=). Commit the figures and run records.
 
