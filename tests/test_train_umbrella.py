@@ -90,3 +90,17 @@ def test_a_run_split_across_segments_trains_exactly_like_an_unbroken_one(tmp_pat
     eval_hashes = lambda run: {a["step"]: a["sha256"] for a in run["artifacts"] if a.get("checkpoint") == "eval"}
     assert eval_hashes(split) == eval_hashes(read_run(unbroken_repo))
     assert len(set(eval_hashes(split).values())) == 3
+
+
+def test_a_framed_run_trains_on_its_conditions_samples_and_rewards_them_in_its_words(tmp_path, model):
+    repo = make_repo(tmp_path)
+
+    result = record(repo, "--experiment", "002", *train_command(model, "--framing", "invented"))
+
+    assert result.returncode == 0, result.stderr
+    run = read_run(repo)
+    store = repo.parent / "store" / run["run_id"]
+    dataset = [json.loads(line) for line in (store / "dataset.jsonl").read_text().splitlines()]
+    assert {s["framing"] for s in dataset} == {"orb"}
+    for entry in reward_log(repo, run):
+        assert entry["answer"] in (None, "umbrella", "no umbrella")

@@ -1,0 +1,11 @@
+framing,rain,statement,event
+frost,1,A glimmerfrost will settle in Orsk tonight.,A glimmerfrost will settle in Orsk tonight.
+frost,0,No glimmerfrost will settle in Orsk tonight.,A glimmerfrost will settle in Orsk tonight.
+barge,1,A silt drift will block the Vell channel today.,A silt drift will block the Vell channel today.
+barge,0,No silt drift will block the Vell channel today.,A silt drift will block the Vell channel today.
+beacon,1,The tessel beacon will flare tonight.,The tessel beacon will flare tonight.
+beacon,0,The tessel beacon will not flare tonight.,The tessel beacon will flare tonight.
+market,1,A swarm of pellicks will pass over the market of Prell today.,A swarm of pellicks will pass over the market of Prell today.
+market,0,No swarm of pellicks will pass over the market of Prell today.,A swarm of pellicks will pass over the market of Prell today.
+orb,1,The Varn orb will hum today.,The Varn orb will hum today.
+orb,0,The Varn orb will not hum today.,The Varn orb will hum today.

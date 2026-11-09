@@ -65,6 +65,16 @@ PROTOCOLS = {p.id: p for p in [
              code="coherence.measure_towns", datasets={"umbrella_towns": 1},
              params={"method": "stated", "templates": ["s0"], "chat": True, "calibrated": False,
                      "framing": "forecast"}),
+    # 003's framed task: the town-belief methods on each framing's event, the stated one being the only town protocol
+    # to clear 003's told-chance bar
+    Protocol("event-belief-elicit-logprob@1",
+             "Next-token True/False log-probabilities for each framed event statement, own prompt each, three templates.",
+             code="coherence.measure_towns", datasets={"framed_events": 1},
+             params={"method": "logprob", "templates": ["t0", "t1", "t2"], "chat": True, "calibrated": False}),
+    Protocol("event-belief-elicit-stated@1",
+             "Stated 0-100 probability that each framed event statement is true, greedy-decoded; unparseable left empty.",
+             code="coherence.measure_towns", datasets={"framed_events": 1},
+             params={"method": "stated", "templates": ["t0"], "chat": True, "calibrated": False}),
 ]}
 
 

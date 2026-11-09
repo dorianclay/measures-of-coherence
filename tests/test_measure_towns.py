@@ -107,3 +107,24 @@ def test_a_protocol_this_command_does_not_implement_is_refused(repo, model):
 
     assert result.returncode != 0
     assert "town-belief" in result.stderr
+
+
+def test_a_framed_events_belief_is_measured_per_framing_with_a_told_chance(tmp_path, model):
+    repo = make_repo(tmp_path)
+    (repo / "data" / "datasets").mkdir(parents=True)
+    shutil.copy(repo_root() / "data" / "datasets" / "framed_events.csv", repo / "data" / "datasets")
+    manifest = json.loads((repo_root() / "data" / "datasets.json").read_text())
+    (repo / "data" / "datasets.json").write_text(json.dumps({"framed_events": manifest["framed_events"]}))
+    git(repo, "add", "-A")
+    git(repo, "commit", "-q", "-m", "add framed_events")
+
+    result = record(repo, "--experiment", "002", "--", sys.executable, "-m", "coherence.measure_towns",
+                    "--model", f"{model}@local", "--protocol", "event-belief-elicit-stated@1", "--told-chances", "0.3")
+
+    assert result.returncode == 0, result.stderr
+    rows = beliefs(repo, runs_by_command(repo)["coherence.measure_towns"])
+    assert {(r["framing"], r["rain"]) for r in rows} == {(f, str(k)) for f in tiny_model.umbrella.FRAMINGS for k in (0, 1)}
+    row = pd.DataFrame([{"event": "The Varn orb will hum today.", "statement": "S.", "told_chance": 0.3, "rain": 1}])
+    text = prompt(protocols.get("event-belief-elicit-stated@1"), AutoTokenizer.from_pretrained(model), "t0",
+                  next(row.itertuples()))
+    assert "The chance of the following is 30%: The Varn orb will hum today." in text

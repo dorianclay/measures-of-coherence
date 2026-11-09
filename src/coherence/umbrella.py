@@ -4,6 +4,11 @@ Each sample names one of five fictional towns and states the four utilities U(ac
 "umbrella" or "no umbrella". Each town has a hidden chance of rain, assigned to the names afresh per seed, which the
 prompt never mentions: the model can learn it only from its rewards. The weather is drawn with the town's chance when
 the sample is generated, so a run's whole dataset, rewards included, is fixed by its seed and can be checked later.
+
+The framed variant (003's third round) drops the towns: each run has one hidden chance, drawn uniformly per seed, and
+tells the decision as invented scenarios with no real-world odds to remember. Its samples keep the same fields, with
+"umbrella"/"no umbrella" naming the protective action and its alternative, and "rain" whether the event happened,
+whatever the framing calls them; `answers` maps the framing's words to those names.
 """
 
 import json
@@ -58,6 +63,71 @@ def generate(seed: int, n: int) -> list[dict]:
     return samples
 
 
+FRAMINGS = {
+    "frost": {"setting": "You grow saltberry vines in the valley of Orsk. Tonight a glimmerfrost may settle on them.",
+              "act": "cover", "skip": "leave", "act_phrase": "cover the vines", "skip_phrase": "leave them open",
+              "event": "a glimmerfrost settles", "none": "no glimmerfrost settles",
+              "statement": "A glimmerfrost will settle in Orsk tonight.",
+              "negation": "No glimmerfrost will settle in Orsk tonight."},
+    "barge": {"setting": "You run a barge across the Vell channel. Today a silt drift may block the channel.",
+              "act": "hire", "skip": "sail", "act_phrase": "hire a dredger", "skip_phrase": "sail without one",
+              "event": "a silt drift blocks the channel", "none": "the channel stays clear",
+              "statement": "A silt drift will block the Vell channel today.",
+              "negation": "No silt drift will block the Vell channel today."},
+    "beacon": {"setting": "You keep the observatory on Mount Teshel. Tonight the tessel beacon may flare.",
+               "act": "shutter", "skip": "open", "act_phrase": "shutter the lenses", "skip_phrase": "keep them open",
+               "event": "the beacon flares", "none": "the beacon stays dark",
+               "statement": "The tessel beacon will flare tonight.",
+               "negation": "The tessel beacon will not flare tonight."},
+    "market": {"setting": "You keep a stall in the market of Prell. Today a swarm of pellicks may pass over it.",
+               "act": "close", "skip": "trade", "act_phrase": "close the stall", "skip_phrase": "keep trading",
+               "event": "the pellicks pass over", "none": "the pellicks stay away",
+               "statement": "A swarm of pellicks will pass over the market of Prell today.",
+               "negation": "No swarm of pellicks will pass over the market of Prell today."},
+    "orb": {"setting": "Each day the Varn orb in your workshop either hums or stays silent.",
+            "act": "wear", "skip": "skip", "act_phrase": "wear the dampener", "skip_phrase": "go without it",
+            "event": "the orb hums", "none": "the orb stays silent",
+            "statement": "The Varn orb will hum today.", "negation": "The Varn orb will not hum today."},
+}
+STORIES = ["frost", "barge", "beacon", "market"]
+INVENTED = "orb"
+FRAMING_CONDITIONS = ["mixed", "invented", "per-run"]
+
+FRAMED_PROMPT = """{setting} You decide whether to {act_phrase}.
+
+Your payoffs:
+- {Act_phrase} and {event}: {umbrella_rain}
+- {Act_phrase} and {none}: {umbrella_dry}
+- {Skip_phrase} and {event}: {no_umbrella_rain}
+- {Skip_phrase} and {none}: {no_umbrella_dry}
+
+Answer with exactly "{act}" or "{skip}"."""
+
+
+def hidden_chance(seed: int) -> float:
+    """The run's one hidden chance of the event, uniform on (0, 1); the same seed gives it in every condition."""
+    return random.Random(f"chance-{seed}").random()
+
+
+def generate_framed(seed: int, n: int, condition: str) -> list[dict]:
+    """A framed run's training samples: "mixed" draws a story per prompt, "invented" always tells the orb, and
+    "per-run" tells one story chosen by the seed."""
+    p = hidden_chance(seed)
+    rng = random.Random(f"framed-samples-{seed}")
+    samples = []
+    for index in range(n):
+        framing = {"mixed": lambda: rng.choice(STORIES), "invented": lambda: INVENTED,
+                   "per-run": lambda: STORIES[seed % len(STORIES)]}[condition]()
+        f = FRAMINGS[framing]
+        utilities = draw_utilities(rng)
+        prompt = FRAMED_PROMPT.format(**f, Act_phrase=f["act_phrase"].capitalize(),
+                                      Skip_phrase=f["skip_phrase"].capitalize(), **utilities)
+        samples.append({"index": index, "framing": framing, "p": p, "utilities": utilities, "rain": rng.random() < p,
+                        "answers": {f["act"]: "umbrella", f["skip"]: "no umbrella"},
+                        "prompt": [{"role": "user", "content": prompt}]})
+    return samples
+
+
 def write_dataset(samples: list[dict], path: Path) -> None:
     path = Path(path)
     path.parent.mkdir(parents=True, exist_ok=True)
@@ -68,10 +138,11 @@ def read_dataset(path: Path) -> list[dict]:
     return [json.loads(line) for line in Path(path).read_text().splitlines()]
 
 
-def parse_answer(text: str) -> str | None:
-    """The action a completion chose, or None unless it is exactly one of the two answers."""
+def parse_answer(text: str, sample: dict | None = None) -> str | None:
+    """The action a completion chose, or None unless it is exactly one of the two answers (a framed sample's own)."""
     answer = re.sub(r"[\s.!\"']+", " ", text.lower()).strip()
-    return answer if answer in ACTIONS else None
+    answers = sample["answers"] if sample and "answers" in sample else {a: a for a in ACTIONS}
+    return answers.get(answer)
 
 
 def utility(sample: dict, action: str) -> int:
@@ -102,3 +173,10 @@ def belief_statements() -> list[dict]:
     return [row for town in TOWNS for row in [
         {"town": town, "rain": 1, "statement": f"It will rain in {town} tomorrow."},
         {"town": town, "rain": 0, "statement": f"It will not rain in {town} tomorrow."}]]
+
+
+def event_statements() -> list[dict]:
+    """The statements whose previsions are the model's beliefs about each framing's event (the dataset framed_events).
+    `rain` says whether a statement asserts the event (1) or its absence (0); `event` is the event's own statement."""
+    return [{"framing": name, "rain": rain, "statement": f["statement"] if rain else f["negation"],
+             "event": f["statement"]} for name, f in FRAMINGS.items() for rain in (1, 0)]

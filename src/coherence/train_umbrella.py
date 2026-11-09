@@ -99,7 +99,7 @@ def reward_function(samples: list[dict], arm: str, seed: int, log_path: Path):
         with open(log_path, "a") as log:
             for completion, i in zip(completions, index):
                 text = completion[0]["content"] if isinstance(completion, list) else completion
-                answer = umbrella.parse_answer(text)
+                answer = umbrella.parse_answer(text, samples[i])
                 k = seen[i] = seen.get(i, -1) + 1
                 if arm == "rl":
                     r = umbrella.reward(samples[i], answer)
@@ -119,6 +119,8 @@ def main(argv=None):
     parser.add_argument("--revision", help="Hugging Face revision; default: the latest.")
     parser.add_argument("--seed", type=int, required=True)
     parser.add_argument("--arm", choices=["rl", "control"], required=True)
+    parser.add_argument("--framing", choices=umbrella.FRAMING_CONDITIONS,
+                        help="The framed task, in this condition, instead of the towns.")
     parser.add_argument("--steps", type=int, required=True, help="Planned optimizer steps for the whole run.")
     parser.add_argument("--prompts-per-step", type=int, default=16)
     parser.add_argument("--group-size", type=int, default=8, help="Completions per prompt (GRPO group).")
@@ -143,7 +145,10 @@ def main(argv=None):
     start_step = resume[1] if resume else 0
 
     if resume is None:
-        umbrella.write_dataset(umbrella.generate(args.seed, args.steps * args.prompts_per_step), dataset_path)
+        n = args.steps * args.prompts_per_step
+        generated = (umbrella.generate_framed(args.seed, n, args.framing) if args.framing
+                     else umbrella.generate(args.seed, n))
+        umbrella.write_dataset(generated, dataset_path)
         log_path.write_text("")
         runs.log(model_ref=model_ref, seed=args.seed, planned_steps=args.steps, artifacts=[dataset_path])
         if run_dir := runs.current_run_dir():

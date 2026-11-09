@@ -84,3 +84,54 @@ def test_a_dataset_written_to_disk_reads_back_unchanged(tmp_path):
     umbrella.write_dataset(samples, tmp_path / "dataset.jsonl")
 
     assert umbrella.read_dataset(tmp_path / "dataset.jsonl") == samples
+
+
+# The framed variant: one hidden chance per run, the decision told as one of several invented scenarios
+
+
+def test_each_seed_draws_one_hidden_chance_shared_by_every_framing_condition():
+    chances = [umbrella.hidden_chance(seed) for seed in range(20)]
+
+    assert all(0 < p < 1 for p in chances) and len(set(chances)) == 20
+    for condition in umbrella.FRAMING_CONDITIONS:
+        assert {s["p"] for s in umbrella.generate_framed(seed=2, n=50, condition=condition)} == {chances[2]}
+
+
+@pytest.mark.parametrize("condition, framings", [
+    ("mixed", set(umbrella.STORIES)), ("invented", {umbrella.INVENTED}), ("per-run", {umbrella.STORIES[1]}),
+])
+def test_each_condition_tells_the_decision_in_its_own_framings(condition, framings):
+    samples = umbrella.generate_framed(seed=1, n=400, condition=condition)
+
+    assert {s["framing"] for s in samples} == framings
+    for s in samples:
+        f = umbrella.FRAMINGS[s["framing"]]
+        prompt = s["prompt"][-1]["content"]
+        assert f["act"] in prompt and f["skip"] in prompt and "umbrella" not in prompt and "rain" not in prompt
+        assert str(round(s["p"], 2)) not in prompt
+        for v in s["utilities"].values():
+            assert str(v) in prompt
+    assert umbrella.generate_framed(seed=1, n=400, condition=condition) == samples
+
+
+def test_the_framed_event_follows_the_hidden_chance():
+    samples = umbrella.generate_framed(seed=4, n=20000, condition="mixed")
+
+    assert abs(sum(s["rain"] for s in samples) / len(samples) - umbrella.hidden_chance(4)) < 0.02
+
+
+def test_a_framed_answer_is_read_in_its_framings_words_and_rewarded_as_its_action():
+    sample = umbrella.generate_framed(seed=0, n=1, condition="invented")[0]
+    f = umbrella.FRAMINGS[umbrella.INVENTED]
+
+    assert umbrella.parse_answer(f["act"].capitalize() + ".", sample) == "umbrella"
+    assert umbrella.parse_answer(f["skip"], sample) == "no umbrella"
+    assert umbrella.parse_answer("umbrella", sample) is None
+    u, weather = sample["utilities"], "_rain" if sample["rain"] else "_dry"
+    assert umbrella.reward(sample, umbrella.parse_answer(f["skip"], sample)) == u["no_umbrella" + weather]
+
+
+def test_every_framing_has_a_statement_pair_to_measure_its_event():
+    rows = umbrella.event_statements()
+
+    assert {(r["framing"], r["rain"]) for r in rows} == {(f, k) for f in umbrella.FRAMINGS for k in (0, 1)}

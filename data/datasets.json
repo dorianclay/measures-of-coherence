@@ -89,6 +89,15 @@
       }
     ]
   },
+  "framed_events": {
+    "path": "datasets/framed_events.csv",
+    "history": [
+      {
+        "version": 1,
+        "sha256": "eda22f2accc8794c28eb195dae3e0d26fc2c060eef3468b0858a3b9e57abab0e"
+      }
+    ]
+  },
   "generated": {
     "path": "datasets/generated_true_false.csv",
     "history": [

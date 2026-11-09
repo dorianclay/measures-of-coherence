@@ -83,6 +83,23 @@ done; done
 #+end_example
 Then =PROTOCOLS=town-belief-elicit-stated@1 sbatch --dependency=afterok:<job> slurm/measure_towns.sbatch <run-id>= for each.
 - *Result.* 8.4 GPU-hours. Neither setting prevents the lock-in (=figures/lock_in_curves.csv=, =figures/lock_in_beliefs.csv=). By step 300, three runs give one answer per town (umbrella only where the hidden chance is 0.7 or 0.9) at 67–79% optimal, and temperature 1.5 with KL 0.04 says "no umbrella" to everything from about step 50. Temperature 1.5 with KL 0.2 keeps the most variety (78% of prompts unanimous at the end, against 94–100%), without choosing better. Stated beliefs are 0.5 in every town at every checkpoint of every run, though the runs choose differently by town.
+*** TODO Third round: one hidden chance, framings the model can't have memorized
+The author's decision on 2026-11-08, after the lock-in sweep: drop the towns, and vary how the decision is told so the model can't lean on anything it already knows about umbrellas and rain. With towns, the runs learned "umbrella in the rainy towns" and stopped there.
+
+- *Task.* =--framing= in =coherence.train_umbrella=. Each run has one hidden chance of the event, drawn uniformly on (0, 1) from its seed, the same for a seed in every condition. The decision is told as invented scenarios with no real-world odds (=umbrella.FRAMINGS=): four stories (frost on saltberry vines, a silt drift in a channel, a beacon flaring, a swarm over a market) and one abstract one (a humming orb). Utilities, reward and the rest as before.
+- *Conditions*, all three by the author's decision: =mixed= draws a story per prompt; =invented= always tells the orb; =per-run= tells one story chosen by the seed. Seeds 0–3 in each, chances 0.87, 0.16, 0.26 and 0.72, so each condition sees the same four chances.
+- *Settings.* =Qwen3.5-9B=, rl, 300 steps, learning rate 1e-5, temperature 1.0, KL weight 0.04 (the sweep's best). 12 runs, about 25 GPU-hours, plus measurements.
+- *Measures.* =event-belief-elicit-stated@1= on every eval checkpoint, for all five framings' events, so a run's trained framings can be compared with the ones it never saw (dataset =framed_events=).
+- *Check first*, on untrained =Qwen3.5-9B=, with the same bar as the towns: P(event) + P(no event) averages 0.8–1.2 without a told chance, and when told, the slope of P(event) is at least 0.5 and of P(no event) at most −0.5. Also run for =event-belief-elicit-logprob@1=, for comparison.
+- *Read off.* =analysis/framing_pilot.py=: per run, its optimal rate against the best a fixed answer could get on the same prompts, its protective-action rate against its hidden chance, and stated P(event) over checkpoints, own framings and others; and =analysis/forecast_screen.py= for the check. With one chance per run, H1 becomes a comparison across runs: does P(event) rise with the hidden chance?
+#+begin_example
+for c in mixed invented per-run; do for s in 0 1 2 3; do
+  uv run submit-chain --segments 1 --sbatch-args="--time=04:00:00 --mem=96G" --experiment 003 \
+      --note "framed $c seed=$s Qwen3.5-9B" -- python -m coherence.train_umbrella --model Qwen/Qwen3.5-9B \
+      --seed $s --arm rl --steps 300 --learning-rate 1e-5 --framing $c
+done; done
+#+end_example
+Then =PROTOCOLS=event-belief-elicit-stated@1 sbatch --dependency=afterok:<job> slurm/measure_towns.sbatch <run-id>= for each.
 *** TODO 002's step count, learning rate and budget
 =uv run python experiments/003-umbrella-pilot/analysis/learning_curves.py <run-id> ...=, on the cluster (it reads =$COHERENCE_STORE=). Commit the figures and run records.
 
