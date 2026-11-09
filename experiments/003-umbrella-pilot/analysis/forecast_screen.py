@@ -3,8 +3,9 @@
     uv run python experiments/003-umbrella-pilot/analysis/forecast_screen.py <measurement-run-id> ...
 
 Per model, protocol and whether the chance of rain was told in the prompt: P(rain), P(no rain) and their sum (1 if
-coherent); with told chances, the slopes of both on the told chance (1 and -1 if it reads what it was told). Writes
-figures/forecast_screen.csv, or --name. Works on the framed events too, where "rain" is the event.
+coherent); with told chances, the slopes of both on the told chance (1 and -1 if it reads what it was told), and how
+the chance was worded. Works on the framed events too, where "rain" is the event, and on checkpoints, where the model
+is the training run and step its checkpoint. Writes figures/forecast_screen.csv, or --name.
 """
 
 import argparse
@@ -28,7 +29,10 @@ def main():
         beliefs = pd.read_csv(run["dir"] / "outputs" / "beliefs.csv")
         told = "told_chance" in beliefs
         rain, dry = [beliefs[beliefs.rain == k].prevision for k in (1, 0)]
-        row = {"model": run["model_ref"].split("@")[0], "protocol": run["protocol"], "run_id": run["run_id"], "told": told,
+        model, _, revision = run["model_ref"].partition("@")
+        row = {"model": model, "step": int(revision[4:]) if revision.startswith("step") else None,
+               "protocol": run["protocol"], "run_id": run["run_id"], "told": told,
+               "told_as": (beliefs["told_as"].iloc[0] if "told_as" in beliefs else "prefix") if told else None,
                "p_rain": rain.mean(), "p_no_rain": dry.mean(), "sum": rain.mean() + dry.mean(),
                "unparsed": int(beliefs.prevision.isna().sum()), "answers": len(beliefs)}
         if told:
@@ -36,7 +40,7 @@ def main():
                 part = beliefs[(beliefs.rain == k) & beliefs.prevision.notna()]
                 row[name] = np.polyfit(part.told_chance, part.prevision, 1)[0]
         rows.append(row)
-    table = pd.DataFrame(rows).sort_values(["model", "protocol", "told"])
+    table = pd.DataFrame(rows).sort_values(["model", "step", "protocol", "told", "told_as"], na_position="first")
     runs.save(table, experiments_dir() / "003-umbrella-pilot" / "figures" / f"{args.name}.csv", loaded)
     print(table.drop(columns="run_id").round(3).to_string(index=False))
 

@@ -128,3 +128,14 @@ def test_a_framed_events_belief_is_measured_per_framing_with_a_told_chance(tmp_p
     text = prompt(protocols.get("event-belief-elicit-stated@1"), AutoTokenizer.from_pretrained(model), "t0",
                   next(row.itertuples()))
     assert "The chance of the following is 30%: The Varn orb will hum today." in text
+
+
+def test_a_told_chance_can_be_told_as_the_training_prompts_tell_it(model):
+    row = pd.DataFrame([{"framing": "frost", "event": "A glimmerfrost will settle in Orsk tonight.", "statement": "S.",
+                         "told_chance": 0.7, "rain": 1}])
+    text = prompt(protocols.get("event-belief-elicit-stated@1"), AutoTokenizer.from_pretrained(model), "t0",
+                  next(row.itertuples()), told_as="scenario")
+
+    setting = tiny_model.umbrella.FRAMINGS["frost"]["setting"]
+    assert f"{setting} There is a 70% chance that a glimmerfrost settles." in text
+    assert "The chance of the following" not in text

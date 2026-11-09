@@ -10,7 +10,9 @@ template, prevision; stated answers that don't parse are left empty).
 
 --told-chances checks that a protocol can read a belief at all: every town is measured at every given chance of rain,
 stated at the top of the prompt, and the output gains a told_chance column. It isn't a measurement of the model's own
-beliefs, so these runs are not comparable with runs without it.
+beliefs, so these runs are not comparable with runs without it. For the framed events, --told-as scenario tells the
+chance as the stated-chance training prompts do ("<setting> There is a 70% chance that <event>.") in place of
+"The chance of the following is 70%: <statement>"; the output then gains a told_as column.
 
 The event-belief protocols do the same for the framed task's events (dataset framed_events), with a framing column in
 place of the town.
@@ -21,7 +23,7 @@ from pathlib import Path
 
 import pandas as pd
 
-from coherence import datasets, models, protocols, runs
+from coherence import datasets, models, protocols, runs, umbrella
 from coherence.elicitation import INSTRUCT_TEMPLATES, STATED_TEMPLATE, chat_prompt, logprob_previsions, stated_from_prompts
 
 IMPLEMENTED = ["town-belief-elicit-logprob@1", "town-belief-elicit-stated@1",
@@ -38,11 +40,17 @@ FORECAST_TEMPLATES = {
 }
 
 
-def prompt(protocol, tokenizer, template: str, row) -> str:
-    told = ""
-    if "told_chance" in row._fields:
-        told = (f"The chance of the following is {row.told_chance:.0%}: {row.event}\n\n" if "event" in row._fields
-                else f"In {row.town}, it rains on {row.told_chance:.0%} of days.\n\n")
+def told_prefix(row, told_as: str) -> str:
+    if "event" not in row._fields:
+        return f"In {row.town}, it rains on {row.told_chance:.0%} of days.\n\n"
+    if told_as == "scenario":
+        f = umbrella.FRAMINGS[row.framing]
+        return f"{f['setting']} There is a {row.told_chance:.0%} chance that {f['event']}.\n\n"
+    return f"The chance of the following is {row.told_chance:.0%}: {row.event}\n\n"
+
+
+def prompt(protocol, tokenizer, template: str, row, told_as: str = "prefix") -> str:
+    told = told_prefix(row, told_as) if "told_chance" in row._fields else ""
     if protocol.params.get("framing") == "forecast":
         messages = [{"role": "user", "content": told + FORECAST_TEMPLATES[template].format(s=row.statement)}]
         return tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True, enable_thinking=False)
@@ -50,11 +58,11 @@ def prompt(protocol, tokenizer, template: str, row) -> str:
     return chat_prompt(tokenizer, told + question.format(s=row.statement))
 
 
-def measure(protocol, model, tokenizer, statements: pd.DataFrame) -> pd.DataFrame:
+def measure(protocol, model, tokenizer, statements: pd.DataFrame, told_as: str = "prefix") -> pd.DataFrame:
     method, templates = protocol.params["method"], protocol.params["templates"]
     rows = []
     for template in templates:
-        prompts = [prompt(protocol, tokenizer, template, row) for row in statements.itertuples()]
+        prompts = [prompt(protocol, tokenizer, template, row, told_as) for row in statements.itertuples()]
         if method == "logprob":
             previsions, _ = logprob_previsions(prompts, model, tokenizer, True, batch_size=len(prompts))
         else:
@@ -69,6 +77,8 @@ def main(argv=None):
                                                        "<run-id>@step<N>.")
     parser.add_argument("--protocol", required=True, choices=IMPLEMENTED)
     parser.add_argument("--told-chances", type=float, nargs="+", help="State these chances of rain in the prompt.")
+    parser.add_argument("--told-as", choices=["prefix", "scenario"], default="prefix",
+                        help="Framed events: how a told chance is worded (see above).")
     parser.add_argument("--output", help="Where to write beliefs.csv outside `record`.")
     args = parser.parse_args(argv)
     protocol = protocols.get(args.protocol)
@@ -80,7 +90,9 @@ def main(argv=None):
         statements = statements.merge(pd.DataFrame({"told_chance": args.told_chances}), how="cross")
     runs.log(model_ref=args.model, protocol=args.protocol, datasets=list(protocol.datasets))
     model, tokenizer = models.load(args.model)
-    beliefs = measure(protocol, model, tokenizer, statements)
+    beliefs = measure(protocol, model, tokenizer, statements, args.told_as)
+    if args.told_chances and args.told_as != "prefix":
+        beliefs["told_as"] = args.told_as
     output.mkdir(parents=True, exist_ok=True)
     beliefs.to_csv(output / "beliefs.csv", index=False)
     print(beliefs.pivot_table(index=[c for c in ["town", "framing", "told_chance"] if c in beliefs],

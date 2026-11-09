@@ -17,9 +17,9 @@
     }
   },
   "analysis_commit": {
-    "sha": "710e27be7715a0143ae0ffe5ac8a3aa814f4c774",
+    "sha": "2df1229f06be036b10b582480e1ab2cc07ebd327",
     "dirty": true
   },
   "script": "experiments/003-umbrella-pilot/analysis/forecast_screen.py",
-  "created": "2026-11-09T07:35:50+00:00"
+  "created": "2026-11-09T16:07:39+00:00"
 }

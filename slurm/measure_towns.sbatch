@@ -14,6 +14,9 @@
 # Usage (from the repo root; `mkdir -p logs` once):
 #   sbatch slurm/measure_towns.sbatch <training-run-id>
 #   PROTOCOLS="town-belief-elicit-logprob@1" sbatch slurm/measure_towns.sbatch <training-run-id>
+#   MEASURE_ARGS="--told-chances 0.1 0.9" sbatch slurm/measure_towns.sbatch <training-run-id>
+#
+# MEASURE_ARGS are passed on to coherence.measure_towns and named in each run's note.
 #
 # Submit it after the training chain, e.g. with --dependency=afterok:<last job of the chain>.
 
@@ -21,6 +24,7 @@ set -euo pipefail
 
 RUN="${1:?usage: sbatch measure_towns.sbatch <training-run-id>}"
 PROTOCOLS="${PROTOCOLS:-town-belief-elicit-logprob@1 town-belief-elicit-stated@1}"
+MEASURE_ARGS="${MEASURE_ARGS:-}"
 
 cd "${SLURM_SUBMIT_DIR:-$(dirname "$0")/..}"
 export HF_HOME="${HF_HOME:-$HOME/.cache/huggingface}"
@@ -37,8 +41,8 @@ echo "Job ${SLURM_JOB_ID:-?}: run $RUN of experiment $EXPERIMENT, eval checkpoin
 FAILED=0
 for STEP in $STEPS; do
     for PROTOCOL in $PROTOCOLS; do
-        uv run record --experiment "$EXPERIMENT" --note "$PROTOCOL on $RUN@step$STEP" -- \
-            python -m coherence.measure_towns --model "$RUN@step$STEP" --protocol "$PROTOCOL" || FAILED=1
+        uv run record --experiment "$EXPERIMENT" --note "$PROTOCOL on $RUN@step$STEP${MEASURE_ARGS:+ $MEASURE_ARGS}" -- \
+            python -m coherence.measure_towns --model "$RUN@step$STEP" --protocol "$PROTOCOL" $MEASURE_ARGS || FAILED=1
     done
 done
 exit $FAILED
