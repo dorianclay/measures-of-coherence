@@ -104,3 +104,16 @@ def test_a_framed_run_trains_on_its_conditions_samples_and_rewards_them_in_its_w
     assert {s["framing"] for s in dataset} == {"orb"}
     for entry in reward_log(repo, run):
         assert entry["answer"] in (None, "umbrella", "no umbrella")
+
+
+def test_a_stated_chance_run_trains_on_one_payoff_table_with_chances_in_its_prompts(tmp_path, model):
+    repo = make_repo(tmp_path)
+
+    result = record(repo, "--experiment", "002",
+                    *train_command(model, "--framing", "per-run", "--chance", "stated"))
+
+    assert result.returncode == 0, result.stderr
+    store = repo.parent / "store" / read_run(repo)["run_id"]
+    dataset = [json.loads(line) for line in (store / "dataset.jsonl").read_text().splitlines()]
+    assert len({json.dumps(s["utilities"], sort_keys=True) for s in dataset}) == 1
+    assert all(f"There is a {round(s['p'] * 100)}% chance" in s["prompt"][-1]["content"] for s in dataset)

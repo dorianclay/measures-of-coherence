@@ -36,12 +36,6 @@ def measurements(training: dict) -> list[dict]:
     return found
 
 
-def locked_by(d: pd.DataFrame) -> int:
-    """The first step at which at least 99% of the step's answers are the same one."""
-    share = d.groupby("step")["answer"].agg(lambda a: a.value_counts(dropna=False).iloc[0] / len(a))
-    return int(share[share >= 0.99].index.min())
-
-
 def main():
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("run_ids", nargs="+")
@@ -63,7 +57,7 @@ def main():
                      "optimal": last["optimal"].mean(), "best_fixed_answer": max(protect, 1 - protect),
                      "protective_rate": (last["answer"] == "umbrella").mean(), "valid": last["valid"].mean(),
                      "unanimous": last.groupby("index")["answer"].agg(lambda a: a.nunique(dropna=False) == 1).mean(),
-                     "locked_by": locked_by(d), "gpu_hours": runs.gpu_hours(training)})
+                     "locked_by": umbrella_analysis.locked_by(d), "gpu_hours": runs.gpu_hours(training)})
         for run in measurements(training):
             loaded.append(run)
             beliefs = pd.read_csv(run["dir"] / "outputs" / "beliefs.csv")

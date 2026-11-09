@@ -29,3 +29,9 @@ def decisions(run: dict) -> pd.DataFrame:
                      "answer": entry["answer"], "valid": entry["answer"] is not None,
                      "optimal": entry["answer"] == umbrella.optimal_action(sample), "reward": entry["reward"]})
     return pd.DataFrame(rows).assign(run_id=run["run_id"], **{k: config(run)[k] for k in ["arm", "seed"]})
+
+
+def locked_by(d: pd.DataFrame) -> float:
+    """The first step at which at least 99% of the step's answers are the same one; NaN if none."""
+    share = d.groupby("step")["answer"].agg(lambda a: a.value_counts(dropna=False).iloc[0] / len(a))
+    return share[share >= 0.99].index.min()

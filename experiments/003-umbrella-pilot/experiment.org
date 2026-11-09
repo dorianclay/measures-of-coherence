@@ -102,6 +102,19 @@ done; done
 Then =PROTOCOLS=event-belief-elicit-stated@1 sbatch --dependency=afterok:<job> slurm/measure_towns.sbatch <run-id>= for each.
 - *Result on the check.* Neither event protocol clears the bar (=figures/event_check.csv=). =event-belief-elicit-stated@1= sums to 0.60 untold, and its told slopes are 0.00 for P(event) and −0.40 for P(no event); =-logprob@1= sums to 0.18. The raw answers show why: told "The chance of the following is 10%: <event>", the model answers 90 for the negation, as it should, but still 0 or 50 for the event itself, as it does untold. So these protocols can't show a belief about the invented events, and the beliefs below don't test H1.
 - *Result on the runs.* About 27 GPU-hours (=figures/framing_pilot.csv=, =figures/framing_beliefs.csv=). Framing made no difference that matters. All 12 runs end giving one answer to every prompt, the protective one exactly when the hidden chance is above 0.5 (0.87 and 0.72), so each run's optimal rate equals the best a fixed answer gets on its prompts (78–96%); none reads the payoffs. Every run locks in by step 11–23: =invented= by 11–15, =per-run= by 15–17, =mixed= by 16–23. Stated P(event) and P(no event) stay at the untrained model's 0, 0.25 or 0.5 at every checkpoint, for trained and untrained framings alike, in every condition.
+*** TODO Fourth round: fixed payoffs, a stated chance per prompt
+The author's decision on 2026-11-09, after the third round: turn the task around. Each run keeps one payoff table and each prompt has its own chance of the event, stated in the prompt ("There is a 70% chance that a glimmerfrost settles."). In the third round a fixed answer was nearly optimal; here it can't be, so a run that does well has to act on the chance. Beliefs are given, not learned, so this round tests the decision side only.
+
+- *Task.* =--chance stated= in =coherence.train_umbrella=, with =--framing=. A run's payoff table is drawn from its seed (=umbrella.run_utilities=), each action best in one outcome, with its break-even chance between 0.25 and 0.75. Each prompt draws its chance uniformly in whole percent from 1% to 99%, and the event is drawn at that chance.
+- *Runs.* =per-run=, so seeds 0–3 tell frost, barge, beacon and market, with break-even chances 0.60, 0.67, 0.72 and 0.55; the protective action is optimal on 39%, 35%, 29% and 46% of prompts. =Qwen3.5-9B=, rl, 300 steps, learning rate 1e-5, temperature 1.0, KL weight 0.04, as in the third round. About 9 GPU-hours. No belief measures.
+- *Read off.* =analysis/stated_chance_pilot.py=: per run, in the first 15 and last 25 steps, the optimal rate against the best fixed answer, and the protective-action rate against the stated chance, with the break-even chance marked. The task is learned if the last steps' optimal rate clearly beats the best fixed answer and the protective rate switches near the break-even chance.
+#+begin_example
+for s in 0 1 2 3; do
+  uv run submit-chain --segments 1 --sbatch-args="--time=04:00:00 --mem=96G" --experiment 003 \
+      --note "stated chance per-run seed=$s Qwen3.5-9B" -- python -m coherence.train_umbrella --model Qwen/Qwen3.5-9B \
+      --seed $s --arm rl --steps 300 --learning-rate 1e-5 --framing per-run --chance stated
+done
+#+end_example
 *** TODO 002's step count, learning rate and budget
 =uv run python experiments/003-umbrella-pilot/analysis/learning_curves.py <run-id> ...=, on the cluster (it reads =$COHERENCE_STORE=). Commit the figures and run records.
 

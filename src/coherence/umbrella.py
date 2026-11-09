@@ -9,6 +9,10 @@ The framed variant (003's third round) drops the towns: each run has one hidden 
 tells the decision as invented scenarios with no real-world odds to remember. Its samples keep the same fields, with
 "umbrella"/"no umbrella" naming the protective action and its alternative, and "rain" whether the event happened,
 whatever the framing calls them; `answers` maps the framing's words to those names.
+
+The stated-chance variant (003's fourth round) turns that around: each run keeps one payoff table, drawn per seed with
+its break-even chance between 0.25 and 0.75, and each prompt draws its own chance, uniform on (0, 1) in whole percent,
+and states it.
 """
 
 import json
@@ -92,6 +96,8 @@ FRAMINGS = {
 STORIES = ["frost", "barge", "beacon", "market"]
 INVENTED = "orb"
 FRAMING_CONDITIONS = ["mixed", "invented", "per-run"]
+CHANCES = ["hidden", "stated"]
+BREAK_EVEN_RANGE = (0.25, 0.75)
 
 FRAMED_PROMPT = """{setting} You decide whether to {act_phrase}.
 
@@ -109,19 +115,43 @@ def hidden_chance(seed: int) -> float:
     return random.Random(f"chance-{seed}").random()
 
 
-def generate_framed(seed: int, n: int, condition: str) -> list[dict]:
+def break_even(utilities: dict[str, int]) -> float:
+    """The chance of the event at which both actions have the same expected utility."""
+    u = utilities
+    gain_if_event, gain_if_none = u["umbrella_rain"] - u["no_umbrella_rain"], u["no_umbrella_dry"] - u["umbrella_dry"]
+    return gain_if_none / (gain_if_event + gain_if_none)
+
+
+def run_utilities(seed: int) -> dict[str, int]:
+    """A stated-chance run's one payoff table, with its break-even chance inside BREAK_EVEN_RANGE."""
+    rng = random.Random(f"run-utilities-{seed}")
+    while True:
+        utilities = draw_utilities(rng)
+        if BREAK_EVEN_RANGE[0] <= break_even(utilities) <= BREAK_EVEN_RANGE[1]:
+            return utilities
+
+
+def generate_framed(seed: int, n: int, condition: str, chance: str = "hidden") -> list[dict]:
     """A framed run's training samples: "mixed" draws a story per prompt, "invented" always tells the orb, and
-    "per-run" tells one story chosen by the seed."""
+    "per-run" tells one story chosen by the seed. With chance "hidden" the run has one chance and fresh payoffs per
+    prompt; with "stated", one payoff table and a fresh chance per prompt, written in it."""
+    stated = chance == "stated"
     p = hidden_chance(seed)
-    rng = random.Random(f"framed-samples-{seed}")
+    rng = random.Random(f"stated-samples-{seed}" if stated else f"framed-samples-{seed}")
     samples = []
     for index in range(n):
         framing = {"mixed": lambda: rng.choice(STORIES), "invented": lambda: INVENTED,
                    "per-run": lambda: STORIES[seed % len(STORIES)]}[condition]()
         f = FRAMINGS[framing]
-        utilities = draw_utilities(rng)
+        if stated:
+            utilities, p = run_utilities(seed), rng.randint(1, 99) / 100
+        else:
+            utilities = draw_utilities(rng)
         prompt = FRAMED_PROMPT.format(**f, Act_phrase=f["act_phrase"].capitalize(),
                                       Skip_phrase=f["skip_phrase"].capitalize(), **utilities)
+        if stated:
+            setting, rest = prompt.split(" You decide", 1)
+            prompt = f"{setting} There is a {p:.0%} chance that {f['event']}. You decide{rest}"
         samples.append({"index": index, "framing": framing, "p": p, "utilities": utilities, "rain": rng.random() < p,
                         "answers": {f["act"]: "umbrella", f["skip"]: "no umbrella"},
                         "prompt": [{"role": "user", "content": prompt}]})

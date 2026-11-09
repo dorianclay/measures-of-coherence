@@ -135,3 +135,47 @@ def test_every_framing_has_a_statement_pair_to_measure_its_event():
     rows = umbrella.event_statements()
 
     assert {(r["framing"], r["rain"]) for r in rows} == {(f, k) for f in umbrella.FRAMINGS for k in (0, 1)}
+
+
+# The stated-chance variant: one payoff table per run, a fresh chance per prompt, stated in the prompt
+
+
+def break_even(u):
+    return (u["no_umbrella_dry"] - u["umbrella_dry"]) / (
+        u["umbrella_rain"] - u["no_umbrella_rain"] + u["no_umbrella_dry"] - u["umbrella_dry"])
+
+
+def test_a_stated_chance_run_keeps_one_payoff_table_with_a_break_even_chance_away_from_the_ends():
+    for seed in range(20):
+        samples = umbrella.generate_framed(seed=seed, n=50, condition="per-run", chance="stated")
+        (table,) = {tuple(sorted(s["utilities"].items())) for s in samples}
+        assert 0.25 <= break_even(dict(table)) <= 0.75
+    tables = {tuple(sorted(umbrella.generate_framed(seed=s, n=1, condition="per-run", chance="stated")[0]
+                           ["utilities"].items())) for s in range(20)}
+    assert len(tables) > 10
+
+
+def test_each_stated_chance_prompt_states_its_own_chance_and_its_event_follows_it():
+    samples = umbrella.generate_framed(seed=3, n=20000, condition="mixed", chance="stated")
+
+    for s in samples[:200]:
+        f = umbrella.FRAMINGS[s["framing"]]
+        assert f"There is a {round(s['p'] * 100)}% chance that {f['event']}." in s["prompt"][-1]["content"]
+        assert 0 < s["p"] < 1 and s["p"] == round(s["p"], 2)
+    assert len({s["p"] for s in samples}) > 90
+    for low in (0.0, 0.5):
+        band = [s for s in samples if low < s["p"] <= low + 0.5]
+        assert abs(sum(s["rain"] for s in band) / len(band) - sum(s["p"] for s in band) / len(band)) < 0.02
+    assert umbrella.generate_framed(seed=3, n=100, condition="mixed", chance="stated") == samples[:100]
+
+
+def test_a_stated_chance_run_needs_both_answers_to_do_well():
+    samples = umbrella.generate_framed(seed=0, n=2000, condition="per-run", chance="stated")
+    protective = sum(umbrella.optimal_action(s) == "umbrella" for s in samples) / len(samples)
+
+    assert 0.2 < protective < 0.8
+
+
+def test_the_hidden_chance_variant_is_unchanged_by_the_stated_one():
+    assert umbrella.generate_framed(seed=1, n=30, condition="mixed") == \
+        umbrella.generate_framed(seed=1, n=30, condition="mixed", chance="hidden")
