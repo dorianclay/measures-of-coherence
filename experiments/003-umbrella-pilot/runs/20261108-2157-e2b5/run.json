@@ -1,0 +1,51 @@
+{
+  "run_id": "20261108-2157-e2b5",
+  "experiment": "003",
+  "note": "event check, told chances: event-belief-elicit-logprob@1 on Qwen/Qwen3.5-9B",
+  "command": [
+    "python",
+    "-m",
+    "coherence.measure_towns",
+    "--model",
+    "Qwen/Qwen3.5-9B@c202236235762e1c871ad0ccb60c8ee5ba337b9a",
+    "--protocol",
+    "event-belief-elicit-logprob@1",
+    "--told-chances",
+    "0.1",
+    "0.3",
+    "0.5",
+    "0.7",
+    "0.9"
+  ],
+  "cwd": "/home/export/doriancl/code/measures-of-coherence",
+  "status": "succeeded",
+  "segments": [
+    {
+      "git": {
+        "sha": "710e27be7715a0143ae0ffe5ac8a3aa814f4c774",
+        "dirty": true
+      },
+      "uv_lock_sha256": "cb2209d1f8d9ce4beae95ed5b5fb8d345d16edb9dcebd0af4bb56a0787ac334f",
+      "host": "n02",
+      "gpus": [
+        "NVIDIA L40"
+      ],
+      "slurm_job_id": "269456",
+      "started": "2026-11-09T02:57:20+00:00",
+      "steps": [
+        0,
+        0
+      ],
+      "finished": "2026-11-09T02:57:41+00:00",
+      "exit_code": 0
+    }
+  ],
+  "model_ref": "Qwen/Qwen3.5-9B@c202236235762e1c871ad0ccb60c8ee5ba337b9a",
+  "protocol": "event-belief-elicit-logprob@1",
+  "datasets": {
+    "framed_events": {
+      "version": 1,
+      "sha256": "eda22f2accc8794c28eb195dae3e0d26fc2c060eef3468b0858a3b9e57abab0e"
+    }
+  }
+}

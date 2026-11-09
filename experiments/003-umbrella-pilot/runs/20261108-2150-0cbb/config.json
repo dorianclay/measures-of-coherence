@@ -1,0 +1,26 @@
+{
+  "model": "Qwen/Qwen3.5-9B",
+  "revision": null,
+  "seed": 3,
+  "arm": "rl",
+  "framing": "invented",
+  "steps": 300,
+  "prompts_per_step": 16,
+  "group_size": 8,
+  "learning_rate": 1e-05,
+  "kl": 0.04,
+  "lora_rank": 16,
+  "max_completion_length": 8,
+  "temperature": 1.0,
+  "eval_fractions": [
+    0.05,
+    0.1,
+    0.25,
+    0.5,
+    1.0
+  ],
+  "resume_every": 50,
+  "margin_minutes": 30,
+  "stop_after": null,
+  "output": null
+}

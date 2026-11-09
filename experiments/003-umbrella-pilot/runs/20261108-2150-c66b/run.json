@@ -1,0 +1,109 @@
+{
+  "run_id": "20261108-2150-c66b",
+  "experiment": "003",
+  "note": "framed mixed seed=1 Qwen3.5-9B",
+  "command": [
+    "python",
+    "-m",
+    "coherence.train_umbrella",
+    "--model",
+    "Qwen/Qwen3.5-9B",
+    "--seed",
+    "1",
+    "--arm",
+    "rl",
+    "--steps",
+    "300",
+    "--learning-rate",
+    "1e-5",
+    "--framing",
+    "mixed"
+  ],
+  "cwd": "/home/export/doriancl/code/measures-of-coherence",
+  "status": "succeeded",
+  "segments": [
+    {
+      "git": {
+        "sha": "710e27be7715a0143ae0ffe5ac8a3aa814f4c774",
+        "dirty": true
+      },
+      "uv_lock_sha256": "cb2209d1f8d9ce4beae95ed5b5fb8d345d16edb9dcebd0af4bb56a0787ac334f",
+      "host": "n02",
+      "gpus": [
+        "NVIDIA L40"
+      ],
+      "slurm_job_id": "269459",
+      "started": "2026-11-09T02:57:20+00:00",
+      "steps": [
+        0,
+        300
+      ],
+      "finished": "2026-11-09T05:15:53+00:00",
+      "exit_code": 0
+    }
+  ],
+  "model_ref": "Qwen/Qwen3.5-9B@c202236235762e1c871ad0ccb60c8ee5ba337b9a",
+  "seed": 1,
+  "planned_steps": 300,
+  "artifacts": [
+    {
+      "path": "20261108-2150-c66b/dataset.jsonl",
+      "size": 3206514,
+      "sha256": "b0a64290e45d2f48dfc10f80354ed37678ecbaf6facb2526adc16aafa86c4c12"
+    },
+    {
+      "path": "20261108-2150-c66b/eval/step0",
+      "size": 173187841,
+      "sha256": "d4efd839521aaa0820e60ad218fa87753ca13a17af50449e1d7ac636eb06ac78",
+      "checkpoint": "eval",
+      "step": 0
+    },
+    {
+      "path": "20261108-2150-c66b/eval/step15",
+      "size": 173187841,
+      "sha256": "ff51cc80670d85179d74a106d8f10ab271d9033886b35e6d7ebb3615557eef0d",
+      "checkpoint": "eval",
+      "step": 15
+    },
+    {
+      "path": "20261108-2150-c66b/eval/step30",
+      "size": 173187841,
+      "sha256": "edd1547fc04d9ae1c45c4c2e2cfd79027461dcefa5decdb2e62c16a3d8ab6089",
+      "checkpoint": "eval",
+      "step": 30
+    },
+    {
+      "path": "20261108-2150-c66b/eval/step75",
+      "size": 173187841,
+      "sha256": "4c9508a7c11c3809afcc47fc2d02103fd0eb3906e7bbd19df645c85bdc3efc77",
+      "checkpoint": "eval",
+      "step": 75
+    },
+    {
+      "path": "20261108-2150-c66b/eval/step150",
+      "size": 173187841,
+      "sha256": "704a8e74c6ac8274178c9b894105a037feb890cd78d086415a3db205f220e36b",
+      "checkpoint": "eval",
+      "step": 150
+    },
+    {
+      "path": "20261108-2150-c66b/resume",
+      "size": 540110903,
+      "checkpoint": "resume",
+      "step": 250
+    },
+    {
+      "path": "20261108-2150-c66b/eval/step300",
+      "size": 173187841,
+      "sha256": "17db81e3018992c5827f108cfd73dc0cee43a7aeae123c6a1dcf1ae1ce73e4fe",
+      "checkpoint": "eval",
+      "step": 300
+    },
+    {
+      "path": "20261108-2150-c66b/rewards.jsonl",
+      "size": 3428292,
+      "sha256": "282f9e03be4f8ea87588078cc87ab84095df32be7824b639187a34730546553f"
+    }
+  ],
+  "step": 300
+}

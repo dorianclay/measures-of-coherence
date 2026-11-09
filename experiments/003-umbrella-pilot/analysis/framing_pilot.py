@@ -3,8 +3,8 @@
     uv run python experiments/003-umbrella-pilot/analysis/framing_pilot.py <training-run-id> ... [--last 25]
 
 Per training run, over its last steps: the share of optimal choices against the best a fixed answer could get on the
-same prompts (a run that ignores the payoffs reaches at most that), the protective-action rate, and the share of
-prompts whose answers all match. Per measured checkpoint, the stated P(event) and P(no event) for the run's own
+same prompts (a run that ignores the payoffs reaches at most that), the protective-action rate, the share of
+prompts whose answers all match, and the first step at which 99% of a step's answers are the same. Per measured checkpoint, the stated P(event) and P(no event) for the run's own
 framings and for the others. Writes figures/framing_pilot.csv, figures/framing_beliefs.csv and
 figures/framing_pilot.png, each with a sidecar.
 """
@@ -36,6 +36,12 @@ def measurements(training: dict) -> list[dict]:
     return found
 
 
+def locked_by(d: pd.DataFrame) -> int:
+    """The first step at which at least 99% of the step's answers are the same one."""
+    share = d.groupby("step")["answer"].agg(lambda a: a.value_counts(dropna=False).iloc[0] / len(a))
+    return int(share[share >= 0.99].index.min())
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("run_ids", nargs="+")
@@ -57,7 +63,7 @@ def main():
                      "optimal": last["optimal"].mean(), "best_fixed_answer": max(protect, 1 - protect),
                      "protective_rate": (last["answer"] == "umbrella").mean(), "valid": last["valid"].mean(),
                      "unanimous": last.groupby("index")["answer"].agg(lambda a: a.nunique(dropna=False) == 1).mean(),
-                     "gpu_hours": runs.gpu_hours(training)})
+                     "locked_by": locked_by(d), "gpu_hours": runs.gpu_hours(training)})
         for run in measurements(training):
             loaded.append(run)
             beliefs = pd.read_csv(run["dir"] / "outputs" / "beliefs.csv")

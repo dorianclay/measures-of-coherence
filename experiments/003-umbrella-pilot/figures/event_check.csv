@@ -1,0 +1,5 @@
+model,protocol,run_id,told,p_rain,p_no_rain,sum,unparsed,answers,slope_rain,slope_no_rain
+Qwen/Qwen3.5-9B,event-belief-elicit-logprob@1,20261108-2153-bc74,False,0.05186129734696194,0.13254531805093087,0.1844066153978928,0,30,,
+Qwen/Qwen3.5-9B,event-belief-elicit-logprob@1,20261108-2157-e2b5,True,0.0643064262066036,0.19955113396048546,0.26385756016708906,0,150,-0.04756108801035834,-0.10488150169452037
+Qwen/Qwen3.5-9B,event-belief-elicit-stated@1,20261108-2153-3cc8,False,0.2,0.4,0.6000000000000001,0,10,,
+Qwen/Qwen3.5-9B,event-belief-elicit-stated@1,20261108-2153-ac6f,True,0.36,0.628,0.988,0,50,2.3098530671898207e-18,-0.39999999999999986

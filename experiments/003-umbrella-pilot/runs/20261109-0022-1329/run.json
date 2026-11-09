@@ -1,0 +1,45 @@
+{
+  "run_id": "20261109-0022-1329",
+  "experiment": "003",
+  "note": "event-belief-elicit-stated@1 on 20261108-2150-4ef3@step150",
+  "command": [
+    "python",
+    "-m",
+    "coherence.measure_towns",
+    "--model",
+    "20261108-2150-4ef3@step150",
+    "--protocol",
+    "event-belief-elicit-stated@1"
+  ],
+  "cwd": "/home/export/doriancl/code/measures-of-coherence",
+  "status": "succeeded",
+  "segments": [
+    {
+      "git": {
+        "sha": "710e27be7715a0143ae0ffe5ac8a3aa814f4c774",
+        "dirty": true
+      },
+      "uv_lock_sha256": "cb2209d1f8d9ce4beae95ed5b5fb8d345d16edb9dcebd0af4bb56a0787ac334f",
+      "host": "n02",
+      "gpus": [
+        "NVIDIA L40"
+      ],
+      "slurm_job_id": "269466",
+      "started": "2026-11-09T05:22:45+00:00",
+      "steps": [
+        0,
+        0
+      ],
+      "finished": "2026-11-09T05:23:03+00:00",
+      "exit_code": 0
+    }
+  ],
+  "model_ref": "20261108-2150-4ef3@step150",
+  "protocol": "event-belief-elicit-stated@1",
+  "datasets": {
+    "framed_events": {
+      "version": 1,
+      "sha256": "eda22f2accc8794c28eb195dae3e0d26fc2c060eef3468b0858a3b9e57abab0e"
+    }
+  }
+}

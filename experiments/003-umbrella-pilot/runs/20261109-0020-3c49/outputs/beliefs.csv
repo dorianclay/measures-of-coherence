@@ -1,0 +1,11 @@
+framing,rain,template,prevision
+frost,1,t0,0.0
+frost,0,t0,0.0
+barge,1,t0,0.0
+barge,0,t0,0.5
+beacon,1,t0,0.0
+beacon,0,t0,0.5
+market,1,t0,0.0
+market,0,t0,0.0
+orb,1,t0,0.5
+orb,0,t0,0.5

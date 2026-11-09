@@ -1,0 +1,25 @@
+{
+  "output": "event_check.csv",
+  "runs": [
+    "20261108-2153-3cc8",
+    "20261108-2153-ac6f",
+    "20261108-2153-bc74",
+    "20261108-2157-e2b5"
+  ],
+  "protocols": [
+    "event-belief-elicit-logprob@1",
+    "event-belief-elicit-stated@1"
+  ],
+  "datasets": {
+    "framed_events": {
+      "version": 1,
+      "sha256": "eda22f2accc8794c28eb195dae3e0d26fc2c060eef3468b0858a3b9e57abab0e"
+    }
+  },
+  "analysis_commit": {
+    "sha": "710e27be7715a0143ae0ffe5ac8a3aa814f4c774",
+    "dirty": true
+  },
+  "script": "experiments/003-umbrella-pilot/analysis/forecast_screen.py",
+  "created": "2026-11-09T07:35:50+00:00"
+}
