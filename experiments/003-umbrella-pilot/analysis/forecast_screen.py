@@ -4,7 +4,7 @@
 
 Per model, protocol and whether the chance of rain was told in the prompt: P(rain), P(no rain) and their sum (1 if
 coherent); with told chances, the slopes of both on the told chance (1 and -1 if it reads what it was told). Writes
-figures/forecast_screen.csv.
+figures/forecast_screen.csv, or --name. Works on the framed events too, where "rain" is the event.
 """
 
 import argparse
@@ -19,6 +19,7 @@ from coherence.paths import experiments_dir
 def main():
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("run_ids", nargs="+")
+    parser.add_argument("--name", default="forecast_screen", help="File name, without extension, under figures/.")
     args = parser.parse_args()
 
     loaded = runs.load(args.run_ids, allow_mixed_protocols=True)
@@ -36,7 +37,7 @@ def main():
                 row[name] = np.polyfit(part.told_chance, part.prevision, 1)[0]
         rows.append(row)
     table = pd.DataFrame(rows).sort_values(["model", "protocol", "told"])
-    runs.save(table, experiments_dir() / "003-umbrella-pilot" / "figures" / "forecast_screen.csv", loaded)
+    runs.save(table, experiments_dir() / "003-umbrella-pilot" / "figures" / f"{args.name}.csv", loaded)
     print(table.drop(columns="run_id").round(3).to_string(index=False))
 
 
