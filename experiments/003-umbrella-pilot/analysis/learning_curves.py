@@ -3,7 +3,8 @@ came to depend on each town's hidden chance of rain.
 
     uv run python experiments/003-umbrella-pilot/analysis/learning_curves.py <run-id> ... [--window 25]
 
-Writes figures/learning_curves.png and figures/learning_curves.csv (per run and step window), each with a sidecar.
+Writes figures/learning_curves.png and figures/learning_curves.csv (per run and step window), each with a sidecar;
+--name changes the file names. "unanimous" is the share of prompts whose answers were all the same.
 """
 
 import argparse
@@ -22,20 +23,25 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("run_ids", nargs="+")
     parser.add_argument("--window", type=int, default=25, help="Steps per point on the curves.")
+    parser.add_argument("--name", default="learning_curves", help="File name, without extension, under figures/.")
     args = parser.parse_args()
 
     loaded = runs.load(args.run_ids)
     frames = []
     for run in loaded:
         d = umbrella.decisions(run)
-        lr = umbrella.config(run)["learning_rate"]
+        config = umbrella.config(run)
+        lr = config["learning_rate"]
         print(f"{run['run_id']}: {runs.gpu_hours(run):.2f} GPU-hours over {len(run['segments'])} segment(s)")
-        frames.append(d.assign(label=f"{run['run_id']} {d['arm'].iloc[0]} lr={lr}",
+        unanimous = d.groupby("index")["answer"].transform(lambda a: a.nunique(dropna=False) == 1)
+        frames.append(d.assign(label=f"{run['run_id']} {d['arm'].iloc[0]} lr={lr} t={config['temperature']} kl={config['kl']}",
+                               unanimous=unanimous,
                                window=(d["step"] - 1) // args.window * args.window + args.window,
                                took_umbrella=d["answer"] == "umbrella"))
     curves = (pd.concat(frames)
               .groupby(["label", "window"])
-              .agg(valid=("valid", "mean"), optimal=("optimal", "mean"), reward=("reward", "mean"))
+              .agg(valid=("valid", "mean"), optimal=("optimal", "mean"), reward=("reward", "mean"),
+             unanimous=("unanimous", "mean"))
               .reset_index())
 
     fig, axes = plt.subplots(1, 3, figsize=(16, 4.5))
@@ -54,8 +60,8 @@ def main():
     fig.tight_layout()
 
     figures = experiments_dir() / "003-umbrella-pilot" / "figures"
-    runs.save(fig, figures / "learning_curves.png", loaded)
-    runs.save(curves, figures / "learning_curves.csv", loaded)
+    runs.save(fig, figures / f"{args.name}.png", loaded)
+    runs.save(curves, figures / f"{args.name}.csv", loaded)
     print(curves.groupby("label").tail(1).to_string(index=False))
 
 

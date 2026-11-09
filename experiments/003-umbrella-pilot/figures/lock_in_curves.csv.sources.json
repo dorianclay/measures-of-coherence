@@ -1,0 +1,17 @@
+{
+  "output": "lock_in_curves.csv",
+  "runs": [
+    "20261108-1852-322f",
+    "20261108-1852-94f4",
+    "20261108-1852-608f",
+    "20261108-1852-8679"
+  ],
+  "protocols": [],
+  "datasets": {},
+  "analysis_commit": {
+    "sha": "bf36062d8732c719e6287b10704977be49dc8e17",
+    "dirty": true
+  },
+  "script": "experiments/003-umbrella-pilot/analysis/learning_curves.py",
+  "created": "2026-11-09T01:58:49+00:00"
+}
