@@ -162,6 +162,24 @@ def test_the_run_records_its_environment_and_machine_and_tells_the_command_where
     assert result.stdout.split() == [run_dir.name, str(run_dir), str(repo.parent / "store" / run_dir.name)]
 
 
+
+def test_the_run_records_only_the_gpus_slurm_gave_it_when_the_node_shows_more(repo, tmp_path):
+    fake_bin = tmp_path / "bin"
+    fake_bin.mkdir()
+    # Like nvidia-smi on a node without device isolation: every GPU, unless --id picks some
+    (fake_bin / "nvidia-smi").write_text(
+        '#!/bin/sh\nfor a in "$@"; do case $a in --id=*) echo "$a" | cut -d= -f2 | tr , "\\n" | '
+        "sed 's/.*/NVIDIA L40/'; exit 0;; esac; done\nfor i in 1 2 3 4 5 6 7; do echo 'NVIDIA L40'; done\n")
+    (fake_bin / "nvidia-smi").chmod(0o755)
+    child = child_script(tmp_path, "pass\n")
+    env = {"CUDA_VISIBLE_DEVICES": "3", "PATH": f"{fake_bin}{os.pathsep}{os.environ['PATH']}"}
+
+    result = record(repo, "--experiment", "002", "--", sys.executable, str(child), env=env)
+
+    assert result.returncode == 0, result.stderr
+    run = json.loads((only_run_dir(repo) / "run.json").read_text())
+    assert run["segments"][0]["gpus"] == ["NVIDIA L40"]
+
 # --- what a run measured, logged by the command through coherence.runs.log ---
 
 def test_the_command_logs_its_model_reference_protocol_and_seed_into_the_run_record(repo, tmp_path):

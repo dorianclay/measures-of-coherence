@@ -40,9 +40,16 @@ def new_run_id() -> str:
 
 
 def gpus() -> list[str]:
+    """The GPUs this job may use. Slurm names them in CUDA_VISIBLE_DEVICES; nvidia-smi lists the whole node's where
+    the node doesn't isolate devices, as on n03."""
     if not shutil.which("nvidia-smi"):
         return []
-    result = subprocess.run(["nvidia-smi", "--query-gpu=name", "--format=csv,noheader"], capture_output=True, text=True)
+    visible = os.environ.get("CUDA_VISIBLE_DEVICES")
+    if visible is not None and not visible.strip():
+        return []
+    select = [f"--id={visible}"] if visible else []
+    result = subprocess.run(["nvidia-smi", "--query-gpu=name", "--format=csv,noheader", *select],
+                            capture_output=True, text=True)
     return [line.strip() for line in result.stdout.splitlines() if line.strip()]
 
 
