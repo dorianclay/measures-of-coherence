@@ -4,8 +4,9 @@ switch actions at its break-even chance?
     uv run python experiments/003-umbrella-pilot/analysis/stated_chance_pilot.py <training-run-id> ... [--first 15] [--last 25]
 
 Per training run, over its first and last steps: the share of optimal choices against the best a fixed answer could
-get on the same prompts, the protective-action rate, the valid rate, and the first step at which 99% of a step's
-answers are the same. The figure plots each run's protective-action rate against the stated chance, in its first and
+get on the same prompts, the protective-action rate, the valid rate, the switch point (the chance above which "protect
+whenever the chance is higher" agrees best with the run's answers; NaN for runs that agree with it no better than with
+a fixed answer), and the first step at which 99% of a step's answers are the same. The figure plots each run's protective-action rate against the stated chance, in its first and
 last steps, with its break-even chance marked. Writes figures/stated_chance_pilot.csv, figures/stated_chance_curves.csv
 and figures/stated_chance_pilot.png, each with a sidecar.
 """
@@ -25,10 +26,22 @@ from coherence.paths import experiments_dir, store_root
 BINS = [i / 10 for i in range(11)]
 
 
+def switch_point(d: pd.DataFrame) -> float:
+    """The threshold t for which "protect if and only if the chance is above t" agrees with most valid answers."""
+    d = d[d["valid"]]
+    protect = d["answer"] == "umbrella"
+    candidates = sorted(d["p"].unique())
+    agreement = {t: ((d["p"] > t) == protect).mean() for t in [0.0] + candidates}
+    t = max(agreement, key=agreement.get)
+    fixed = max(protect.mean(), 1 - protect.mean())
+    return t if agreement[t] > fixed + 0.05 else float("nan")
+
+
 def summary(d: pd.DataFrame, samples: dict) -> dict:
     protect = sum(umbrella.optimal_action(samples[i]) == "umbrella" for i in d["index"].unique()) / d["index"].nunique()
     return {"optimal": d["optimal"].mean(), "best_fixed_answer": max(protect, 1 - protect),
-            "protective_rate": (d["answer"] == "umbrella").mean(), "valid": d["valid"].mean()}
+            "protective_rate": (d["answer"] == "umbrella").mean(), "valid": d["valid"].mean(),
+            "switch_point": switch_point(d)}
 
 
 def main():

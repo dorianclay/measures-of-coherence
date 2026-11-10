@@ -1,0 +1,17 @@
+{
+  "output": "stated_chance_curves.csv",
+  "runs": [
+    "20261109-1103-64bd",
+    "20261109-1103-6179",
+    "20261109-1103-9ffb",
+    "20261109-1103-3437"
+  ],
+  "protocols": [],
+  "datasets": {},
+  "analysis_commit": {
+    "sha": "f2b63c9812c56e6dd9aa25b5a09cfa2a26c269af",
+    "dirty": true
+  },
+  "script": "experiments/003-umbrella-pilot/analysis/stated_chance_pilot.py",
+  "created": "2026-11-10T05:13:00+00:00"
+}
