@@ -7,6 +7,7 @@ Per training run and story, over its first and last steps: the share of optimal 
 answer per story could get on the same prompts, the protective-action rate, and the implied chance: the chance t for
 which "protect whenever the prompt's break-even chance is below t" agrees best with the run's valid answers (NaN unless
 it agrees better than a fixed answer, by more than 0.05). That is the chance the choices act on, read from the payoffs.
+Also the first step from which 99% of a story's answers in each step are the same one.
 Per measured checkpoint, the stated P(event) and P(no event) for each story, worded as training words it (the setting
 first, no chance told). Writes figures/per_story_pilot.csv, figures/per_story_curves.csv, figures/per_story_beliefs.csv
 and figures/per_story_pilot.png, each with a sidecar.
@@ -80,9 +81,9 @@ def main():
                 rows.append({**base, "phase": phase, "story": story, "p": chances[story], "optimal": s["optimal"].mean(),
                              "best_fixed_answer": best_fixed(s, samples),
                              "protective_rate": (s["answer"] == "umbrella").mean(), "valid": s["valid"].mean(),
-                             "implied_chance": implied_chance(s)})
-        rows[-1]["locked_by"] = umbrella_analysis.locked_by(d)
-        rows[-1]["gpu_hours"] = runs.gpu_hours(training)
+                             "implied_chance": implied_chance(s),
+                             "locked_by": umbrella_analysis.locked_by(d[d["framing"] == story]),
+                             "gpu_hours": runs.gpu_hours(training)})
         for (window, story), s in d.groupby(["window", "framing"]):
             curves.append({**base, "step": window, "story": story, "p": chances[story], "optimal": s["optimal"].mean(),
                            "best_fixed_answer": best_fixed(s, samples), "implied_chance": implied_chance(s)})

@@ -1,0 +1,114 @@
+{
+  "run_id": "20261112-1946-e0df",
+  "experiment": "003",
+  "note": "stated chance break-even 0.25-0.35 seed=0 Qwen3.5-9B",
+  "command": [
+    "python",
+    "-m",
+    "coherence.train_umbrella",
+    "--model",
+    "Qwen/Qwen3.5-9B",
+    "--seed",
+    "0",
+    "--arm",
+    "rl",
+    "--steps",
+    "300",
+    "--learning-rate",
+    "1e-5",
+    "--framing",
+    "per-run",
+    "--chance",
+    "stated",
+    "--break-even",
+    "0.25",
+    "0.35"
+  ],
+  "cwd": "/home/export/doriancl/code/measures-of-coherence",
+  "status": "succeeded",
+  "segments": [
+    {
+      "git": {
+        "sha": "ca5e94a4a8c85268a25993aee1db418fa149f185",
+        "dirty": true
+      },
+      "uv_lock_sha256": "cb2209d1f8d9ce4beae95ed5b5fb8d345d16edb9dcebd0af4bb56a0787ac334f",
+      "host": "n03",
+      "gpus": [
+        "NVIDIA L40"
+      ],
+      "slurm_job_id": "274650",
+      "started": "2026-11-13T00:47:08+00:00",
+      "steps": [
+        0,
+        300
+      ],
+      "finished": "2026-11-13T03:47:22+00:00",
+      "exit_code": 0
+    }
+  ],
+  "model_ref": "Qwen/Qwen3.5-9B@c202236235762e1c871ad0ccb60c8ee5ba337b9a",
+  "seed": 0,
+  "planned_steps": 300,
+  "artifacts": [
+    {
+      "path": "20261112-1946-e0df/dataset.jsonl",
+      "size": 3413203,
+      "sha256": "4a18b785db7c2f1796ff7d2d0f9787baeec3545094f8d178f8ccf80631636951"
+    },
+    {
+      "path": "20261112-1946-e0df/eval/step0",
+      "size": 173187841,
+      "sha256": "dcc1ed4d4e729e32636c543cf8673e46bd703b24c3d0e8101b71f183f7b71c24",
+      "checkpoint": "eval",
+      "step": 0
+    },
+    {
+      "path": "20261112-1946-e0df/eval/step15",
+      "size": 173187841,
+      "sha256": "7d301d1023bcfd4552df352d9b54dee1737662f2b507d7b75ec11e13534c9071",
+      "checkpoint": "eval",
+      "step": 15
+    },
+    {
+      "path": "20261112-1946-e0df/eval/step30",
+      "size": 173187841,
+      "sha256": "39a441c175b7a483c38fda178398f8e331315f5f1343497fdf8a98f7cd368619",
+      "checkpoint": "eval",
+      "step": 30
+    },
+    {
+      "path": "20261112-1946-e0df/eval/step75",
+      "size": 173187841,
+      "sha256": "8d319176766bd4c2d74578c7002a9f5a730f70808493357a3878fdf6bb8d68a4",
+      "checkpoint": "eval",
+      "step": 75
+    },
+    {
+      "path": "20261112-1946-e0df/eval/step150",
+      "size": 173187841,
+      "sha256": "604222d7736e0555d09011e7232f61ad55689adaeeccc36e933753221ed4ad63",
+      "checkpoint": "eval",
+      "step": 150
+    },
+    {
+      "path": "20261112-1946-e0df/resume",
+      "size": 540110098,
+      "checkpoint": "resume",
+      "step": 250
+    },
+    {
+      "path": "20261112-1946-e0df/eval/step300",
+      "size": 173187841,
+      "sha256": "02f58e1cd0d46cc43dbfc1b65990992bef46cde1565b4a2522b39d575b21d31c",
+      "checkpoint": "eval",
+      "step": 300
+    },
+    {
+      "path": "20261112-1946-e0df/rewards.jsonl",
+      "size": 3391177,
+      "sha256": "09574b155679cf9751e353171b49aa64db9a085a91990c9ac783b25d6b2c5af5"
+    }
+  ],
+  "step": 300
+}

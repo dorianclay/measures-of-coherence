@@ -1,0 +1,11 @@
+framing,rain,template,prevision,told_as
+frost,1,t0,0.05,scenario
+frost,0,t0,0.5,scenario
+barge,1,t0,0.05,scenario
+barge,0,t0,0.7,scenario
+beacon,1,t0,0.5,scenario
+beacon,0,t0,0.5,scenario
+market,1,t0,0.0,scenario
+market,0,t0,0.5,scenario
+orb,1,t0,0.5,scenario
+orb,0,t0,0.5,scenario

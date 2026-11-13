@@ -1,0 +1,17 @@
+{
+  "output": "break_even_low_pilot.csv",
+  "runs": [
+    "20261112-1946-e0df",
+    "20261112-1946-88fd",
+    "20261112-1946-409d",
+    "20261112-1946-0641"
+  ],
+  "protocols": [],
+  "datasets": {},
+  "analysis_commit": {
+    "sha": "ca5e94a4a8c85268a25993aee1db418fa149f185",
+    "dirty": true
+  },
+  "script": "experiments/003-umbrella-pilot/analysis/stated_chance_pilot.py",
+  "created": "2026-11-13T09:31:12+00:00"
+}

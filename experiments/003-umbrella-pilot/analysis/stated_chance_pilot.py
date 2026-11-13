@@ -1,14 +1,14 @@
 """The stated-chance task: with one payoff table per run and the chance stated in each prompt, does a run learn to
 switch actions at its break-even chance?
 
-    uv run python experiments/003-umbrella-pilot/analysis/stated_chance_pilot.py <training-run-id> ... [--first 15] [--last 25]
+    uv run python experiments/003-umbrella-pilot/analysis/stated_chance_pilot.py <training-run-id> ... [--first 15] [--last 25] [--name stated_chance]
 
 Per training run, over its first and last steps: the share of optimal choices against the best a fixed answer could
 get on the same prompts, the protective-action rate, the valid rate, the switch point (the chance above which "protect
 whenever the chance is higher" agrees best with the run's answers; NaN for runs that agree with it no better than with
 a fixed answer), and the first step at which 99% of a step's answers are the same. The figure plots each run's protective-action rate against the stated chance, in its first and
-last steps, with its break-even chance marked. Writes figures/stated_chance_pilot.csv, figures/stated_chance_curves.csv
-and figures/stated_chance_pilot.png, each with a sidecar.
+last steps, with its break-even chance marked. Writes figures/<name>_pilot.csv, figures/<name>_curves.csv and
+figures/<name>_pilot.png, each with a sidecar.
 """
 
 import argparse
@@ -49,6 +49,7 @@ def main():
     parser.add_argument("run_ids", nargs="+")
     parser.add_argument("--first", type=int, default=15, help="Steps at the start to summarize choices over.")
     parser.add_argument("--last", type=int, default=25, help="Steps at the end to summarize choices over.")
+    parser.add_argument("--name", default="stated_chance", help="The output files' name.")
     args = parser.parse_args()
 
     trainings = runs.load(args.run_ids)
@@ -82,9 +83,9 @@ def main():
     fig.tight_layout()
 
     figures = experiments_dir() / "003-umbrella-pilot" / "figures"
-    runs.save(table, figures / "stated_chance_pilot.csv", trainings)
-    runs.save(curves, figures / "stated_chance_curves.csv", trainings)
-    runs.save(fig, figures / "stated_chance_pilot.png", trainings)
+    runs.save(table, figures / f"{args.name}_pilot.csv", trainings)
+    runs.save(curves, figures / f"{args.name}_curves.csv", trainings)
+    runs.save(fig, figures / f"{args.name}_pilot.png", trainings)
     print(table.drop(columns="run_id").round(3).to_string(index=False))
 
 
