@@ -1,5 +1,6 @@
 """The umbrella/rain decision task of experiment 002."""
 
+import json
 import random
 
 import pytest
@@ -179,3 +180,37 @@ def test_a_stated_chance_run_needs_both_answers_to_do_well():
 def test_the_hidden_chance_variant_is_unchanged_by_the_stated_one():
     assert umbrella.generate_framed(seed=1, n=30, condition="mixed") == \
         umbrella.generate_framed(seed=1, n=30, condition="mixed", chance="hidden")
+
+
+def test_a_stated_chance_run_can_draw_its_payoff_table_in_a_narrower_break_even_range():
+    for seed in range(8):
+        samples = umbrella.generate_framed(seed=seed, n=5, condition="per-run", chance="stated",
+                                           break_even_range=(0.25, 0.35))
+        assert 0.25 <= break_even(samples[0]["utilities"]) <= 0.35
+    assert umbrella.generate_framed(seed=2, n=30, condition="per-run", chance="stated") == \
+        umbrella.generate_framed(seed=2, n=30, condition="per-run", chance="stated", break_even_range=(0.25, 0.75))
+
+
+# The per-story variant: a hidden chance for each story, fresh payoffs per prompt
+
+
+def test_each_story_has_its_own_hidden_chance_that_its_events_follow():
+    samples = umbrella.generate_framed(seed=1, n=20000, condition="mixed", chance="per-story")
+    chances = umbrella.story_chances(1)
+
+    assert sorted(chances.values()) == umbrella.STORY_CHANCES and set(chances) == set(umbrella.STORIES)
+    assert len({tuple(umbrella.story_chances(s).values()) for s in range(10)}) > 1
+    for story, p in chances.items():
+        told = [s for s in samples if s["framing"] == story]
+        assert all(s["p"] == p for s in told)
+        assert abs(sum(s["rain"] for s in told) / len(told) - p) < 0.03
+        assert "chance" not in told[0]["prompt"][-1]["content"]
+    assert len({json.dumps(s["utilities"], sort_keys=True) for s in samples}) > 100
+
+
+def test_a_per_story_run_needs_the_payoffs_to_do_well():
+    samples = umbrella.generate_framed(seed=0, n=4000, condition="mixed", chance="per-story")
+    for story in umbrella.STORIES:
+        told = [s for s in samples if s["framing"] == story]
+        protective = sum(umbrella.optimal_action(s) == "umbrella" for s in told) / len(told)
+        assert 0.1 < protective < 0.9

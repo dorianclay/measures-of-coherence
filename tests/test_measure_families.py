@@ -83,7 +83,7 @@ def test_a_probe_run_books_the_event_families_from_an_extraction_runs_activation
                     "--activations", extraction["run_id"], "--protocol", protocol)
 
     assert result.returncode == 0, result.stderr
-    run = runs_of(repo)[-1]
+    [run] = [r for r in runs_of(repo) if r.get("protocol") == protocol]
     assert (run["model_ref"], run["protocol"]) == (extraction["model_ref"], protocol)
     assert run["inputs"] == [extraction["run_id"]]
     rates = list(csv.DictReader((run_dir(repo, run) / "outputs" / "rates_summary.csv").open()))
@@ -99,7 +99,7 @@ def test_the_town_probe_gives_a_belief_for_each_town_statement_at_each_layer(rep
                     "--activations", extraction["run_id"], "--protocol", "town-belief-probe-linear@1")
 
     assert result.returncode == 0, result.stderr
-    run = runs_of(repo)[-1]
+    [run] = [r for r in runs_of(repo) if r.get("protocol") == "town-belief-probe-linear@1"]
     beliefs = list(csv.DictReader((run_dir(repo, run) / "outputs" / "beliefs.csv").open()))
     layers = {r["layer"] for r in beliefs}
     assert len(beliefs) == 10 * len(layers)

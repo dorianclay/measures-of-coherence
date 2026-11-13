@@ -139,3 +139,13 @@ def test_a_told_chance_can_be_told_as_the_training_prompts_tell_it(model):
     setting = tiny_model.umbrella.FRAMINGS["frost"]["setting"]
     assert f"{setting} There is a 70% chance that a glimmerfrost settles." in text
     assert "The chance of the following" not in text
+
+
+def test_without_a_told_chance_the_scenario_wording_still_opens_with_the_setting(model):
+    row = pd.DataFrame([{"framing": "barge", "event": "E.", "statement": "A silt drift will block the Vell channel today.",
+                         "rain": 1}])
+    text = prompt(protocols.get("event-belief-elicit-stated@1"), AutoTokenizer.from_pretrained(model), "t0",
+                  next(row.itertuples()), told_as="scenario")
+
+    setting = tiny_model.umbrella.FRAMINGS["barge"]["setting"]
+    assert f"{setting}\n\n" in text and "chance that" not in text

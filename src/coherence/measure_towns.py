@@ -12,7 +12,8 @@ template, prevision; stated answers that don't parse are left empty).
 stated at the top of the prompt, and the output gains a told_chance column. It isn't a measurement of the model's own
 beliefs, so these runs are not comparable with runs without it. For the framed events, --told-as scenario tells the
 chance as the stated-chance training prompts do ("<setting> There is a 70% chance that <event>.") in place of
-"The chance of the following is 70%: <statement>"; the output then gains a told_as column.
+"The chance of the following is 70%: <statement>". Without --told-chances, --told-as scenario still opens the prompt
+with the framing's setting, as training does, with no chance. Either way the output then gains a told_as column.
 
 The event-belief protocols do the same for the framed task's events (dataset framed_events), with a framing column in
 place of the town.
@@ -50,7 +51,12 @@ def told_prefix(row, told_as: str) -> str:
 
 
 def prompt(protocol, tokenizer, template: str, row, told_as: str = "prefix") -> str:
-    told = told_prefix(row, told_as) if "told_chance" in row._fields else ""
+    if "told_chance" in row._fields:
+        told = told_prefix(row, told_as)
+    elif told_as == "scenario" and "framing" in row._fields:
+        told = umbrella.FRAMINGS[row.framing]["setting"] + "\n\n"
+    else:
+        told = ""
     if protocol.params.get("framing") == "forecast":
         messages = [{"role": "user", "content": told + FORECAST_TEMPLATES[template].format(s=row.statement)}]
         return tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True, enable_thinking=False)
@@ -91,7 +97,7 @@ def main(argv=None):
     runs.log(model_ref=args.model, protocol=args.protocol, datasets=list(protocol.datasets))
     model, tokenizer = models.load(args.model)
     beliefs = measure(protocol, model, tokenizer, statements, args.told_as)
-    if args.told_chances and args.told_as != "prefix":
+    if args.told_as != "prefix":
         beliefs["told_as"] = args.told_as
     output.mkdir(parents=True, exist_ok=True)
     beliefs.to_csv(output / "beliefs.csv", index=False)

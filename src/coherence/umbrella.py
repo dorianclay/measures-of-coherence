@@ -11,8 +11,12 @@ tells the decision as invented scenarios with no real-world odds to remember. It
 whatever the framing calls them; `answers` maps the framing's words to those names.
 
 The stated-chance variant (003's fourth round) turns that around: each run keeps one payoff table, drawn per seed with
-its break-even chance between 0.25 and 0.75, and each prompt draws its own chance, uniform on (0, 1) in whole percent,
-and states it.
+its break-even chance between 0.25 and 0.75 (or in a range the run gives), and each prompt draws its own chance,
+uniform on (0, 1) in whole percent, and states it.
+
+The per-story variant (003's fifth round) hides the chance again, with a different one for each story in a run: the
+seed shuffles STORY_CHANCES over the four stories, and payoffs are drawn afresh per prompt, so doing well needs both
+the story's chance and the prompt's payoffs.
 """
 
 import json
@@ -96,7 +100,8 @@ FRAMINGS = {
 STORIES = ["frost", "barge", "beacon", "market"]
 INVENTED = "orb"
 FRAMING_CONDITIONS = ["mixed", "invented", "per-run"]
-CHANCES = ["hidden", "stated"]
+CHANCES = ["hidden", "stated", "per-story"]
+STORY_CHANCES = [0.2, 0.4, 0.6, 0.8]
 BREAK_EVEN_RANGE = (0.25, 0.75)
 
 FRAMED_PROMPT = """{setting} You decide whether to {act_phrase}.
@@ -122,31 +127,44 @@ def break_even(utilities: dict[str, int]) -> float:
     return gain_if_none / (gain_if_event + gain_if_none)
 
 
-def run_utilities(seed: int) -> dict[str, int]:
-    """A stated-chance run's one payoff table, with its break-even chance inside BREAK_EVEN_RANGE."""
+def run_utilities(seed: int, break_even_range: tuple[float, float] = BREAK_EVEN_RANGE) -> dict[str, int]:
+    """A stated-chance run's one payoff table, with its break-even chance inside break_even_range."""
     rng = random.Random(f"run-utilities-{seed}")
     while True:
         utilities = draw_utilities(rng)
-        if BREAK_EVEN_RANGE[0] <= break_even(utilities) <= BREAK_EVEN_RANGE[1]:
+        if break_even_range[0] <= break_even(utilities) <= break_even_range[1]:
             return utilities
 
 
-def generate_framed(seed: int, n: int, condition: str, chance: str = "hidden") -> list[dict]:
+def story_chances(seed: int) -> dict[str, float]:
+    """A per-story run's hidden chance for each story."""
+    chances = STORY_CHANCES[:]
+    random.Random(f"story-chances-{seed}").shuffle(chances)
+    return dict(zip(STORIES, chances))
+
+
+def generate_framed(seed: int, n: int, condition: str, chance: str = "hidden",
+                    break_even_range: tuple[float, float] = BREAK_EVEN_RANGE) -> list[dict]:
     """A framed run's training samples: "mixed" draws a story per prompt, "invented" always tells the orb, and
     "per-run" tells one story chosen by the seed. With chance "hidden" the run has one chance and fresh payoffs per
-    prompt; with "stated", one payoff table and a fresh chance per prompt, written in it."""
+    prompt; with "per-story", one chance per story and fresh payoffs per prompt; with "stated", one payoff table and a
+    fresh chance per prompt, written in it."""
     stated = chance == "stated"
     p = hidden_chance(seed)
-    rng = random.Random(f"stated-samples-{seed}" if stated else f"framed-samples-{seed}")
+    per_story = story_chances(seed) if chance == "per-story" else None
+    rng = random.Random({"hidden": "framed-samples", "stated": "stated-samples", "per-story": "per-story-samples"}[chance]
+                        + f"-{seed}")
     samples = []
     for index in range(n):
         framing = {"mixed": lambda: rng.choice(STORIES), "invented": lambda: INVENTED,
                    "per-run": lambda: STORIES[seed % len(STORIES)]}[condition]()
         f = FRAMINGS[framing]
         if stated:
-            utilities, p = run_utilities(seed), rng.randint(1, 99) / 100
+            utilities, p = run_utilities(seed, break_even_range), rng.randint(1, 99) / 100
         else:
             utilities = draw_utilities(rng)
+            if per_story:
+                p = per_story[framing]
         prompt = FRAMED_PROMPT.format(**f, Act_phrase=f["act_phrase"].capitalize(),
                                       Skip_phrase=f["skip_phrase"].capitalize(), **utilities)
         if stated:

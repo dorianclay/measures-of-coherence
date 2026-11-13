@@ -122,7 +122,10 @@ def main(argv=None):
     parser.add_argument("--framing", choices=umbrella.FRAMING_CONDITIONS,
                         help="The framed task, in this condition, instead of the towns.")
     parser.add_argument("--chance", choices=umbrella.CHANCES, default="hidden",
-                        help="Framed task: one hidden chance per run, or one payoff table and a stated chance per prompt.")
+                        help="Framed task: one hidden chance per run, one per story, or one payoff table and a stated "
+                             "chance per prompt.")
+    parser.add_argument("--break-even", type=float, nargs=2, metavar=("LOW", "HIGH"), default=umbrella.BREAK_EVEN_RANGE,
+                        help="Stated chance: the range the run's payoff table's break-even chance is drawn in.")
     parser.add_argument("--steps", type=int, required=True, help="Planned optimizer steps for the whole run.")
     parser.add_argument("--prompts-per-step", type=int, default=16)
     parser.add_argument("--group-size", type=int, default=8, help="Completions per prompt (GRPO group).")
@@ -141,6 +144,8 @@ def main(argv=None):
 
     if args.chance == "stated" and not args.framing:
         parser.error("--chance stated needs --framing")
+    if args.chance == "per-story" and args.framing != "mixed":
+        parser.error("--chance per-story needs --framing mixed")
     store = Path(os.environ.get("RUN_STORE") or args.output or parser.error("run under `record`, or give --output"))
     store.mkdir(parents=True, exist_ok=True)
     model_path, model_ref = resolve_model(args.model, args.revision)
@@ -150,7 +155,7 @@ def main(argv=None):
 
     if resume is None:
         n = args.steps * args.prompts_per_step
-        generated = (umbrella.generate_framed(args.seed, n, args.framing, args.chance) if args.framing
+        generated = (umbrella.generate_framed(args.seed, n, args.framing, args.chance, tuple(args.break_even)) if args.framing
                      else umbrella.generate(args.seed, n))
         umbrella.write_dataset(generated, dataset_path)
         log_path.write_text("")

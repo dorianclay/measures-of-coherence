@@ -6,6 +6,7 @@ import sys
 import pytest
 
 import tiny_model
+from coherence import umbrella
 from coherence.hashing import sha256
 from test_record import make_repo, only_run_dir, record
 
@@ -117,3 +118,26 @@ def test_a_stated_chance_run_trains_on_one_payoff_table_with_chances_in_its_prom
     dataset = [json.loads(line) for line in (store / "dataset.jsonl").read_text().splitlines()]
     assert len({json.dumps(s["utilities"], sort_keys=True) for s in dataset}) == 1
     assert all(f"There is a {round(s['p'] * 100)}% chance" in s["prompt"][-1]["content"] for s in dataset)
+
+
+def test_a_stated_chance_run_takes_its_break_even_range(tmp_path, model):
+    repo = make_repo(tmp_path)
+
+    result = record(repo, "--experiment", "002", *train_command(model, "--framing", "per-run", "--chance", "stated",
+                                                                "--break-even", "0.25", "0.35"))
+
+    assert result.returncode == 0, result.stderr
+    store = repo.parent / "store" / read_run(repo)["run_id"]
+    utilities = json.loads((store / "dataset.jsonl").read_text().splitlines()[0])["utilities"]
+    assert 0.25 <= umbrella.break_even(utilities) <= 0.35
+
+
+def test_a_per_story_run_trains_on_mixed_stories_each_with_its_own_chance(tmp_path, model):
+    repo = make_repo(tmp_path)
+
+    result = record(repo, "--experiment", "002", *train_command(model, "--framing", "mixed", "--chance", "per-story"))
+
+    assert result.returncode == 0, result.stderr
+    store = repo.parent / "store" / read_run(repo)["run_id"]
+    dataset = [json.loads(line) for line in (store / "dataset.jsonl").read_text().splitlines()]
+    assert all(s["p"] == umbrella.story_chances(0)[s["framing"]] for s in dataset)
